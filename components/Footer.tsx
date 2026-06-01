@@ -16,6 +16,9 @@ export default function Footer() {
           <Link href="/privacy" className="hover:text-gray-900">
             Privacy
           </Link>
+          <Link href="/refund" className="hover:text-gray-900">
+            Refund
+          </Link>
         </nav>
         <p className="text-sm text-gray-500">
           Built by an ex-BMW Director · © 2026
