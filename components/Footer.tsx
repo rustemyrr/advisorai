@@ -1,4 +1,5 @@
 import { Car } from "lucide-react";
+import Link from "next/link";
 
 export default function Footer() {
   return (
@@ -8,6 +9,14 @@ export default function Footer() {
           <Car className="h-5 w-5" aria-hidden />
           AdvisorAI
         </div>
+        <nav className="flex items-center gap-4 text-sm text-gray-500">
+          <Link href="/terms" className="hover:text-gray-900">
+            Terms
+          </Link>
+          <Link href="/privacy" className="hover:text-gray-900">
+            Privacy
+          </Link>
+        </nav>
         <p className="text-sm text-gray-500">
           Built by an ex-BMW Director · © 2026
         </p>

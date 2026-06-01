@@ -1,0 +1,213 @@
+import type { Metadata } from "next";
+import LegalLayout from "@/components/LegalLayout";
+
+export const metadata: Metadata = {
+  title: "Terms of Service — AdvisorAI",
+  description: "Terms of Service for AdvisorAI SaaS subscription.",
+};
+
+export default function TermsPage() {
+  return (
+    <LegalLayout title="Terms of Service" lastUpdated="May 31, 2026">
+      <section>
+        <h2 className="text-lg font-semibold text-gray-900">1. Agreement</h2>
+        <p className="mt-3 text-sm leading-relaxed">
+          These Terms of Service (&ldquo;Terms&rdquo;) govern your access to and
+          use of AdvisorAI, a software-as-a-service product operated by Rustem
+          Yertisbay (&ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;),
+          available at{" "}
+          <a
+            href="https://advisorai.help"
+            className="text-gray-900 underline hover:no-underline"
+          >
+            advisorai.help
+          </a>{" "}
+          (the &ldquo;Service&rdquo;). By creating an account, subscribing, or
+          using the Service, you agree to these Terms. If you do not agree, do
+          not use the Service.
+        </p>
+      </section>
+
+      <section>
+        <h2 className="text-lg font-semibold text-gray-900">2. The Service</h2>
+        <p className="mt-3 text-sm leading-relaxed">
+          AdvisorAI provides AI-assisted tools for automotive service advisors,
+          including generation of customer estimates, plain-language repair
+          explanations, and upsell suggestions based on job descriptions you
+          provide. We may update, modify, or discontinue features at any time with
+          reasonable notice where practicable.
+        </p>
+      </section>
+
+      <section>
+        <h2 className="text-lg font-semibold text-gray-900">3. Accounts</h2>
+        <p className="mt-3 text-sm leading-relaxed">
+          You must provide accurate registration information and keep your
+          credentials secure. You are responsible for all activity under your
+          account. You must be at least 18 years old and authorized to use the
+          Service on behalf of your employer or dealership where applicable.
+        </p>
+      </section>
+
+      <section>
+        <h2 className="text-lg font-semibold text-gray-900">
+          4. Subscriptions and billing
+        </h2>
+        <p className="mt-3 text-sm leading-relaxed">
+          AdvisorAI offers a free plan with limited daily usage and paid
+          subscription plans. The Pro plan is billed at{" "}
+          <strong className="font-medium text-gray-900">$29 USD per month</strong>{" "}
+          (plus applicable taxes) unless otherwise stated at checkout. Team and
+          other plans are billed at the prices shown on our website at the time
+          of purchase.
+        </p>
+        <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-relaxed">
+          <li>
+            Subscriptions renew automatically each billing period until
+            cancelled.
+          </li>
+          <li>
+            You authorize us and our payment processor to charge your payment
+            method on each renewal date.
+          </li>
+          <li>
+            Fees are non-refundable except where required by law or explicitly
+            stated in a promotion (e.g. a stated money-back trial period).
+          </li>
+          <li>
+            We may change pricing with at least 30 days&apos; notice; continued
+            use after the effective date constitutes acceptance of new pricing.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 className="text-lg font-semibold text-gray-900">
+          5. Free trial and cancellation
+        </h2>
+        <p className="mt-3 text-sm leading-relaxed">
+          Where offered, a free trial converts to a paid subscription unless you
+          cancel before the trial ends. You may cancel at any time from your
+          account settings; cancellation takes effect at the end of the current
+          billing period. No cancellation fees apply.
+        </p>
+      </section>
+
+      <section>
+        <h2 className="text-lg font-semibold text-gray-900">6. Acceptable use</h2>
+        <p className="mt-3 text-sm leading-relaxed">You agree not to:</p>
+        <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-relaxed">
+          <li>Use the Service for unlawful purposes or in violation of dealership policies</li>
+          <li>Reverse engineer, scrape, or attempt to extract our models or source code</li>
+          <li>Share account access outside your licensed team size</li>
+          <li>Submit content that infringes third-party rights or contains malware</li>
+          <li>Overload or interfere with the Service&apos;s infrastructure</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 className="text-lg font-semibold text-gray-900">
+          7. AI-generated content
+        </h2>
+        <p className="mt-3 text-sm leading-relaxed">
+          Outputs are generated by artificial intelligence and are provided for
+          assistance only. You are solely responsible for reviewing, verifying,
+          and approving all estimates, explanations, and recommendations before
+          presenting them to customers or your employer. AdvisorAI does not
+          replace professional judgment, manufacturer guidelines, or legal
+          obligations of your dealership.
+        </p>
+      </section>
+
+      <section>
+        <h2 className="text-lg font-semibold text-gray-900">
+          8. Intellectual property
+        </h2>
+        <p className="mt-3 text-sm leading-relaxed">
+          We retain all rights in the Service, software, branding, and
+          documentation. You retain ownership of job descriptions and other
+          content you submit. You grant us a limited license to process that
+          content solely to provide and improve the Service.
+        </p>
+      </section>
+
+      <section>
+        <h2 className="text-lg font-semibold text-gray-900">
+          9. Disclaimer of warranties
+        </h2>
+        <p className="mt-3 text-sm leading-relaxed">
+          THE SERVICE IS PROVIDED &ldquo;AS IS&rdquo; AND &ldquo;AS
+          AVAILABLE&rdquo; WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
+          IMPLIED, INCLUDING MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
+          AND NON-INFRINGEMENT. WE DO NOT WARRANT THAT THE SERVICE WILL BE
+          UNINTERRUPTED, ERROR-FREE, OR ACCURATE.
+        </p>
+      </section>
+
+      <section>
+        <h2 className="text-lg font-semibold text-gray-900">
+          10. Limitation of liability
+        </h2>
+        <p className="mt-3 text-sm leading-relaxed">
+          TO THE MAXIMUM EXTENT PERMITTED BY LAW, ADVISORAI AND RUSTEM YERTISBAY
+          SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL,
+          CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR ANY LOSS OF PROFITS, DATA, OR
+          GOODWILL. OUR TOTAL LIABILITY FOR ANY CLAIM ARISING FROM THESE TERMS
+          OR THE SERVICE SHALL NOT EXCEED THE AMOUNT YOU PAID US IN THE TWELVE
+          (12) MONTHS BEFORE THE CLAIM, OR ONE HUNDRED US DOLLARS ($100), WHICHEVER
+          IS GREATER.
+        </p>
+      </section>
+
+      <section>
+        <h2 className="text-lg font-semibold text-gray-900">11. Indemnification</h2>
+        <p className="mt-3 text-sm leading-relaxed">
+          You agree to indemnify and hold harmless AdvisorAI and Rustem Yertisbay
+          from claims arising out of your use of the Service, your content, or
+          your violation of these Terms.
+        </p>
+      </section>
+
+      <section>
+        <h2 className="text-lg font-semibold text-gray-900">12. Termination</h2>
+        <p className="mt-3 text-sm leading-relaxed">
+          We may suspend or terminate your access for breach of these Terms or
+          non-payment. Upon termination, your right to use the Service ends
+          immediately. Sections that by nature should survive (including payment
+          obligations, disclaimers, and limitations of liability) will survive.
+        </p>
+      </section>
+
+      <section>
+        <h2 className="text-lg font-semibold text-gray-900">13. Governing law</h2>
+        <p className="mt-3 text-sm leading-relaxed">
+          These Terms are governed by the laws of England and Wales, without
+          regard to conflict-of-law principles. Courts in England shall have
+          exclusive jurisdiction, except where mandatory consumer protection laws
+          in your country require otherwise.
+        </p>
+      </section>
+
+      <section>
+        <h2 className="text-lg font-semibold text-gray-900">14. Contact</h2>
+        <p className="mt-3 text-sm leading-relaxed">
+          Questions about these Terms:{" "}
+          <a
+            href="mailto:legal@advisorai.help"
+            className="text-gray-900 underline hover:no-underline"
+          >
+            legal@advisorai.help
+          </a>
+          <br />
+          AdvisorAI · Rustem Yertisbay ·{" "}
+          <a
+            href="https://advisorai.help"
+            className="text-gray-900 underline hover:no-underline"
+          >
+            advisorai.help
+          </a>
+        </p>
+      </section>
+    </LegalLayout>
+  );
+}
