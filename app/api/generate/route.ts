@@ -1,5 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
+import { checkUsage, checkUsageForIp, incrementUsageForIp } from "@/lib/leads-store";
+import { getClientIp } from "@/lib/get-client-ip";
 
 const SYSTEM_PROMPT = `You are an AI assistant for automotive service advisors. Given a repair job description, return a JSON object with exactly these three fields:
 estimate: a bullet-point list of repair line items (parts + labor), professional and clear
@@ -22,6 +24,26 @@ function parseJsonResponse(text: string) {
 
 export async function POST(request: Request) {
   try {
+    const ip = getClientIp(request);
+    const usage = await checkUsageForIp(ip);
+
+    if (!usage.allowed) {
+      if (usage.requiresEmail) {
+        return NextResponse.json(
+          { error: "Email required", code: "EMAIL_REQUIRED", ...usage },
+          { status: 403 }
+        );
+      }
+      return NextResponse.json(
+        {
+          error: "You've used all 3 free generations. Upgrade to Pro for unlimited access.",
+          code: "LIMIT_REACHED",
+          ...usage,
+        },
+        { status: 403 }
+      );
+    }
+
     const { jobDescription } = await request.json();
 
     if (!jobDescription || typeof jobDescription !== "string") {
@@ -56,7 +78,12 @@ export async function POST(request: Request) {
     }
 
     const parsed = parseJsonResponse(textBlock.text);
-    return NextResponse.json(parsed);
+    const record = await incrementUsageForIp(ip);
+
+    return NextResponse.json({
+      ...parsed,
+      usage: checkUsage(record),
+    });
   } catch (err) {
     console.error(err);
     const message =

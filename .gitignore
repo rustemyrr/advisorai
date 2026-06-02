@@ -32,5 +32,8 @@ yarn-error.log*
 # local subscription store (webhook handler)
 .data
 
+# demo usage & leads (IP tracking)
+/data
+
 # typescript
 *.tsbuildinfo
