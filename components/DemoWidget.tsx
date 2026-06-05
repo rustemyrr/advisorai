@@ -8,6 +8,14 @@ import { FREE_GENERATION_LIMIT } from "@/lib/demo-constants";
 const DEFAULT_JOB =
   "BMW 520d, 180k miles. Front brake discs + pads. Oil seal leaking on crank.";
 
+const STORAGE_KEY = "advisorai_usage";
+
+type StoredUsage = {
+  count: number;
+  date: string;
+  email: string | null;
+};
+
 type GenerateResult = {
   estimate: string;
   explanation: string;
@@ -22,6 +30,48 @@ type UsageCheck = {
   email: string | null;
 };
 
+function getTodayString(): string {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+}
+
+function readUsage(): StoredUsage {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return { count: 0, date: getTodayString(), email: null };
+    const parsed = JSON.parse(raw) as StoredUsage;
+    if (parsed.date !== getTodayString()) {
+      return { count: 0, date: getTodayString(), email: parsed.email };
+    }
+    return parsed;
+  } catch {
+    return { count: 0, date: getTodayString(), email: null };
+  }
+}
+
+function writeUsage(usage: StoredUsage) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(usage));
+  } catch {
+    // ignore storage errors
+  }
+}
+
+function computeUsageCheck(stored: StoredUsage): UsageCheck {
+  const count = stored.count;
+  const hasEmail = Boolean(stored.email);
+  const limitReached = count >= FREE_GENERATION_LIMIT;
+  const requiresEmail = count >= 1 && count < FREE_GENERATION_LIMIT && !hasEmail;
+  const allowed = !limitReached && !requiresEmail;
+  return {
+    allowed,
+    requiresEmail,
+    count,
+    remaining: Math.max(0, FREE_GENERATION_LIMIT - count),
+    email: stored.email,
+  };
+}
+
 export default function DemoWidget() {
   const [jobDescription, setJobDescription] = useState(DEFAULT_JOB);
   const [loading, setLoading] = useState(false);
@@ -33,48 +83,33 @@ export default function DemoWidget() {
   const [emailInput, setEmailInput] = useState("");
   const [emailSubmitting, setEmailSubmitting] = useState(false);
 
-  const fetchUsageCheck = useCallback(async () => {
-    const res = await fetch("/api/usage/check", { method: "POST" });
-    if (!res.ok) return null;
-    return (await res.json()) as UsageCheck;
+  const refreshUsage = useCallback((): UsageCheck => {
+    const stored = readUsage();
+    const check = computeUsageCheck(stored);
+    setUsage(check);
+    return check;
   }, []);
 
   useEffect(() => {
-    void fetchUsageCheck().then((status) => {
-      if (status) setUsage(status);
-    });
-  }, [fetchUsageCheck]);
+    refreshUsage();
+  }, [refreshUsage]);
 
-  async function saveEmail(): Promise<boolean> {
-    const email = emailInput.trim();
-    if (!email) {
-      setError("Please enter your email");
-      return false;
-    }
+  function saveEmailLocally(email: string): UsageCheck {
+    const stored = readUsage();
+    const updated: StoredUsage = { ...stored, email: email.trim().toLowerCase() };
+    writeUsage(updated);
+    const check = computeUsageCheck(updated);
+    setUsage(check);
+    return check;
+  }
 
-    setEmailSubmitting(true);
-    setError(null);
-
-    try {
-      const res = await fetch("/api/usage/track", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error ?? "Failed to save email");
-      }
-
-      setUsage(data);
-      setShowEmailModal(false);
-      return true;
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to save email");
-      return false;
-    } finally {
-      setEmailSubmitting(false);
-    }
+  function incrementUsage(): UsageCheck {
+    const stored = readUsage();
+    const updated: StoredUsage = { ...stored, count: stored.count + 1 };
+    writeUsage(updated);
+    const check = computeUsageCheck(updated);
+    setUsage(check);
+    return check;
   }
 
   async function runGenerate() {
@@ -90,18 +125,6 @@ export default function DemoWidget() {
       });
       const data = await res.json();
 
-      if (res.status === 403 && data.code === "LIMIT_REACHED") {
-        setUsage(data);
-        setShowUpgradeModal(true);
-        return;
-      }
-
-      if (res.status === 403 && data.code === "EMAIL_REQUIRED") {
-        setUsage(data);
-        setShowEmailModal(true);
-        return;
-      }
-
       if (!res.ok || data.error) {
         throw new Error(data.error ?? "Something went wrong");
       }
@@ -112,12 +135,7 @@ export default function DemoWidget() {
         upsell: data.upsell,
       });
 
-      if (data.usage) {
-        setUsage(data.usage);
-      } else {
-        const refreshed = await fetchUsageCheck();
-        if (refreshed) setUsage(refreshed);
-      }
+      incrementUsage();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to generate");
     } finally {
@@ -127,12 +145,10 @@ export default function DemoWidget() {
 
   async function handleGenerate() {
     setError(null);
-    const status = (await fetchUsageCheck()) ?? usage;
+    const status = refreshUsage();
 
-    if (status) setUsage(status);
-
-    if (!status?.allowed) {
-      if (status?.requiresEmail) {
+    if (!status.allowed) {
+      if (status.requiresEmail) {
         setShowEmailModal(true);
         return;
       }
@@ -145,9 +161,23 @@ export default function DemoWidget() {
 
   async function handleEmailContinue(e: React.FormEvent) {
     e.preventDefault();
-    const saved = await saveEmail();
-    if (saved) {
+    const email = emailInput.trim();
+    if (!email) {
+      setError("Please enter your email");
+      return;
+    }
+
+    setEmailSubmitting(true);
+    setError(null);
+
+    try {
+      saveEmailLocally(email);
+      setShowEmailModal(false);
       await runGenerate();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong");
+    } finally {
+      setEmailSubmitting(false);
     }
   }
 
