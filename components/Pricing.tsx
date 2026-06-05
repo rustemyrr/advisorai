@@ -13,7 +13,7 @@ const plans = [
     featured: false,
     paddleCheckout: false,
     features: [
-      "5 estimates per day",
+      "3 generations per day",
       "Plain-language explainer",
       "No upsell suggestions",
       "No estimate history",

@@ -37,7 +37,7 @@ export default function CTASection() {
             type="submit"
             className="rounded-md bg-gray-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-800"
           >
-            {submitted ? "Thanks!" : "Get early access"}
+            {submitted ? "Thanks!" : "Start free"}
           </button>
         </form>
         <p className="mt-4 text-sm text-gray-500">
