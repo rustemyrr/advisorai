@@ -4,7 +4,7 @@ export const translations = {
   en: {
     // Navbar
     pricing: "Pricing",
-    startFree: "Start free",
+    startFree: "Sign in",
 
     // Hero
     heroTag: "AI for automotive service advisors",
@@ -149,7 +149,7 @@ export const translations = {
   ru: {
     // Navbar
     pricing: "Цены",
-    startFree: "Начать бесплатно",
+    startFree: "Войти",
 
     // Hero
     heroTag: "ИИ для автомобильных сервисных консультантов",
