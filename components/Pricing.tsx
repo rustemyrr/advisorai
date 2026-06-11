@@ -4,63 +4,50 @@ import { useEffect } from "react";
 import { Check } from "lucide-react";
 import ProCheckoutButton from "./ProCheckoutButton";
 import { unlockPagePointerEvents } from "@/lib/paddle-client";
-
-const plans = [
-  {
-    name: "Free",
-    price: "$0",
-    period: "/forever",
-    featured: false,
-    paddleCheckout: false,
-    features: [
-      "3 generations per day",
-      "Plain-language explainer",
-      "No upsell suggestions",
-      "No estimate history",
-    ],
-    cta: "Get started",
-    ctaStyle: "outline" as const,
-    href: "#hero",
-  },
-  {
-    name: "Pro",
-    price: "$29",
-    period: "/month",
-    featured: true,
-    paddleCheckout: true,
-    features: [
-      "Unlimited estimates",
-      "Plain-language explainer",
-      "AI upsell suggestions",
-      "Full estimate history",
-    ],
-    cta: "Start 7-day free trial",
-    ctaStyle: "primary" as const,
-    href: undefined,
-  },
-  {
-    name: "Team",
-    price: "$99",
-    period: "/month",
-    featured: false,
-    paddleCheckout: false,
-    features: [
-      "Everything in Pro",
-      "Up to 5 advisors",
-      "Team dashboard",
-      "Manager analytics",
-      "Priority support",
-    ],
-    cta: "Contact us",
-    ctaStyle: "outline" as const,
-    href: "mailto:support@advisorai.help",
-  },
-];
+import { useLanguage } from "@/lib/language-context";
 
 export default function Pricing() {
+  const { t } = useLanguage();
+
   useEffect(() => {
     unlockPagePointerEvents();
   }, []);
+
+  const plans = [
+    {
+      name: t.planFree,
+      price: "$0",
+      period: t.perForever,
+      featured: false,
+      paddleCheckout: false,
+      features: t.freeFeatures,
+      cta: t.ctaGetStarted,
+      ctaStyle: "outline" as const,
+      href: "#hero",
+    },
+    {
+      name: t.planPro,
+      price: "$29",
+      period: t.perMonth,
+      featured: true,
+      paddleCheckout: true,
+      features: t.proFeatures,
+      cta: t.ctaStartTrial,
+      ctaStyle: "primary" as const,
+      href: undefined,
+    },
+    {
+      name: t.planTeam,
+      price: "$99",
+      period: t.perMonth,
+      featured: false,
+      paddleCheckout: false,
+      features: t.teamFeatures,
+      cta: t.ctaContact,
+      ctaStyle: "outline" as const,
+      href: "mailto:support@advisorai.help",
+    },
+  ];
 
   return (
     <section
@@ -68,9 +55,9 @@ export default function Pricing() {
       className="relative border-b border-gray-100 py-16 sm:py-20 [pointer-events:auto]"
     >
       <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6">
-        <p className="text-sm font-medium text-gray-500">Pricing</p>
+        <p className="text-sm font-medium text-gray-500">{t.pricingTag}</p>
         <h2 className="mt-2 max-w-2xl text-3xl font-semibold tracking-tight text-gray-900 sm:text-4xl">
-          Start free. Upgrade when it saves you time.
+          {t.pricingHeadline}
         </h2>
         <div className="mt-12 grid gap-6 lg:grid-cols-3">
           {plans.map((plan) => {
@@ -88,7 +75,7 @@ export default function Pricing() {
               >
                 {plan.featured && (
                   <span className="pointer-events-none absolute -top-3 left-1/2 z-10 -translate-x-1/2 rounded-full bg-gray-900 px-3 py-0.5 text-xs font-medium text-white">
-                    Most popular
+                    {t.mostPopular}
                   </span>
                 )}
                 <h3 className="text-lg font-semibold text-gray-900">

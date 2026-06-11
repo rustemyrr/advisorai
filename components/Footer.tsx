@@ -1,7 +1,12 @@
+"use client";
+
 import { Car } from "lucide-react";
 import Link from "next/link";
+import { useLanguage } from "@/lib/language-context";
 
 export default function Footer() {
+  const { t } = useLanguage();
+
   return (
     <footer className="border-t border-gray-200 py-6">
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 sm:flex-row sm:px-6">
@@ -11,18 +16,16 @@ export default function Footer() {
         </div>
         <nav className="flex items-center gap-4 text-sm text-gray-500">
           <Link href="/terms" className="hover:text-gray-900">
-            Terms
+            {t.footerTerms}
           </Link>
           <Link href="/privacy" className="hover:text-gray-900">
-            Privacy
+            {t.footerPrivacy}
           </Link>
           <Link href="/refund" className="hover:text-gray-900">
-            Refund
+            {t.footerRefund}
           </Link>
         </nav>
-        <p className="text-sm text-gray-500">
-          Built by an ex-BMW Director · © 2026
-        </p>
+        <p className="text-sm text-gray-500">{t.footerTagline}</p>
       </div>
     </footer>
   );

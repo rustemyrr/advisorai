@@ -1,36 +1,25 @@
-import { Clock, MessageCircle, TrendingUp } from "lucide-react";
+"use client";
 
-const cards = [
-  {
-    icon: Clock,
-    title: "15 min per estimate → 30 sec",
-    text: "Stop building estimates from scratch. Generate a complete, professional quote instantly.",
-  },
-  {
-    icon: MessageCircle,
-    title: "Technical jargon → plain English",
-    text: "One click turns 'DMTL solenoid failure' into something your customer actually understands.",
-  },
-  {
-    icon: TrendingUp,
-    title: "Never miss an upsell again",
-    text: "AI spots the right moment to offer extras based on mileage, job type, and customer history.",
-  },
-];
+import { Clock, MessageCircle, TrendingUp } from "lucide-react";
+import { useLanguage } from "@/lib/language-context";
 
 export default function ProblemSection() {
+  const { t } = useLanguage();
+
+  const cards = [
+    { icon: Clock, title: t.card1Title, text: t.card1Text },
+    { icon: MessageCircle, title: t.card2Title, text: t.card2Text },
+    { icon: TrendingUp, title: t.card3Title, text: t.card3Text },
+  ];
+
   return (
     <section className="border-b border-gray-100 py-16 sm:py-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <p className="text-sm font-medium text-gray-500">The problem</p>
+        <p className="text-sm font-medium text-gray-500">{t.problemTag}</p>
         <h2 className="mt-2 max-w-3xl text-3xl font-semibold tracking-tight text-gray-900 sm:text-4xl">
-          Service advisors waste 20% of their day on paperwork, not customers.
+          {t.problemHeadline}
         </h2>
-        <p className="mt-4 max-w-3xl text-gray-600">
-          Writing estimates, finding the right words for a non-technical customer,
-          figuring out what to upsell — it all takes time and skill most advisors
-          learn over years. AdvisorAI gives you that skill on day one.
-        </p>
+        <p className="mt-4 max-w-3xl text-gray-600">{t.problemSubtext}</p>
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           {cards.map((card) => (
             <div

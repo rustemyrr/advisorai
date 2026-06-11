@@ -2,31 +2,10 @@
 
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
-
-const faqs = [
-  {
-    question: "Does it work for any brand — not just BMW or Lexus?",
-    answer:
-      "Yes. AdvisorAI works for any make and model. Just describe the job in plain English and it handles the rest.",
-  },
-  {
-    question: "Do I need to connect it to my DMS?",
-    answer:
-      "No integration needed. You type or paste the job description — AdvisorAI generates the output instantly in your browser.",
-  },
-  {
-    question: "Is my data stored or shared?",
-    answer:
-      "Job descriptions are processed to generate your output and not stored permanently. We never share your data with third parties.",
-  },
-  {
-    question: "Can I cancel anytime?",
-    answer:
-      "Yes. Cancel anytime from your account settings. No contracts, no cancellation fees.",
-  },
-];
+import { useLanguage } from "@/lib/language-context";
 
 export default function FAQ() {
+  const { t } = useLanguage();
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   function toggle(index: number) {
@@ -37,10 +16,10 @@ export default function FAQ() {
     <section className="border-b border-gray-100 py-16 sm:py-20">
       <div className="mx-auto max-w-3xl px-4 sm:px-6">
         <h2 className="text-center text-3xl font-semibold tracking-tight text-gray-900">
-          Frequently asked questions
+          {t.faqHeadline}
         </h2>
         <div className="mt-10 divide-y divide-gray-200 border-y border-gray-200">
-          {faqs.map((faq, index) => {
+          {t.faqs.map((faq, index) => {
             const isOpen = openIndex === index;
             return (
               <div key={faq.question}>
