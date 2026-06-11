@@ -1,7 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
 
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const secretKey = process.env.SUPABASE_SECRET_KEY!;
+function asciiOnly(s: string | undefined): string {
+  return (s ?? "").replace(/[^\x20-\x7E]/g, "").trim();
+}
+
+const url = asciiOnly(process.env.NEXT_PUBLIC_SUPABASE_URL);
+const secretKey = asciiOnly(process.env.SUPABASE_SECRET_KEY);
 
 // Admin client for API routes — uses secret key, bypasses RLS.
 // Always scope queries manually to the verified user_id.
