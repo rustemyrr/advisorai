@@ -6,8 +6,6 @@ import { Loader2, X } from "lucide-react";
 import { FREE_GENERATION_LIMIT } from "@/lib/demo-constants";
 import { useLanguage } from "@/lib/language-context";
 
-const DEFAULT_JOB =
-  "BMW 520d, 180k miles. Front brake discs + pads. Oil seal leaking on crank.";
 
 const STORAGE_KEY = "advisorai_usage";
 
@@ -75,7 +73,7 @@ function computeUsageCheck(stored: StoredUsage): UsageCheck {
 
 export default function DemoWidget() {
   const { lang, t } = useLanguage();
-  const [jobDescription, setJobDescription] = useState(DEFAULT_JOB);
+  const [jobDescription, setJobDescription] = useState<string>(t.defaultJob);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<GenerateResult | null>(null);
@@ -84,6 +82,19 @@ export default function DemoWidget() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [emailInput, setEmailInput] = useState("");
   const [emailSubmitting, setEmailSubmitting] = useState(false);
+
+  // Sync placeholder when language changes, but only if user hasn't edited it
+  const enDefault =
+    "BMW 520d, 180k miles. Front brake discs + pads. Oil seal leaking on crank.";
+  const ruDefault =
+    "BMW 520d, 180 тыс. км. Передние тормозные диски + колодки. Течь сальника коленвала.";
+
+  useEffect(() => {
+    setJobDescription((prev) => {
+      if (prev === enDefault || prev === ruDefault) return t.defaultJob;
+      return prev;
+    });
+  }, [lang]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const refreshUsage = useCallback((): UsageCheck => {
     const stored = readUsage();

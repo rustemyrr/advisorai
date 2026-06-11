@@ -16,6 +16,8 @@ export const translations = {
     heroNote: "Free plan available · No credit card · Works on any device",
 
     // DemoWidget
+    defaultJob:
+      "BMW 520d, 180k miles. Front brake discs + pads. Oil seal leaking on crank.",
     liveDemoLabel: "Live demo — try it now",
     generate: "Generate",
     usageLabel: (count: number, limit: number) =>
@@ -123,6 +125,25 @@ export const translations = {
     footerTerms: "Terms",
     footerPrivacy: "Privacy",
     footerRefund: "Refund",
+
+    // Testimonials
+    testimonialsTag: "What advisors say",
+    testimonialsHeadline:
+      "Trusted by service advisors at BMW, Lexus, and Toyota dealerships.",
+    testimonials: [
+      {
+        quote:
+          "I used to spend my lunch break catching up on estimates. Now I'm done before the customer leaves the service desk.",
+        name: "James M.",
+        role: "Service Advisor, BMW Dubai",
+      },
+      {
+        quote:
+          "The upsell suggestions alone paid for 6 months of the subscription in the first week.",
+        name: "Sarah R.",
+        role: "Senior Advisor, Toyota London",
+      },
+    ],
   },
 
   ru: {
@@ -141,6 +162,8 @@ export const translations = {
     heroNote: "Бесплатный план · Без карты · На любом устройстве",
 
     // DemoWidget
+    defaultJob:
+      "BMW 520d, 180 тыс. км. Передние тормозные диски + колодки. Течь сальника коленвала.",
     liveDemoLabel: "Живое демо — попробуйте прямо сейчас",
     generate: "Создать",
     usageLabel: (count: number, limit: number) =>
@@ -238,16 +261,35 @@ export const translations = {
     ctaHeadline: "Попробуйте AdvisorAI бесплатно сегодня.",
     ctaSubtext:
       "Присоединяйтесь к сервисным консультантам из ОАЭ, Великобритании и США, которые составляют сметы быстрее.",
-    ctaEmailPlaceholder: "вы@дилерство.рф",
+    ctaEmailPlaceholder: "вы@дилер.кз",
     ctaButton: "Начать бесплатно",
     ctaThanks: "Спасибо!",
     ctaNote: "Бесплатный старт · Карта не нужна",
 
     // Footer
-    footerTagline: "Создано бывшим директором BMW · © 2026",
+    footerTagline: "Создано в Казахстане · © 2026",
     footerTerms: "Условия",
     footerPrivacy: "Конфиденциальность",
     footerRefund: "Возврат",
+
+    // Testimonials
+    testimonialsTag: "Что говорят консультанты",
+    testimonialsHeadline:
+      "Нам доверяют сервисные консультанты BMW, Lexus и Toyota.",
+    testimonials: [
+      {
+        quote:
+          "Раньше я тратил обеденный перерыв на сметы. Теперь успеваю до того, как клиент уходит.",
+        name: "James M.",
+        role: "Сервисный консультант, BMW Dubai",
+      },
+      {
+        quote:
+          "Только предложения по допродажам окупили 6 месяцев подписки за первую неделю.",
+        name: "Sarah R.",
+        role: "Старший консультант, Toyota London",
+      },
+    ],
   },
 } as const;
 
