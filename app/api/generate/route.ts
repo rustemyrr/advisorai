@@ -1,15 +1,31 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
+import { getUserFromToken, createAdminClient } from "@/lib/supabase-server";
+import type { PricelistItem } from "@/app/api/pricelist/route";
 
-function buildSystemPrompt(language: string, currency: string): string {
+function buildPricelistSection(items: PricelistItem[], laborRate: number, currency: string): string {
+  const rows = items
+    .map((i) => `  - ${i.service}: ${i.price} ${currency}, ${i.hours}h`)
+    .join("\n");
+  return `Use the following dealership price list for your estimates:\n${rows}\nLabor rate: ${laborRate} ${currency} per hour.`;
+}
+
+function buildSystemPrompt(
+  language: string,
+  currency: string,
+  pricelist?: { items: PricelistItem[]; labor_rate: number; currency: string } | null
+): string {
   const currencyInstruction = `Always show prices in ${currency}. Use realistic local market prices for that currency.`;
+  const pricelistSection = pricelist && pricelist.items.length > 0
+    ? "\n" + buildPricelistSection(pricelist.items, pricelist.labor_rate, pricelist.currency)
+    : "";
 
   if (language === "ru") {
     return `Ты — ИИ-ассистент для автомобильных сервисных консультантов. По описанию ремонтной работы верни JSON-объект ровно с тремя полями:
 estimate: список позиций сметы (запчасти + работа), профессионально и чётко, на русском языке
 explanation: объяснение простым языком для нетехнического клиента, 2-3 предложения, дружелюбный тон, на русском языке
 upsell: одно конкретное предложение допуслуги, актуальное для пробега и типа работы, с диапазоном цен, на русском языке
-${currencyInstruction}
+${currencyInstruction}${pricelistSection}
 Верни только валидный JSON, без markdown, без лишнего текста.`;
   }
 
@@ -17,8 +33,21 @@ ${currencyInstruction}
 estimate: a bullet-point list of repair line items (parts + labor), professional and clear
 explanation: a plain-language explanation for a non-technical customer, 2-3 sentences, friendly tone
 upsell: one specific upsell suggestion relevant to the mileage and job type, with a price range
-${currencyInstruction}
+${currencyInstruction}${pricelistSection}
 Return only valid JSON, no markdown, no extra text.`;
+}
+
+async function fetchUserPricelist(token: string | null) {
+  if (!token) return null;
+  const user = await getUserFromToken(token);
+  if (!user) return null;
+  const db = createAdminClient();
+  const { data } = await db
+    .from("pricelist")
+    .select("items, labor_rate, currency")
+    .eq("user_id", user.id)
+    .single();
+  return data as { items: PricelistItem[]; labor_rate: number; currency: string } | null;
 }
 
 function parseJsonResponse(text: string) {
@@ -36,6 +65,7 @@ function parseJsonResponse(text: string) {
 
 export async function POST(request: Request) {
   try {
+    const token = request.headers.get("authorization")?.replace("Bearer ", "") ?? null;
     const { jobDescription, language, currency } = await request.json();
 
     if (!jobDescription || typeof jobDescription !== "string") {
@@ -54,7 +84,12 @@ export async function POST(request: Request) {
 
     const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-    const systemPrompt = buildSystemPrompt(language ?? "en", currency ?? (language === "ru" ? "KZT (₸)" : "USD ($)"));
+    const pricelist = await fetchUserPricelist(token);
+    const systemPrompt = buildSystemPrompt(
+      language ?? "en",
+      currency ?? (language === "ru" ? "KZT (₸)" : "USD ($)"),
+      pricelist
+    );
 
     const message = await client.messages.create({
       model: "claude-sonnet-4-6",

@@ -132,6 +132,19 @@ export const translations = {
     historyExpand: "Show details",
     historyCollapse: "Hide",
 
+    // Pricelist
+    pricelistTitle: "Price List",
+    pricelistUpload: "Upload Excel / CSV",
+    pricelistLaborRate: "Labor rate",
+    pricelistSave: "Save price list",
+    pricelistSaving: "Saving…",
+    pricelistSaved: "Saved!",
+    pricelistColService: "Service",
+    pricelistColPrice: "Price",
+    pricelistColHours: "Hours",
+    pricelistEmpty: "No price list uploaded yet.",
+    pricelistParseError: "Could not parse file. Check that it has Service, Price, and Hours columns.",
+
     // Testimonials
     testimonialsTag: "What advisors say",
     testimonialsHeadline:
@@ -283,6 +296,19 @@ export const translations = {
     historyEmpty: "Генераций пока нет. Попробуйте демо выше.",
     historyExpand: "Показать",
     historyCollapse: "Скрыть",
+
+    // Pricelist
+    pricelistTitle: "Прайс-лист",
+    pricelistUpload: "Загрузить Excel / CSV",
+    pricelistLaborRate: "Ставка н/ч",
+    pricelistSave: "Сохранить прайс-лист",
+    pricelistSaving: "Сохранение…",
+    pricelistSaved: "Сохранено!",
+    pricelistColService: "Услуга",
+    pricelistColPrice: "Цена",
+    pricelistColHours: "Н/ч",
+    pricelistEmpty: "Прайс-лист ещё не загружен.",
+    pricelistParseError: "Не удалось распознать файл. Проверьте, что есть столбцы Service, Price и Hours.",
 
     // Testimonials
     testimonialsTag: "Что говорят консультанты",

@@ -7,6 +7,7 @@ import { FREE_GENERATION_LIMIT } from "@/lib/demo-constants";
 import { useLanguage } from "@/lib/language-context";
 import { useAuth } from "@/lib/auth-context";
 import GenerationHistory from "@/components/GenerationHistory";
+import PriceListSection from "@/components/PriceListSection";
 import type { HistoryRow } from "@/app/api/history/route";
 
 const STORAGE_KEY = "advisorai_usage";
@@ -214,9 +215,11 @@ export default function DemoWidget() {
     setError(null);
     setResult(null);
     try {
+      const generateHeaders: Record<string, string> = { "Content-Type": "application/json" };
+      if (session?.access_token) generateHeaders["Authorization"] = `Bearer ${session.access_token}`;
       const res = await fetch("/api/generate", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: generateHeaders,
         body: JSON.stringify({ jobDescription, language: lang, currency: CURRENCIES.find(c => c.value === currency)?.label ?? currency }),
       });
       const data = await res.json();
@@ -364,6 +367,7 @@ export default function DemoWidget() {
       )}
 
       {user && session && <GenerationHistory items={history} />}
+      {user && session && <PriceListSection session={session} />}
 
       {showUpgradeModal && (
         <Modal onClose={() => setShowUpgradeModal(false)}>

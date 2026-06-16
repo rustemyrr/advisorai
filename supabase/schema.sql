@@ -44,3 +44,20 @@ alter table public.generation_history enable row level security;
 
 create policy "own history select" on public.generation_history for select using (auth.uid() = user_id);
 create policy "own history insert" on public.generation_history for insert with check (auth.uid() = user_id);
+
+-- Pricelist (one per user, upserted on save)
+create table if not exists public.pricelist (
+  id          uuid        default gen_random_uuid() primary key,
+  user_id     uuid        references auth.users(id) on delete cascade not null unique,
+  filename    text        not null default '',
+  labor_rate  numeric     not null default 0,
+  currency    text        not null default 'USD',
+  items       jsonb       not null default '[]',
+  updated_at  timestamptz default now()
+);
+
+alter table public.pricelist enable row level security;
+
+create policy "own pricelist select" on public.pricelist for select using (auth.uid() = user_id);
+create policy "own pricelist insert" on public.pricelist for insert with check (auth.uid() = user_id);
+create policy "own pricelist update" on public.pricelist for update using (auth.uid() = user_id);
