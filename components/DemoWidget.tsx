@@ -255,10 +255,17 @@ export default function DemoWidget() {
 
   async function handleGenerate() {
     setError(null);
-    const status = await refreshUsage();
+    let status: UsageCheck;
+    try {
+      status = await refreshUsage();
+    } catch {
+      // Supabase unavailable — fall back to local check so UI doesn't freeze
+      status = localToCheck(readLocalUsage());
+    }
 
     if (!status.allowed) {
-      if (status.requiresEmail) { setShowEmailModal(true); return; }
+      // Email gate only applies to anonymous users; logged-in users go straight to upgrade
+      if (status.requiresEmail && !user) { setShowEmailModal(true); return; }
       setShowUpgradeModal(true);
       return;
     }
@@ -285,6 +292,7 @@ export default function DemoWidget() {
   const usageCount = usage?.count ?? 0;
   const remaining = usage?.remaining ?? FREE_GENERATION_LIMIT;
   const hasEmail = Boolean(usage?.email);
+  const isLoggedIn = Boolean(user && session);
 
   return (
     <>
@@ -317,13 +325,19 @@ export default function DemoWidget() {
         </button>
         </div>
 
-        <p className="mt-2 text-sm text-gray-500">
-          {usage?.isPro
-            ? lang === "en" ? "Unlimited generations (Pro)" : "Безлимитные генерации (Pro)"
-            : t.usageLabel(usageCount, FREE_GENERATION_LIMIT)}
-        </p>
-        {!usage?.isPro && hasEmail && remaining > 0 && (
-          <p className="mt-1 text-sm text-gray-600">{t.remaining(remaining)}</p>
+        {usage?.isPro ? (
+          <p className="mt-2 text-sm text-gray-500">
+            {lang === "en" ? "Unlimited generations (Pro)" : "Безлимитные генерации (Pro)"}
+          </p>
+        ) : (
+          <>
+            <p className="mt-2 text-sm text-gray-500">
+              {t.usageLabel(usageCount, FREE_GENERATION_LIMIT)}
+            </p>
+            {remaining > 0 && (isLoggedIn || hasEmail) && (
+              <p className="mt-1 text-sm text-gray-600">{t.remaining(remaining)}</p>
+            )}
+          </>
         )}
 
         {error && (
