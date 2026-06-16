@@ -2,9 +2,11 @@
 
 import DemoWidget from "./DemoWidget";
 import { useLanguage } from "@/lib/language-context";
+import { useAuth } from "@/lib/auth-context";
 
 export default function Hero() {
   const { t } = useLanguage();
+  const { user } = useAuth();
 
   return (
     <section id="hero" className="border-b border-gray-100">
@@ -16,21 +18,25 @@ export default function Hero() {
           {t.heroHeadline}
         </h1>
         <p className="mt-6 max-w-2xl text-lg text-gray-600">{t.heroSubtext}</p>
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-          <a
-            href="#demo"
-            className="inline-flex justify-center rounded-md bg-gray-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-800"
-          >
-            {t.heroCta}
-          </a>
-          <a
-            href="#demo"
-            className="inline-flex justify-center rounded-md border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-50"
-          >
-            {t.heroDemo}
-          </a>
-        </div>
-        <p className="mt-4 text-sm text-gray-500">{t.heroNote}</p>
+        {!user && (
+          <>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <a
+                href="#demo"
+                className="inline-flex justify-center rounded-md bg-gray-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-800"
+              >
+                {t.heroCta}
+              </a>
+              <a
+                href="#demo"
+                className="inline-flex justify-center rounded-md border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-50"
+              >
+                {t.heroDemo}
+              </a>
+            </div>
+            <p className="mt-4 text-sm text-gray-500">{t.heroNote}</p>
+          </>
+        )}
         <div id="demo" className="mt-12">
           <DemoWidget />
         </div>
