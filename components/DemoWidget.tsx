@@ -74,7 +74,8 @@ function localToCheck(s: StoredUsage): UsageCheck {
 
 export default function DemoWidget() {
   const { lang, t } = useLanguage();
-  const { user, session } = useAuth();
+  const { user, session, plan } = useAuth();
+  const isPro = plan === "pro";
 
   const enDefault = "BMW 520d, 180k miles. Front brake discs + pads. Oil seal leaking on crank.";
   const ruDefault = "BMW 520d, 180 тыс. км. Передние тормозные диски + колодки. Течь сальника коленвала.";
@@ -230,7 +231,7 @@ export default function DemoWidget() {
       if (user && session) {
         const selectedCurrencyLabel = CURRENCIES.find(c => c.value === currency)?.label ?? currency;
         await Promise.all([
-          incrementSupabaseUsage(),
+          isPro ? Promise.resolve() : incrementSupabaseUsage(),
           fetch("/api/history", {
             method: "POST",
             headers: supabaseHeaders(),
@@ -255,6 +256,9 @@ export default function DemoWidget() {
 
   async function handleGenerate() {
     setError(null);
+    // Pro users bypass all limits
+    if (isPro) { await runGenerate(); return; }
+
     let status: UsageCheck;
     try {
       status = await refreshUsage();
@@ -325,11 +329,7 @@ export default function DemoWidget() {
         </button>
         </div>
 
-        {usage?.isPro ? (
-          <p className="mt-2 text-sm text-gray-500">
-            {lang === "en" ? "Unlimited generations (Pro)" : "Безлимитные генерации (Pro)"}
-          </p>
-        ) : (
+        {isPro ? null : (
           <>
             <p className="mt-2 text-sm text-gray-500">
               {t.usageLabel(usageCount, FREE_GENERATION_LIMIT)}
