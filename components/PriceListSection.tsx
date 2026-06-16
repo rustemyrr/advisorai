@@ -75,7 +75,6 @@ export default function PriceListSection({ session }: Props) {
   const [items, setItems] = useState<PricelistItem[]>([]);
   const [filename, setFilename] = useState("");
   const [laborRate, setLaborRate] = useState<number>(0);
-  const [currency, setCurrency] = useState("USD");
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">("idle");
   const [parseError, setParseError] = useState(false);
   const [selectedCurrency, setSelectedCurrency] = useState<string>(readSelectedCurrency);
@@ -102,7 +101,6 @@ export default function PriceListSection({ session }: Props) {
           setItems(data.pricelist.items);
           setFilename(data.pricelist.filename);
           setLaborRate(data.pricelist.labor_rate);
-          setCurrency(data.pricelist.currency);
         }
       } catch { /* ignore */ }
     })();
@@ -129,7 +127,7 @@ export default function PriceListSection({ session }: Props) {
       await fetch("/api/pricelist", {
         method: "POST",
         headers: authHeaders,
-        body: JSON.stringify({ filename, labor_rate: laborRate, currency: selectedCurrency, items }),
+        body: JSON.stringify({ filename, labor_rate: laborRate, items }),
       });
       setSaveStatus("saved");
       setTimeout(() => setSaveStatus("idle"), 2000);

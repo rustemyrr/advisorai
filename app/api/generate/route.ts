@@ -13,11 +13,11 @@ function buildPricelistSection(items: PricelistItem[], laborRate: number, curren
 function buildSystemPrompt(
   language: string,
   currency: string,
-  pricelist?: { items: PricelistItem[]; labor_rate: number; currency: string } | null
+  pricelist?: { items: PricelistItem[]; labor_rate: number } | null
 ): string {
   const currencyInstruction = `Always show prices in ${currency}. Use realistic local market prices for that currency.`;
   const pricelistSection = pricelist && pricelist.items.length > 0
-    ? "\n" + buildPricelistSection(pricelist.items, pricelist.labor_rate, pricelist.currency)
+    ? "\n" + buildPricelistSection(pricelist.items, pricelist.labor_rate, currency)
     : "";
 
   if (language === "ru") {
@@ -44,10 +44,10 @@ async function fetchUserPricelist(token: string | null) {
   const db = createAdminClient();
   const { data } = await db
     .from("pricelist")
-    .select("items, labor_rate, currency")
+    .select("items, labor_rate")
     .eq("user_id", user.id)
     .single();
-  return data as { items: PricelistItem[]; labor_rate: number; currency: string } | null;
+  return data as { items: PricelistItem[]; labor_rate: number } | null;
 }
 
 function parseJsonResponse(text: string) {

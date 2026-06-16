@@ -8,7 +8,6 @@ export type PricelistItem = { service: string; price: number; hours: number };
 export type PricelistRow = {
   filename: string;
   labor_rate: number;
-  currency: string;
   items: PricelistItem[];
   updated_at: string;
 };
@@ -22,7 +21,7 @@ export async function GET(request: Request) {
   const db = createAdminClient();
   const { data, error } = await db
     .from("pricelist")
-    .select("filename, labor_rate, currency, items, updated_at")
+    .select("filename, labor_rate, items, updated_at")
     .eq("user_id", user.id)
     .single();
 
@@ -40,10 +39,9 @@ export async function POST(request: Request) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await request.json().catch(() => ({}));
-  const { filename, labor_rate, currency, items } = body as {
+  const { filename, labor_rate, items } = body as {
     filename?: string;
     labor_rate?: number;
-    currency?: string;
     items?: PricelistItem[];
   };
 
@@ -57,7 +55,6 @@ export async function POST(request: Request) {
       user_id: user.id,
       filename: filename ?? "",
       labor_rate: labor_rate ?? 0,
-      currency: currency ?? "USD",
       items,
       updated_at: new Date().toISOString(),
     },

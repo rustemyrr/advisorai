@@ -51,7 +51,6 @@ create table if not exists public.pricelist (
   user_id     uuid        references auth.users(id) on delete cascade not null unique,
   filename    text        not null default '',
   labor_rate  numeric     not null default 0,
-  currency    text        not null default 'USD',
   items       jsonb       not null default '[]',
   updated_at  timestamptz default now()
 );
