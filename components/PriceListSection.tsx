@@ -1,10 +1,18 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { Upload } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
 import type { Session } from "@supabase/supabase-js";
 import type { PricelistItem, PricelistRow } from "@/app/api/pricelist/route";
+
+const CURRENCY_SYMBOLS: Record<string, string> = {
+  KZT: "₸", RUB: "₽", USD: "$", AED: "د.إ", GBP: "£",
+};
+
+function readSelectedCurrency(): string {
+  try { return localStorage.getItem("advisorai_currency") ?? "USD"; } catch { return "USD"; }
+}
 
 type Props = { session: Session };
 
@@ -70,6 +78,13 @@ export default function PriceListSection({ session }: Props) {
   const [currency, setCurrency] = useState("USD");
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">("idle");
   const [parseError, setParseError] = useState(false);
+  const [selectedCurrency, setSelectedCurrency] = useState<string>(readSelectedCurrency);
+
+  const syncCurrency = useCallback(() => setSelectedCurrency(readSelectedCurrency()), []);
+  useEffect(() => {
+    window.addEventListener("storage", syncCurrency);
+    return () => window.removeEventListener("storage", syncCurrency);
+  }, [syncCurrency]);
 
   const authHeaders = {
     "Content-Type": "application/json",
@@ -114,7 +129,7 @@ export default function PriceListSection({ session }: Props) {
       await fetch("/api/pricelist", {
         method: "POST",
         headers: authHeaders,
-        body: JSON.stringify({ filename, labor_rate: laborRate, currency, items }),
+        body: JSON.stringify({ filename, labor_rate: laborRate, currency: selectedCurrency, items }),
       });
       setSaveStatus("saved");
       setTimeout(() => setSaveStatus("idle"), 2000);
@@ -154,7 +169,7 @@ export default function PriceListSection({ session }: Props) {
             onChange={(e) => setLaborRate(Number(e.target.value))}
             className="w-24 rounded-md border border-gray-200 px-2 py-1.5 text-sm text-gray-900 focus:border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400"
           />
-          <span className="text-gray-500">{currency}</span>
+          <span className="text-gray-500">{CURRENCY_SYMBOLS[selectedCurrency] ?? selectedCurrency}</span>
         </label>
 
         {items.length > 0 && (
