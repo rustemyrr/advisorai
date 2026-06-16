@@ -6,6 +6,8 @@ import { Loader2, X } from "lucide-react";
 import { FREE_GENERATION_LIMIT } from "@/lib/demo-constants";
 import { useLanguage } from "@/lib/language-context";
 import { useAuth } from "@/lib/auth-context";
+import GenerationHistory from "@/components/GenerationHistory";
+import type { HistoryRow } from "@/app/api/history/route";
 
 const STORAGE_KEY = "advisorai_usage";
 const CURRENCY_KEY = "advisorai_currency";
@@ -90,6 +92,7 @@ export default function DemoWidget() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [emailInput, setEmailInput] = useState("");
   const [emailSubmitting, setEmailSubmitting] = useState(false);
+  const [history, setHistory] = useState<HistoryRow[]>([]);
 
   // Sync placeholder when language toggles (only if user hasn't typed anything custom)
   useEffect(() => {
@@ -170,6 +173,20 @@ export default function DemoWidget() {
     void refreshUsage();
   }, [refreshUsage]);
 
+  const fetchHistory = useCallback(async () => {
+    if (!user || !session) return;
+    try {
+      const res = await fetch("/api/history", { headers: supabaseHeaders() });
+      if (!res.ok) return;
+      const data = await res.json() as { history: HistoryRow[] };
+      setHistory(data.history);
+    } catch { /* ignore */ }
+  }, [user, session, supabaseHeaders]);
+
+  useEffect(() => {
+    void fetchHistory();
+  }, [fetchHistory]);
+
   // ─── Local increment (anonymous) ───────────────────────────────────────
 
   function incrementLocalUsage(): UsageCheck {
@@ -204,10 +221,25 @@ export default function DemoWidget() {
       });
       const data = await res.json();
       if (!res.ok || data.error) throw new Error(data.error ?? "Something went wrong");
-      setResult({ estimate: data.estimate, explanation: data.explanation, upsell: data.upsell });
+      const generationResult: GenerateResult = { estimate: data.estimate, explanation: data.explanation, upsell: data.upsell };
+      setResult(generationResult);
 
       if (user && session) {
-        await incrementSupabaseUsage();
+        const selectedCurrencyLabel = CURRENCIES.find(c => c.value === currency)?.label ?? currency;
+        await Promise.all([
+          incrementSupabaseUsage(),
+          fetch("/api/history", {
+            method: "POST",
+            headers: supabaseHeaders(),
+            body: JSON.stringify({
+              input: jobDescription,
+              estimate: generationResult.estimate,
+              explanation: generationResult.explanation,
+              upsell: generationResult.upsell,
+              currency: selectedCurrencyLabel,
+            }),
+          }).then(() => fetchHistory()),
+        ]);
       } else {
         incrementLocalUsage();
       }
@@ -330,6 +362,8 @@ export default function DemoWidget() {
           </form>
         </Modal>
       )}
+
+      {user && session && <GenerationHistory items={history} />}
 
       {showUpgradeModal && (
         <Modal onClose={() => setShowUpgradeModal(false)}>

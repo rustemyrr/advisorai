@@ -126,6 +126,12 @@ export const translations = {
     footerPrivacy: "Privacy",
     footerRefund: "Refund",
 
+    // History
+    historyTitle: "History",
+    historyEmpty: "No generations yet. Try the demo above.",
+    historyExpand: "Show details",
+    historyCollapse: "Hide",
+
     // Testimonials
     testimonialsTag: "What advisors say",
     testimonialsHeadline:
@@ -271,6 +277,12 @@ export const translations = {
     footerTerms: "Условия",
     footerPrivacy: "Конфиденциальность",
     footerRefund: "Возврат",
+
+    // History
+    historyTitle: "История запросов",
+    historyEmpty: "Генераций пока нет. Попробуйте демо выше.",
+    historyExpand: "Показать",
+    historyCollapse: "Скрыть",
 
     // Testimonials
     testimonialsTag: "Что говорят консультанты",

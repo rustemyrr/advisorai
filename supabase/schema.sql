@@ -27,3 +27,20 @@ create policy "own usage update"  on public.usage    for update using (auth.uid(
 create policy "own profile select" on public.profiles for select using (auth.uid() = user_id);
 create policy "own profile insert" on public.profiles for insert with check (auth.uid() = user_id);
 create policy "own profile update" on public.profiles for update using (auth.uid() = user_id);
+
+-- Generation history
+create table if not exists public.generation_history (
+  id          uuid        default gen_random_uuid() primary key,
+  user_id     uuid        references auth.users(id) on delete cascade not null,
+  input       text        not null,
+  estimate    text        not null,
+  explanation text        not null,
+  upsell      text        not null,
+  currency    text        not null default 'USD',
+  created_at  timestamptz default now()
+);
+
+alter table public.generation_history enable row level security;
+
+create policy "own history select" on public.generation_history for select using (auth.uid() = user_id);
+create policy "own history insert" on public.generation_history for insert with check (auth.uid() = user_id);
