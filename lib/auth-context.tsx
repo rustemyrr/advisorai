@@ -37,13 +37,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
 
-  const fetchPlan = useCallback(async (userId: string) => {
-    const { data } = await supabase
-      .from("profiles")
-      .select("plan")
-      .eq("user_id", userId)
-      .single();
-    setPlan((data as { plan: "free" | "pro" } | null)?.plan ?? "free");
+  const fetchPlan = useCallback(async (token: string) => {
+    try {
+      const res = await fetch("/api/plan", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json() as { plan: string };
+      console.log("[fetchPlan] response:", data);
+      setPlan(data.plan === "pro" ? "pro" : "free");
+    } catch (err) {
+      console.error("[fetchPlan] error:", err);
+      setPlan("free");
+    }
   }, []);
 
   useEffect(() => {
@@ -52,13 +57,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(s);
       setUser(s?.user ?? null);
       setLoading(false);
-      if (s?.user) void fetchPlan(s.user.id);
+      if (s?.access_token) void fetchPlan(s.access_token);
     });
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, s) => {
       setSession(s);
       setUser(s?.user ?? null);
-      if (s?.user) void fetchPlan(s.user.id);
+      if (s?.access_token) void fetchPlan(s.access_token);
       else setPlan(null);
     });
 

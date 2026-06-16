@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Upload } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
 import type { Session } from "@supabase/supabase-js";
@@ -10,11 +10,7 @@ const CURRENCY_SYMBOLS: Record<string, string> = {
   KZT: "₸", RUB: "₽", USD: "$", AED: "د.إ", GBP: "£",
 };
 
-function readSelectedCurrency(): string {
-  try { return localStorage.getItem("advisorai_currency") ?? "USD"; } catch { return "USD"; }
-}
-
-type Props = { session: Session };
+type Props = { session: Session; currency: string };
 
 async function parseFile(file: File): Promise<PricelistItem[]> {
   const name = file.name.toLowerCase();
@@ -68,7 +64,7 @@ function normalizeRows(rows: Record<string, string>[]): PricelistItem[] | null {
     }));
 }
 
-export default function PriceListSection({ session }: Props) {
+export default function PriceListSection({ session, currency }: Props) {
   const { t } = useLanguage();
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -77,13 +73,8 @@ export default function PriceListSection({ session }: Props) {
   const [laborRate, setLaborRate] = useState<number>(0);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">("idle");
   const [parseError, setParseError] = useState(false);
-  const [selectedCurrency, setSelectedCurrency] = useState<string>(readSelectedCurrency);
 
-  const syncCurrency = useCallback(() => setSelectedCurrency(readSelectedCurrency()), []);
-  useEffect(() => {
-    window.addEventListener("storage", syncCurrency);
-    return () => window.removeEventListener("storage", syncCurrency);
-  }, [syncCurrency]);
+  const currencySymbol = CURRENCY_SYMBOLS[currency] ?? currency;
 
   const authHeaders = {
     "Content-Type": "application/json",
@@ -167,7 +158,7 @@ export default function PriceListSection({ session }: Props) {
             onChange={(e) => setLaborRate(Number(e.target.value))}
             className="w-24 rounded-md border border-gray-200 px-2 py-1.5 text-sm text-gray-900 focus:border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400"
           />
-          <span className="text-gray-500">{CURRENCY_SYMBOLS[selectedCurrency] ?? selectedCurrency}</span>
+          <span className="text-gray-500">{currencySymbol}</span>
         </label>
 
         {items.length > 0 && (

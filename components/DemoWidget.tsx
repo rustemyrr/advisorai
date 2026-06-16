@@ -381,7 +381,7 @@ export default function DemoWidget() {
       )}
 
       {user && session && <GenerationHistory items={history} />}
-      {user && session && <PriceListSection session={session} />}
+      {user && session && <PriceListSection session={session} currency={currency} />}
 
       {showUpgradeModal && (
         <Modal onClose={() => setShowUpgradeModal(false)}>
