@@ -8,6 +8,15 @@ import { useLanguage } from "@/lib/language-context";
 import { useAuth } from "@/lib/auth-context";
 
 const STORAGE_KEY = "advisorai_usage";
+const CURRENCY_KEY = "advisorai_currency";
+
+const CURRENCIES = [
+  { value: "KZT", label: "KZT (₸)" },
+  { value: "RUB", label: "RUB (₽)" },
+  { value: "USD", label: "USD ($)" },
+  { value: "AED", label: "AED (د.إ)" },
+  { value: "GBP", label: "GBP (£)" },
+];
 
 type StoredUsage = { count: number; date: string; email: string | null };
 
@@ -67,6 +76,11 @@ export default function DemoWidget() {
   const enDefault = "BMW 520d, 180k miles. Front brake discs + pads. Oil seal leaking on crank.";
   const ruDefault = "BMW 520d, 180 тыс. км. Передние тормозные диски + колодки. Течь сальника коленвала.";
 
+  const defaultCurrency = lang === "ru" ? "KZT" : "USD";
+  const [currency, setCurrency] = useState<string>(() => {
+    try { return localStorage.getItem(CURRENCY_KEY) ?? defaultCurrency; } catch { return defaultCurrency; }
+  });
+
   const [jobDescription, setJobDescription] = useState<string>(t.defaultJob);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -83,7 +97,16 @@ export default function DemoWidget() {
       if (prev === enDefault || prev === ruDefault) return t.defaultJob;
       return prev;
     });
+    // Switch to language-default currency only if localStorage has no saved preference
+    if (!localStorage.getItem(CURRENCY_KEY)) {
+      setCurrency(lang === "ru" ? "KZT" : "USD");
+    }
   }, [lang]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  function handleCurrencyChange(val: string) {
+    setCurrency(val);
+    try { localStorage.setItem(CURRENCY_KEY, val); } catch { /* ignore */ }
+  }
 
   // ─── Supabase usage helpers ─────────────────────────────────────────────
 
@@ -177,7 +200,7 @@ export default function DemoWidget() {
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jobDescription, language: lang }),
+        body: JSON.stringify({ jobDescription, language: lang, currency: CURRENCIES.find(c => c.value === currency)?.label ?? currency }),
       });
       const data = await res.json();
       if (!res.ok || data.error) throw new Error(data.error ?? "Something went wrong");
@@ -238,15 +261,26 @@ export default function DemoWidget() {
           rows={4}
           className="w-full resize-y rounded-lg border border-gray-200 bg-white p-3 text-sm text-gray-900 focus:border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400"
         />
-        <button
+        <div className="mt-3 flex items-center gap-3">
+          <select
+            value={currency}
+            onChange={(e) => handleCurrencyChange(e.target.value)}
+            className="rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 focus:border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400"
+          >
+            {CURRENCIES.map((c) => (
+              <option key={c.value} value={c.value}>{c.label}</option>
+            ))}
+          </select>
+          <button
           type="button"
           onClick={() => void handleGenerate()}
           disabled={loading}
-          className="mt-3 inline-flex items-center gap-2 rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex items-center gap-2 rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
           {t.generate}
         </button>
+        </div>
 
         <p className="mt-2 text-sm text-gray-500">
           {usage?.isPro
