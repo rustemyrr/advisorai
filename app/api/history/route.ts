@@ -27,7 +27,10 @@ export async function GET(request: Request) {
     .order("created_at", { ascending: false })
     .limit(10);
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error("[history GET]", error.message);
+    return NextResponse.json({ history: [] });
+  }
   return NextResponse.json({ history: data ?? [] });
 }
 
@@ -54,6 +57,9 @@ export async function POST(request: Request) {
     currency: currency ?? "USD",
   });
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error("[history POST]", error.message);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
   return NextResponse.json({ ok: true });
 }

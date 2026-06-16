@@ -20,12 +20,16 @@ export async function GET(request: Request) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const db = createAdminClient();
-  const { data } = await db
+  const { data, error } = await db
     .from("pricelist")
     .select("filename, labor_rate, currency, items, updated_at")
     .eq("user_id", user.id)
     .single();
 
+  if (error && error.code !== "PGRST116") {
+    // PGRST116 = "no rows found" — expected when user has no pricelist yet
+    console.error("[pricelist GET]", error.message);
+  }
   return NextResponse.json({ pricelist: data ?? null });
 }
 
