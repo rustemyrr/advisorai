@@ -19,6 +19,7 @@ export const translations = {
     defaultJob:
       "BMW 520d, 180k miles. Front brake discs + pads. Oil seal leaking on crank.",
     liveDemoLabel: "Live demo — try it now",
+    liveDemoLabelLoggedIn: "Expand the order",
     generate: "Generate",
     usageLabel: (count: number, limit: number) =>
       `${count} of ${limit} free generations used today`,
@@ -184,6 +185,7 @@ export const translations = {
     defaultJob:
       "BMW 520d, 180 тыс. км. Передние тормозные диски + колодки. Течь сальника коленвала.",
     liveDemoLabel: "Живое демо — попробуйте прямо сейчас",
+    liveDemoLabelLoggedIn: "Расширьте заказ",
     generate: "Создать",
     usageLabel: (count: number, limit: number) =>
       `Использовано ${count} из ${limit} бесплатных генераций сегодня`,

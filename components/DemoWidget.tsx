@@ -301,7 +301,7 @@ export default function DemoWidget() {
   return (
     <>
       <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 sm:p-6">
-        <p className="mb-3 text-sm font-medium text-gray-700">{t.liveDemoLabel}</p>
+        <p className="mb-3 text-sm font-medium text-gray-700">{user ? t.liveDemoLabelLoggedIn : t.liveDemoLabel}</p>
         <textarea
           value={jobDescription}
           onChange={(e) => setJobDescription(e.target.value)}
