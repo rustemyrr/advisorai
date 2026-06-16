@@ -33,10 +33,10 @@ async function getOrCreateProfile(userId: string): Promise<{ plan: string }> {
   const { data } = await db
     .from("profiles")
     .select("plan")
-    .eq("user_id", userId)
+    .eq("id", userId)
     .single();
   if (data) return data as { plan: string };
-  await db.from("profiles").insert({ user_id: userId, plan: "free" });
+  await db.from("profiles").insert({ id: userId, plan: "free" });
   return { plan: "free" };
 }
 

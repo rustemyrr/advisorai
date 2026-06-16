@@ -12,7 +12,7 @@ export async function GET(request: Request) {
   const { data, error } = await db
     .from("profiles")
     .select("plan")
-    .eq("user_id", user.id)
+    .eq("id", user.id)
     .single();
 
   if (error) {

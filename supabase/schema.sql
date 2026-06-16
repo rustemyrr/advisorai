@@ -11,7 +11,7 @@ create table if not exists public.usage (
 
 -- Per-user plan (free | pro). Row is created on first sign-up.
 create table if not exists public.profiles (
-  user_id    uuid    references auth.users(id) on delete cascade primary key,
+  id         uuid    references auth.users(id) on delete cascade primary key,
   plan       text    not null default 'free' check (plan in ('free', 'pro')),
   created_at timestamptz default now()
 );
@@ -24,9 +24,9 @@ create policy "own usage select"  on public.usage    for select using (auth.uid(
 create policy "own usage insert"  on public.usage    for insert with check (auth.uid() = user_id);
 create policy "own usage update"  on public.usage    for update using (auth.uid() = user_id);
 
-create policy "own profile select" on public.profiles for select using (auth.uid() = user_id);
-create policy "own profile insert" on public.profiles for insert with check (auth.uid() = user_id);
-create policy "own profile update" on public.profiles for update using (auth.uid() = user_id);
+create policy "own profile select" on public.profiles for select using (auth.uid() = id);
+create policy "own profile insert" on public.profiles for insert with check (auth.uid() = id);
+create policy "own profile update" on public.profiles for update using (auth.uid() = id);
 
 -- Generation history
 create table if not exists public.generation_history (
