@@ -153,10 +153,13 @@ export default function PriceListSection({ session, currency }: Props) {
           <span className="whitespace-nowrap">{t.pricelistLaborRate}:</span>
           <input
             type="number"
+            inputMode="numeric"
             min={0}
             value={laborRate}
             onChange={(e) => setLaborRate(Number(e.target.value))}
+            onFocus={(e) => e.target.select()}
             className="w-24 rounded-md border border-gray-200 px-2 py-1.5 text-sm text-gray-900 focus:border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400"
+            style={{ fontSize: "16px" }}
           />
           <span className="text-gray-500">{currencySymbol}</span>
         </label>
