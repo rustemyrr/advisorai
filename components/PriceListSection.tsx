@@ -71,7 +71,6 @@ export default function PriceListSection({ session, currency }: Props) {
   const [items, setItems] = useState<PricelistItem[]>([]);
   const [filename, setFilename] = useState("");
   const [laborRate, setLaborRate] = useState<number>(0);
-  const [laborRateStr, setLaborRateStr] = useState<string>("0");
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">("idle");
   const [parseError, setParseError] = useState(false);
 
@@ -93,7 +92,6 @@ export default function PriceListSection({ session, currency }: Props) {
           setItems(data.pricelist.items);
           setFilename(data.pricelist.filename);
           setLaborRate(data.pricelist.labor_rate);
-          setLaborRateStr(String(data.pricelist.labor_rate));
         }
       } catch { /* ignore */ }
     })();
@@ -151,31 +149,17 @@ export default function PriceListSection({ session, currency }: Props) {
           onChange={handleFile}
         />
 
-        <div className="flex items-center gap-2 text-sm text-gray-700">
-          <label htmlFor="labor-rate" className="whitespace-nowrap">{t.pricelistLaborRate}:</label>
+        <label className="flex items-center gap-2 text-sm text-gray-700">
+          <span className="whitespace-nowrap">{t.pricelistLaborRate}:</span>
           <input
-            id="labor-rate"
-            type="text"
-            inputMode="decimal"
-            value={laborRateStr}
-            onFocus={(e) => e.target.select()}
-            onChange={(e) => {
-              const raw = e.target.value.replace(/[^\d.]/g, "");
-              setLaborRateStr(raw);
-              const parsed = parseFloat(raw);
-              if (!isNaN(parsed)) setLaborRate(parsed);
-              else if (raw === "" || raw === ".") setLaborRate(0);
-            }}
-            onBlur={() => {
-              const parsed = parseFloat(laborRateStr);
-              const n = isNaN(parsed) ? 0 : parsed;
-              setLaborRate(n);
-              setLaborRateStr(String(n));
-            }}
-            className="w-24 touch-manipulation rounded-md border border-gray-200 px-2 py-1.5 text-base text-gray-900 focus:border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 sm:text-sm"
+            type="number"
+            min={0}
+            value={laborRate}
+            onChange={(e) => setLaborRate(Number(e.target.value))}
+            className="w-24 rounded-md border border-gray-200 px-2 py-1.5 text-sm text-gray-900 focus:border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400"
           />
           <span className="text-gray-500">{currencySymbol}</span>
-        </div>
+        </label>
 
         {items.length > 0 && (
           <button

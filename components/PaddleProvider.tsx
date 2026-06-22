@@ -65,17 +65,6 @@ export function PaddleProvider({ children, config: initialConfig }: PaddleProvid
   useEffect(() => {
     unlockPagePointerEvents();
 
-    // Watch for Paddle setting pointer-events:none on body/html after async init.
-    // This is especially important on mobile where there is no mouse-move to
-    // accidentally trigger any unlock recovery.
-    const observer = new MutationObserver(() => {
-      const bodyLocked = document.body.style.pointerEvents === "none";
-      const htmlLocked = document.documentElement.style.pointerEvents === "none";
-      if (bodyLocked || htmlLocked) unlockPagePointerEvents();
-    });
-    observer.observe(document.body, { attributes: true, attributeFilter: ["style"] });
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["style"] });
-
     let cancelled = false;
 
     fetchPaddleConfig()
@@ -94,7 +83,6 @@ export function PaddleProvider({ children, config: initialConfig }: PaddleProvid
 
     return () => {
       cancelled = true;
-      observer.disconnect();
       unlockPagePointerEvents();
     };
   }, [initialConfig]);

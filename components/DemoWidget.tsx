@@ -315,7 +315,7 @@ export default function DemoWidget() {
           rows={4}
           className="w-full resize-y rounded-lg border border-gray-200 bg-white p-3 text-sm text-gray-900 focus:border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400"
         />
-        <div className="mt-3 flex flex-wrap items-center gap-3">
+        <div className="mt-3 flex items-center gap-3">
           <select
             value={currency}
             onChange={(e) => handleCurrencyChange(e.target.value)}
@@ -326,14 +326,14 @@ export default function DemoWidget() {
             ))}
           </select>
           <button
-            type="button"
-            onClick={() => void handleGenerate()}
-            disabled={loading}
-            className="touch-manipulation inline-flex items-center gap-2 rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {loading && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
-            {t.generate}
-          </button>
+          type="button"
+          onClick={() => void handleGenerate()}
+          disabled={loading}
+          className="inline-flex items-center gap-2 rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {loading && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
+          {t.generate}
+        </button>
         </div>
 
         {isPro ? null : (
