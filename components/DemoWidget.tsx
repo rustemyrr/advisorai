@@ -80,6 +80,14 @@ export default function DemoWidget() {
   const enDefault = "BMW 520d, 180k miles. Front brake discs + pads. Oil seal leaking on crank.";
   const ruDefault = "BMW 520d, 180 тыс. км. Передние тормозные диски + колодки. Течь сальника коленвала.";
 
+  const textareaPlaceholder = user
+    ? lang === "ru"
+      ? "Опишите автомобиль и работы: марка, модель, пробег, что нужно сделать"
+      : "Describe the car and job: make, model, mileage, what needs to be done"
+    : lang === "ru"
+    ? ruDefault
+    : enDefault;
+
   const defaultCurrency = lang === "ru" ? "KZT" : "USD";
   const [currency, setCurrency] = useState<string>(() => {
     try { return localStorage.getItem(CURRENCY_KEY) ?? defaultCurrency; } catch { return defaultCurrency; }
@@ -313,6 +321,7 @@ export default function DemoWidget() {
           value={jobDescription}
           onChange={(e) => setJobDescription(e.target.value)}
           rows={4}
+          placeholder={textareaPlaceholder}
           className="w-full resize-y rounded-lg border border-gray-200 bg-white p-3 text-sm text-gray-900 focus:border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400"
         />
         <div className="mt-3 flex flex-wrap items-center gap-3">
