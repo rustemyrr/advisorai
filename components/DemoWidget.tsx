@@ -106,6 +106,15 @@ export default function DemoWidget() {
   const [emailSubmitting, setEmailSubmitting] = useState(false);
   const [history, setHistory] = useState<HistoryRow[]>([]);
 
+  // When user logs in, clear the pre-filled example so the instructional placeholder shows
+  useEffect(() => {
+    if (user) {
+      setJobDescription((prev) =>
+        prev === enDefault || prev === ruDefault ? "" : prev
+      );
+    }
+  }, [user]);
+
   // Sync placeholder when language toggles (only if user hasn't typed anything custom)
   useEffect(() => {
     setJobDescription((prev) => {
