@@ -77,6 +77,8 @@ export default function DemoWidget() {
   const { user, session, plan } = useAuth();
   const isPro = plan === "pro";
 
+  console.log("[DemoWidget] user:", user);
+
   const enDefault = "BMW 520d, 180k miles. Front brake discs + pads. Oil seal leaking on crank.";
   const ruDefault = "BMW 520d, 180 тыс. км. Передние тормозные диски + колодки. Течь сальника коленвала.";
 
