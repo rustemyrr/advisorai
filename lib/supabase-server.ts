@@ -5,7 +5,7 @@ function asciiOnly(s: string | undefined): string {
 }
 
 const url = asciiOnly(process.env.NEXT_PUBLIC_SUPABASE_URL);
-const secretKey = asciiOnly(process.env.SUPABASE_SECRET_KEY);
+const secretKey = asciiOnly(process.env.SUPABASE_SERVICE_ROLE_KEY);
 
 // Admin client for API routes — uses secret key, bypasses RLS.
 // Always scope queries manually to the verified user_id.
