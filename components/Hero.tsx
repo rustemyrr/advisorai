@@ -28,7 +28,7 @@ export default function Hero() {
                 {t.heroCta}
               </a>
               <a
-                href="#demo"
+                href="#example"
                 className="inline-flex justify-center rounded-md border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-50"
               >
                 {t.heroDemo}
@@ -40,6 +40,26 @@ export default function Hero() {
         <div id="demo" className="mt-12">
           <DemoWidget />
         </div>
+
+        {!user && (
+          <div id="example" className="mt-12 scroll-mt-8">
+            <p className="mb-4 text-sm font-medium text-gray-500">{t.exampleTitle}</p>
+            <div className="grid gap-4 lg:grid-cols-3">
+              <div className="rounded-lg border border-gray-200 bg-white p-4">
+                <h3 className="text-sm font-semibold text-gray-900">{t.outputEstimate}</h3>
+                <p className="mt-2 whitespace-pre-wrap text-sm text-gray-600">{t.exampleEstimate}</p>
+              </div>
+              <div className="rounded-lg border border-gray-200 bg-white p-4">
+                <h3 className="text-sm font-semibold text-gray-900">{t.outputExplanation}</h3>
+                <p className="mt-2 text-sm text-gray-600">{t.exampleExplanation}</p>
+              </div>
+              <div className="rounded-lg border border-gray-200 bg-white p-4">
+                <h3 className="text-sm font-semibold text-gray-900">{t.outputUpsell}</h3>
+                <p className="mt-2 text-sm text-gray-600">{t.exampleUpsell}</p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

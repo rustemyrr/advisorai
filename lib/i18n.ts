@@ -12,8 +12,12 @@ export const translations = {
     heroSubtext:
       "AdvisorAI turns any repair job into a clear customer estimate, plain-language explanation, and smart upsell suggestion. No more staring at a blank page between cars.",
     heroCta: "See plans",
-    heroDemo: "Try the demo",
+    heroDemo: "See how it works",
     heroNote: "From $4/month · No setup · Works on any device",
+    exampleTitle: "Example output",
+    exampleEstimate: "• Front brake discs (x2 OEM-spec): $320\n• Front brake pads (set): $95\n• Brake caliper service: $45\n• Front brake labour: $160\n• Crankshaft oil seal (part): $35\n• Crankshaft oil seal labour: $280\n• Fluids & shop supplies: $40\n\nTotal: $975 – $1,075",
+    exampleExplanation: "We'll be replacing your front brake discs and pads, which are essential for safe stopping, and fixing a leaking crankshaft oil seal to prevent engine oil loss. Both jobs make good sense to do together since your car is already in the shop — saving you on labour time.",
+    exampleUpsell: "At 180,000 miles, your coolant system components — particularly the water pump and thermostat — are very likely due for replacement. Replacing them now while the front of the engine is already partially accessed can save $320–$480 in labour later.",
 
     // DemoWidget
     defaultJob:
@@ -180,8 +184,12 @@ export const translations = {
     heroSubtext:
       "AdvisorAI превращает любой ремонт в чёткую смету для клиента, понятное объяснение и умное предложение допродажи. Больше никакого ступора между машинами.",
     heroCta: "Смотреть планы",
-    heroDemo: "Попробовать демо",
+    heroDemo: "Смотреть как работает",
     heroNote: "От $4 в месяц · Без настройки · На любом устройстве",
+    exampleTitle: "Пример результата",
+    exampleEstimate: "• Тормозные диски передние (x2): 144 000 ₸\n• Тормозные колодки (комплект): 43 000 ₸\n• Обслуживание суппортов: 20 000 ₸\n• Работа по тормозам: 72 000 ₸\n• Сальник коленвала (деталь): 16 000 ₸\n• Замена сальника (работа): 126 000 ₸\n• Расходники и жидкости: 18 000 ₸\n\nИтого: 439 000 – 470 000 ₸",
+    exampleExplanation: "Заменим передние тормозные диски и колодки — это необходимо для безопасного торможения. Заодно устраним течь сальника коленвала, чтобы двигатель не терял масло. Делать всё вместе выгоднее — экономим на работе.",
+    exampleUpsell: "При пробеге 180 000 км высока вероятность износа водяного насоса и термостата. Замена сейчас, пока передняя часть двигателя уже разобрана, сэкономит 144 000–216 000 ₸ на работе в будущем.",
 
     // DemoWidget
     defaultJob:
