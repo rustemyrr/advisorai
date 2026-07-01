@@ -22,7 +22,7 @@ export default function Hero() {
           <>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
               <a
-                href="#demo"
+                href="#pricing"
                 className="inline-flex justify-center rounded-md bg-gray-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-800"
               >
                 {t.heroCta}

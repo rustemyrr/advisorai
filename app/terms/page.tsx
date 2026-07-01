@@ -54,12 +54,10 @@ export default function TermsPage() {
           4. Subscriptions and billing
         </h2>
         <p className="mt-3 text-sm leading-relaxed">
-          AdvisorAI offers a free plan with limited daily usage and paid
-          subscription plans. The Pro plan is billed at{" "}
-          <strong className="font-medium text-gray-900">$29 USD per month</strong>{" "}
-          (plus applicable taxes) unless otherwise stated at checkout. Team and
-          other plans are billed at the prices shown on our website at the time
-          of purchase.
+          AdvisorAI offers paid subscription plans (Starter, Standard, and
+          Professional). Plans are billed at the prices shown on our website at
+          the time of purchase (plus applicable taxes) unless otherwise stated at
+          checkout.
         </p>
         <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-relaxed">
           <li>

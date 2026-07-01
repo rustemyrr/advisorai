@@ -12,10 +12,12 @@ import type { User, Session } from "@supabase/supabase-js";
 import { supabase } from "./supabase";
 import AuthModal from "@/components/AuthModal";
 
+export type Plan = "starter" | "standard" | "professional";
+
 type AuthContextValue = {
   user: User | null;
   session: Session | null;
-  plan: "free" | "pro" | null;
+  plan: Plan | null;
   loading: boolean;
   openAuthModal: () => void;
   signOut: () => Promise<void>;
@@ -33,7 +35,7 @@ const AuthContext = createContext<AuthContextValue>({
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [plan, setPlan] = useState<"free" | "pro" | null>(null);
+  const [plan, setPlan] = useState<Plan | null>(null);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -44,10 +46,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       const data = await res.json() as { plan: string };
       console.log("[fetchPlan] response:", data);
-      setPlan(data.plan === "pro" ? "pro" : "free");
+      const validPlans: Plan[] = ["starter", "standard", "professional"];
+      setPlan(validPlans.includes(data.plan as Plan) ? (data.plan as Plan) : "starter");
     } catch (err) {
       console.error("[fetchPlan] error:", err);
-      setPlan("free");
+      setPlan("starter");
     }
   }, []);
 

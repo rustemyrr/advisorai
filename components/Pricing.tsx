@@ -5,9 +5,11 @@ import { Check } from "lucide-react";
 import ProCheckoutButton from "./ProCheckoutButton";
 import { unlockPagePointerEvents } from "@/lib/paddle-client";
 import { useLanguage } from "@/lib/language-context";
+import { usePaddle } from "./PaddleProvider";
 
 export default function Pricing() {
   const { t } = useLanguage();
+  const { config } = usePaddle();
 
   useEffect(() => {
     unlockPagePointerEvents();
@@ -15,37 +17,40 @@ export default function Pricing() {
 
   const plans = [
     {
-      name: t.planFree,
-      price: "$0",
-      period: t.perForever,
+      name: t.planStarter,
+      price: "$4",
+      period: t.perMonth,
       featured: false,
-      paddleCheckout: false,
-      features: t.freeFeatures,
+      paddleCheckout: true,
+      features: t.starterFeatures,
       cta: t.ctaGetStarted,
       ctaStyle: "outline" as const,
-      href: "#hero",
+      href: undefined,
+      priceId: config.priceIdStarter,
     },
     {
-      name: t.planPro,
-      price: "$29",
+      name: t.planStandard,
+      price: "$19",
       period: t.perMonth,
       featured: true,
       paddleCheckout: true,
-      features: t.proFeatures,
-      cta: t.ctaStartTrial,
+      features: t.standardFeatures,
+      cta: t.ctaSubscribe,
       ctaStyle: "primary" as const,
       href: undefined,
+      priceId: config.priceId,
     },
     {
-      name: t.planTeam,
-      price: "$99",
+      name: t.planProfessional,
+      price: "$28",
       period: t.perMonth,
       featured: false,
-      paddleCheckout: false,
-      features: t.teamFeatures,
-      cta: t.ctaContact,
+      paddleCheckout: true,
+      features: t.professionalFeatures,
+      cta: t.ctaSubscribe,
       ctaStyle: "outline" as const,
-      href: "mailto:support@advisorai.help",
+      href: undefined,
+      priceId: config.priceIdProfessional || config.priceId,
     },
   ];
 
@@ -101,17 +106,7 @@ export default function Pricing() {
                     </li>
                   ))}
                 </ul>
-                {plan.paddleCheckout ? (
-                  <ProCheckoutButton label={plan.cta} />
-                ) : plan.href?.startsWith("mailto:") ? (
-                  <a href={plan.href} className={outlineClass}>
-                    {plan.cta}
-                  </a>
-                ) : (
-                  <a href={plan.href ?? "#hero"} className={outlineClass}>
-                    {plan.cta}
-                  </a>
-                )}
+                <ProCheckoutButton label={plan.cta} priceId={plan.priceId} />
               </div>
             );
           })}

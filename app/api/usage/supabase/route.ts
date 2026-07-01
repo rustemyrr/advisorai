@@ -1,31 +1,36 @@
 import { NextResponse } from "next/server";
 import { getUserFromToken, createAdminClient } from "@/lib/supabase-server";
-import { FREE_GENERATION_LIMIT } from "@/lib/demo-constants";
 
 export const dynamic = "force-dynamic";
 
-function getTodayString(): string {
-  return new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+// Monthly generation limits per plan
+const PLAN_LIMITS: Record<string, number> = {
+  starter: 15,
+  standard: 100,
+  professional: Infinity,
+};
+
+function getMonthString(): string {
+  return new Date().toISOString().slice(0, 7); // YYYY-MM
 }
 
 type UsageRow = { user_id: string; date: string; count: number };
 
-async function getOrCreateUsage(userId: string, date: string): Promise<UsageRow> {
+async function getOrCreateUsage(userId: string, month: string): Promise<UsageRow> {
   const db = createAdminClient();
   const { data } = await db
     .from("usage")
     .select("user_id, date, count")
     .eq("user_id", userId)
-    .eq("date", date)
+    .eq("date", month)
     .single();
   if (data) return data as UsageRow;
-  // First use today — insert row
   const { data: inserted } = await db
     .from("usage")
-    .insert({ user_id: userId, date, count: 0 })
+    .insert({ user_id: userId, date: month, count: 0 })
     .select("user_id, date, count")
     .single();
-  return (inserted as UsageRow) ?? { user_id: userId, date, count: 0 };
+  return (inserted as UsageRow) ?? { user_id: userId, date: month, count: 0 };
 }
 
 async function getOrCreateProfile(userId: string): Promise<{ plan: string }> {
@@ -36,32 +41,33 @@ async function getOrCreateProfile(userId: string): Promise<{ plan: string }> {
     .eq("id", userId)
     .single();
   if (data) return data as { plan: string };
-  await db.from("profiles").insert({ id: userId, plan: "free" });
-  return { plan: "free" };
+  await db.from("profiles").insert({ id: userId, plan: "starter" });
+  return { plan: "starter" };
 }
 
-function buildResponse(count: number, isPro: boolean) {
-  const limit = isPro ? Infinity : FREE_GENERATION_LIMIT;
+function buildResponse(count: number, plan: string) {
+  const limit = PLAN_LIMITS[plan] ?? PLAN_LIMITS.starter;
+  const isPro = limit === Infinity;
   const remaining = isPro ? 999 : Math.max(0, limit - count);
-  return { count, remaining, allowed: isPro || count < FREE_GENERATION_LIMIT, isPro };
+  const allowed = count < limit;
+  return { count, remaining, allowed, isPro, plan };
 }
 
-// GET /api/usage/supabase — returns today's usage for the authenticated user
+// GET /api/usage/supabase — returns this month's usage for the authenticated user
 export async function GET(request: Request) {
   const token = request.headers.get("authorization")?.replace("Bearer ", "") ?? null;
   const user = await getUserFromToken(token);
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const date = getTodayString();
+  const month = getMonthString();
   const [usage, profile] = await Promise.all([
-    getOrCreateUsage(user.id, date),
+    getOrCreateUsage(user.id, month),
     getOrCreateProfile(user.id),
   ]);
-  const isPro = profile.plan === "pro";
-  return NextResponse.json(buildResponse(usage.count, isPro));
+  return NextResponse.json(buildResponse(usage.count, profile.plan));
 }
 
-// POST /api/usage/supabase — increments today's count; body: { action: "increment" }
+// POST /api/usage/supabase — increments this month's count; body: { action: "increment" }
 export async function POST(request: Request) {
   const token = request.headers.get("authorization")?.replace("Bearer ", "") ?? null;
   const user = await getUserFromToken(token);
@@ -72,16 +78,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "action must be 'increment'" }, { status: 400 });
   }
 
-  const date = getTodayString();
+  const month = getMonthString();
   const [usage, profile] = await Promise.all([
-    getOrCreateUsage(user.id, date),
+    getOrCreateUsage(user.id, month),
     getOrCreateProfile(user.id),
   ]);
-  const isPro = profile.plan === "pro";
+  const limit = PLAN_LIMITS[profile.plan] ?? PLAN_LIMITS.starter;
 
-  // Don't increment if already over the free limit (Pro users are always allowed)
-  if (!isPro && usage.count >= FREE_GENERATION_LIMIT) {
-    return NextResponse.json(buildResponse(usage.count, isPro));
+  if (usage.count >= limit) {
+    return NextResponse.json(buildResponse(usage.count, profile.plan));
   }
 
   const db = createAdminClient();
@@ -90,7 +95,7 @@ export async function POST(request: Request) {
     .from("usage")
     .update({ count: newCount })
     .eq("user_id", user.id)
-    .eq("date", date);
+    .eq("date", month);
 
-  return NextResponse.json(buildResponse(newCount, isPro));
+  return NextResponse.json(buildResponse(newCount, profile.plan));
 }

@@ -11,9 +11,9 @@ export const translations = {
     heroHeadline: "Write estimates, explain repairs, and upsell — in 10 seconds.",
     heroSubtext:
       "AdvisorAI turns any repair job into a clear customer estimate, plain-language explanation, and smart upsell suggestion. No more staring at a blank page between cars.",
-    heroCta: "Try free — no signup needed",
-    heroDemo: "See a demo",
-    heroNote: "Free plan available · No credit card · Works on any device",
+    heroCta: "See plans",
+    heroDemo: "Try the demo",
+    heroNote: "From $4/month · No setup · Works on any device",
 
     // DemoWidget
     defaultJob:
@@ -23,17 +23,18 @@ export const translations = {
     liveDemoSubtitleLoggedIn: "Increase average ticket with every customer",
     generate: "Generate",
     usageLabel: (count: number, limit: number) =>
-      `${count} of ${limit} free generations used today`,
-    remaining: (n: number) => `${n} generation${n === 1 ? "" : "s"} remaining today`,
+      `${count} of ${limit} free generations used this month`,
+    remaining: (n: number) => `${n} generation${n === 1 ? "" : "s"} remaining this month`,
     emailModalTitle: "🔓 Get 2 more free generations",
     emailModalSubtext: "No spam. Just your email to continue.",
     emailPlaceholder: "you@dealership.com",
     continueGenerating: "Continue generating →",
-    upgradeNote: "Upgrade anytime for unlimited access",
+    upgradeNote: "Upgrade anytime for more access",
     limitTitle: "You've reached the free limit",
     limitSubtext:
-      "Upgrade to Pro for unlimited estimates, explanations, and upsell suggestions.",
-    startTrial: "Start 7-day free trial →",
+      "Upgrade to Standard or Professional for more estimates, explanations, and upsell suggestions.",
+    startTrial: "View plans →",
+    signInToGenerate: "Sign in to generate →",
     pleaseWait: "Please wait…",
     pleaseEnterEmail: "Please enter your email",
     outputEstimate: "Estimate",
@@ -58,34 +59,36 @@ export const translations = {
 
     // Pricing
     pricingTag: "Pricing",
-    pricingHeadline: "Start free. Upgrade when it saves you time.",
+    pricingHeadline: "Simple plans for every dealership.",
     mostPopular: "Most popular",
-    planFree: "Free",
-    planPro: "Pro",
-    planTeam: "Team",
-    perForever: "/forever",
+    planStarter: "Starter",
+    planStandard: "Standard",
+    planProfessional: "Professional",
     perMonth: "/month",
-    freeFeatures: [
-      "3 generations per day",
-      "Plain-language explainer",
-      "No upsell suggestions",
-      "No estimate history",
-    ],
-    proFeatures: [
-      "Unlimited estimates",
+    starterFeatures: [
+      "15 generations per month",
+      "1 advisor",
       "Plain-language explainer",
       "AI upsell suggestions",
-      "Full estimate history",
+      "Currency selector (KZT/RUB/USD/AED/GBP)",
+      "Estimate history — 7 days",
     ],
-    teamFeatures: [
-      "Everything in Pro",
-      "Up to 5 advisors",
-      "Team dashboard",
-      "Manager analytics",
+    standardFeatures: [
+      "100 generations per month",
+      "1 advisor",
+      "Everything in Starter",
+      "Full estimate history",
+      "Pricelist upload (Excel/CSV)",
+    ],
+    professionalFeatures: [
+      "Unlimited generations",
+      "Up to 3 advisor seats",
+      "Everything in Standard",
+      "Team analytics / dashboard",
       "Priority support",
     ],
     ctaGetStarted: "Get started",
-    ctaStartTrial: "Start 7-day free trial",
+    ctaSubscribe: "Subscribe",
     ctaContact: "Contact us",
 
     // FAQ
@@ -178,9 +181,9 @@ export const translations = {
       "Составляйте сметы, объясняйте ремонт и делайте допродажи — за 10 секунд.",
     heroSubtext:
       "AdvisorAI превращает любой ремонт в чёткую смету для клиента, понятное объяснение и умное предложение допродажи. Больше никакого ступора между машинами.",
-    heroCta: "Попробовать бесплатно",
-    heroDemo: "Смотреть демо",
-    heroNote: "Бесплатный план · Без карты · На любом устройстве",
+    heroCta: "Смотреть планы",
+    heroDemo: "Попробовать демо",
+    heroNote: "От $4 в месяц · Без настройки · На любом устройстве",
 
     // DemoWidget
     defaultJob:
@@ -190,17 +193,18 @@ export const translations = {
     liveDemoSubtitleLoggedIn: "Увеличьте средний чек с каждого клиента",
     generate: "Создать",
     usageLabel: (count: number, limit: number) =>
-      `Использовано ${count} из ${limit} бесплатных генераций сегодня`,
-    remaining: (n: number) => `Осталось ${n} генераци${n === 1 ? "я" : n < 5 ? "и" : "й"} сегодня`,
+      `Использовано ${count} из ${limit} бесплатных генераций в этом месяце`,
+    remaining: (n: number) => `Осталось ${n} генераци${n === 1 ? "я" : n < 5 ? "и" : "й"} в этом месяце`,
     emailModalTitle: "🔓 Получите ещё 2 бесплатные генерации",
     emailModalSubtext: "Без спама. Просто укажите email, чтобы продолжить.",
     emailPlaceholder: "вы@дилерство.рф",
     continueGenerating: "Продолжить →",
-    upgradeNote: "Переходите на Pro для безлимитного доступа",
-    limitTitle: "Вы достигли бесплатного лимита",
+    upgradeNote: "Переходите на более высокий план для расширенного доступа",
+    limitTitle: "Вы достигли лимита генераций",
     limitSubtext:
-      "Перейдите на Pro для неограниченного количества смет, объяснений и допродаж.",
-    startTrial: "Начать 7-дневный пробный период →",
+      "Перейдите на Standard или Professional для большего числа смет, объяснений и допродаж.",
+    startTrial: "Смотреть планы →",
+    signInToGenerate: "Войдите чтобы генерировать →",
     pleaseWait: "Подождите…",
     pleaseEnterEmail: "Введите ваш email",
     outputEstimate: "Смета",
@@ -225,34 +229,36 @@ export const translations = {
 
     // Pricing
     pricingTag: "Цены",
-    pricingHeadline: "Начните бесплатно. Переходите, когда захотите сэкономить время.",
+    pricingHeadline: "Простые планы для любого дилерства.",
     mostPopular: "Популярный",
-    planFree: "Бесплатно",
-    planPro: "Pro",
-    planTeam: "Команда",
-    perForever: "/навсегда",
+    planStarter: "Starter",
+    planStandard: "Standard",
+    planProfessional: "Professional",
     perMonth: "/месяц",
-    freeFeatures: [
-      "3 генерации в день",
-      "Объяснение простым языком",
-      "Без предложений допродажи",
-      "Без истории смет",
-    ],
-    proFeatures: [
-      "Безлимитные сметы",
+    starterFeatures: [
+      "15 генераций в месяц",
+      "1 консультант",
       "Объяснение простым языком",
       "ИИ-допродажи",
-      "Полная история смет",
+      "Выбор валюты (KZT/RUB/USD/AED/GBP)",
+      "История смет — 7 дней",
     ],
-    teamFeatures: [
-      "Всё из Pro",
-      "До 5 консультантов",
-      "Командная панель",
-      "Аналитика для менеджеров",
+    standardFeatures: [
+      "100 генераций в месяц",
+      "1 консультант",
+      "Всё из Starter",
+      "Полная история смет",
+      "Загрузка прайс-листа (Excel/CSV)",
+    ],
+    professionalFeatures: [
+      "Безлимитные генерации",
+      "До 3 мест для консультантов",
+      "Всё из Standard",
+      "Аналитика команды / дашборд",
       "Приоритетная поддержка",
     ],
     ctaGetStarted: "Начать",
-    ctaStartTrial: "Пробный период 7 дней",
+    ctaSubscribe: "Подписаться",
     ctaContact: "Связаться с нами",
 
     // FAQ

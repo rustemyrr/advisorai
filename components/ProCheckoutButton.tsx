@@ -6,11 +6,13 @@ import { unlockPagePointerEvents } from "@/lib/paddle-client";
 
 type ProCheckoutButtonProps = {
   label: string;
+  priceId?: string;
   className?: string;
 };
 
 export default function ProCheckoutButton({
   label,
+  priceId,
   className = "",
 }: ProCheckoutButtonProps) {
   const { openProCheckout, checkoutLoading } = usePaddle();
@@ -26,7 +28,7 @@ export default function ProCheckoutButton({
         onClick={(event) => {
           event.preventDefault();
           event.stopPropagation();
-          void openProCheckout();
+          void openProCheckout(priceId);
         }}
         className={`w-full cursor-pointer rounded-md bg-gray-900 px-4 py-2.5 text-center text-sm font-medium text-white hover:bg-gray-800 [pointer-events:auto] ${className}`}
       >

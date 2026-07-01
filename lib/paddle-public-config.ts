@@ -1,6 +1,8 @@
 export type PaddlePublicConfig = {
   clientToken: string;
-  priceId: string;
+  priceIdStarter: string;
+  priceId: string; // Standard plan price ID
+  priceIdProfessional: string; // Professional plan price ID
   environment: "sandbox" | "production";
 };
 
@@ -33,13 +35,21 @@ export function getPaddlePublicConfig(): PaddlePublicConfig {
     process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN ||
       process.env.PADDLE_CLIENT_TOKEN
   );
+  const priceIdStarter = normalizeEnv(
+    process.env.NEXT_PUBLIC_PADDLE_PRICE_ID_STARTER || ""
+  );
   const priceId = normalizeEnv(
     process.env.NEXT_PUBLIC_PADDLE_PRICE_ID || process.env.PADDLE_PRICE_ID
+  );
+  const priceIdProfessional = normalizeEnv(
+    process.env.NEXT_PUBLIC_PADDLE_PRICE_ID_PROFESSIONAL || ""
   );
 
   return {
     clientToken,
+    priceIdStarter,
     priceId,
+    priceIdProfessional,
     environment: resolveEnvironment(clientToken),
   };
 }

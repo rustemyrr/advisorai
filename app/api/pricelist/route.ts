@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getUserFromToken, createAdminClient } from "@/lib/supabase-server";
 
+const PRICELIST_PLANS = ["standard", "professional"];
+
 export const dynamic = "force-dynamic";
 
 export type PricelistItem = { service: string; price: number; hours: number };
@@ -32,11 +34,25 @@ export async function GET(request: Request) {
   return NextResponse.json({ pricelist: data ?? null });
 }
 
-// POST /api/pricelist — upsert pricelist
+// POST /api/pricelist — upsert pricelist (Standard and Professional only)
 export async function POST(request: Request) {
   const token = request.headers.get("authorization")?.replace("Bearer ", "") ?? null;
   const user = await getUserFromToken(token);
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const db = createAdminClient();
+  const { data: profile } = await db
+    .from("profiles")
+    .select("plan")
+    .eq("id", user.id)
+    .single();
+  const plan = (profile as { plan: string } | null)?.plan ?? "starter";
+  if (!PRICELIST_PLANS.includes(plan)) {
+    return NextResponse.json(
+      { error: "Pricelist upload requires Standard or Professional plan" },
+      { status: 403 }
+    );
+  }
 
   const body = await request.json().catch(() => ({}));
   const { filename, labor_rate, items } = body as {
@@ -49,7 +65,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "items must be an array" }, { status: 400 });
   }
 
-  const db = createAdminClient();
   const { error } = await db.from("pricelist").upsert(
     {
       user_id: user.id,

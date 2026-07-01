@@ -22,8 +22,8 @@ export default function PrivacyPage() {
           </a>
           . This Privacy Policy explains how we collect, use, disclose, and
           protect personal information when you use our software-as-a-service
-          platform for automotive service advisors, including free and paid
-          plans (such as Pro at $29/month).
+          platform for automotive service advisors, including paid subscription
+          plans (Starter, Standard, and Professional).
         </p>
       </section>
 
@@ -69,7 +69,7 @@ export default function PrivacyPage() {
         <p className="mt-3 text-sm leading-relaxed">We use personal information to:</p>
         <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-relaxed">
           <li>Provide, operate, and maintain the Service</li>
-          <li>Process subscriptions and payments ($29/month Pro plan and other tiers)</li>
+          <li>Process subscriptions and payments for paid plans</li>
           <li>Generate AI outputs from job descriptions you submit</li>
           <li>Enforce usage limits on free and paid plans</li>
           <li>Send service-related notices (billing, security, product updates)</li>

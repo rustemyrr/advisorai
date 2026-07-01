@@ -74,8 +74,8 @@ function localToCheck(s: StoredUsage): UsageCheck {
 
 export default function DemoWidget() {
   const { lang, t } = useLanguage();
-  const { user, session, plan } = useAuth();
-  const isPro = plan === "pro";
+  const { user, session, plan, openAuthModal } = useAuth();
+  const isPro = plan === "standard" || plan === "professional";
 
   console.log("[DemoWidget] user:", user);
 
@@ -275,20 +275,17 @@ export default function DemoWidget() {
 
   async function handleGenerate() {
     setError(null);
-    // Pro users bypass all limits
+    if (!user) { openAuthModal(); return; }
     if (isPro) { await runGenerate(); return; }
 
     let status: UsageCheck;
     try {
       status = await refreshUsage();
     } catch {
-      // Supabase unavailable — fall back to local check so UI doesn't freeze
       status = localToCheck(readLocalUsage());
     }
 
     if (!status.allowed) {
-      // Email gate only applies to anonymous users; logged-in users go straight to upgrade
-      if (status.requiresEmail && !user) { setShowEmailModal(true); return; }
       setShowUpgradeModal(true);
       return;
     }
@@ -356,12 +353,14 @@ export default function DemoWidget() {
           </button>
         </div>
 
-        {isPro ? null : (
+        {!user ? (
+          <p className="mt-2 text-sm text-gray-500">{t.signInToGenerate}</p>
+        ) : isPro ? null : (
           <>
             <p className="mt-2 text-sm text-gray-500">
               {t.usageLabel(usageCount, FREE_GENERATION_LIMIT)}
             </p>
-            {remaining > 0 && (isLoggedIn || hasEmail) && (
+            {remaining > 0 && isLoggedIn && (
               <p className="mt-1 text-sm text-gray-600">{t.remaining(remaining)}</p>
             )}
           </>
@@ -382,32 +381,7 @@ export default function DemoWidget() {
         )}
       </div>
 
-      {showEmailModal && (
-        <Modal onClose={() => setShowEmailModal(false)}>
-          <h3 className="text-xl font-semibold text-gray-900">{t.emailModalTitle}</h3>
-          <p className="mt-2 text-sm text-gray-600">{t.emailModalSubtext}</p>
-          <form onSubmit={(e) => void handleEmailContinue(e)} className="mt-6">
-            <input
-              type="email"
-              required
-              placeholder={t.emailPlaceholder}
-              value={emailInput}
-              onChange={(e) => setEmailInput(e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400"
-            />
-            <button
-              type="submit"
-              disabled={emailSubmitting || loading}
-              className="mt-4 w-full rounded-md bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-60"
-            >
-              {emailSubmitting || loading ? t.pleaseWait : t.continueGenerating}
-            </button>
-            <p className="mt-3 text-center text-xs text-gray-500">{t.upgradeNote}</p>
-          </form>
-        </Modal>
-      )}
-
-      {user && session && <GenerationHistory items={history} />}
+{user && session && <GenerationHistory items={history} />}
       {user && session && <PriceListSection session={session} currency={currency} />}
 
       {showUpgradeModal && (

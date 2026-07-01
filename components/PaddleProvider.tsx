@@ -16,12 +16,14 @@ import { unlockPagePointerEvents } from "@/lib/paddle-client";
 
 const emptyConfig: PaddlePublicConfig = {
   clientToken: "",
+  priceIdStarter: "",
   priceId: "",
+  priceIdProfessional: "",
   environment: "sandbox",
 };
 
 type PaddleContextValue = {
-  openProCheckout: () => Promise<void>;
+  openProCheckout: (priceIdOverride?: string) => Promise<void>;
   checkoutLoading: boolean;
   config: PaddlePublicConfig;
   configLoaded: boolean;
@@ -48,7 +50,9 @@ function mergeConfig(
 ): PaddlePublicConfig {
   return {
     clientToken: fresh.clientToken || initial.clientToken,
+    priceIdStarter: fresh.priceIdStarter || initial.priceIdStarter,
     priceId: fresh.priceId || initial.priceId,
+    priceIdProfessional: fresh.priceIdProfessional || initial.priceIdProfessional,
     environment: fresh.environment || initial.environment,
   };
 }
@@ -143,7 +147,7 @@ export function PaddleProvider({ children, config: initialConfig }: PaddleProvid
     return promise;
   }, [config]);
 
-  const openProCheckout = useCallback(async () => {
+  const openProCheckout = useCallback(async (priceIdOverride?: string) => {
     unlockPagePointerEvents();
 
     let activeConfig = config;
@@ -177,7 +181,7 @@ export function PaddleProvider({ children, config: initialConfig }: PaddleProvid
       }
 
       instance.Checkout.open({
-        items: [{ priceId: activeConfig.priceId, quantity: 1 }],
+        items: [{ priceId: priceIdOverride ?? activeConfig.priceId, quantity: 1 }],
       });
     } finally {
       setCheckoutLoading(false);

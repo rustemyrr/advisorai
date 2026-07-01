@@ -14,8 +14,8 @@ export default function RefundPage() {
           7-day money-back guarantee
         </h2>
         <p className="mt-3 text-sm leading-relaxed">
-          We want you to be confident in AdvisorAI. If you subscribe to a paid
-          plan (including Pro at $29/month) and are not satisfied for any reason,
+          We want you to be confident in AdvisorAI. If you subscribe to any paid
+          plan and are not satisfied for any reason,
           contact us within <strong className="font-medium text-gray-900">7 days</strong> of
           your first paid charge and we will refund that payment in full. No
           questions asked.
