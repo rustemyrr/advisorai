@@ -23,14 +23,14 @@ export const translations = {
     liveDemoSubtitleLoggedIn: "Increase average ticket with every customer",
     generate: "Generate",
     usageLabel: (count: number, limit: number) =>
-      `${count} of ${limit} free generations used this month`,
+      `${count} of ${limit} generations used this month`,
     remaining: (n: number) => `${n} generation${n === 1 ? "" : "s"} remaining this month`,
     emailModalTitle: "🔓 Get 2 more free generations",
     emailModalSubtext: "No spam. Just your email to continue.",
     emailPlaceholder: "you@dealership.com",
     continueGenerating: "Continue generating →",
     upgradeNote: "Upgrade anytime for more access",
-    limitTitle: "You've reached the free limit",
+    limitTitle: "You've reached your monthly limit",
     limitSubtext:
       "Upgrade to Standard or Professional for more estimates, explanations, and upsell suggestions.",
     startTrial: "View plans →",
@@ -117,13 +117,11 @@ export const translations = {
     ],
 
     // CTA Section
-    ctaHeadline: "Try AdvisorAI free today.",
+    ctaHeadline: "Start writing better estimates today.",
     ctaSubtext:
       "Join service advisors in UAE, UK, and US who write better estimates in less time.",
-    ctaEmailPlaceholder: "you@dealership.com",
-    ctaButton: "Start free",
-    ctaThanks: "Thanks!",
-    ctaNote: "Free to start · No credit card required",
+    ctaButton: "See plans",
+    ctaNote: "From $4/month · Cancel anytime",
 
     // Footer
     footerTagline: "Built by an ex-BMW Director · © 2026",
@@ -193,7 +191,7 @@ export const translations = {
     liveDemoSubtitleLoggedIn: "Увеличьте средний чек с каждого клиента",
     generate: "Создать",
     usageLabel: (count: number, limit: number) =>
-      `Использовано ${count} из ${limit} бесплатных генераций в этом месяце`,
+      `Использовано ${count} из ${limit} генераций в этом месяце`,
     remaining: (n: number) => `Осталось ${n} генераци${n === 1 ? "я" : n < 5 ? "и" : "й"} в этом месяце`,
     emailModalTitle: "🔓 Получите ещё 2 бесплатные генерации",
     emailModalSubtext: "Без спама. Просто укажите email, чтобы продолжить.",
@@ -287,13 +285,11 @@ export const translations = {
     ],
 
     // CTA Section
-    ctaHeadline: "Попробуйте AdvisorAI бесплатно сегодня.",
+    ctaHeadline: "Начните составлять сметы лучше уже сегодня.",
     ctaSubtext:
       "Присоединяйтесь к сервисным консультантам из ОАЭ, Великобритании и США, которые составляют сметы быстрее.",
-    ctaEmailPlaceholder: "вы@дилер.кз",
-    ctaButton: "Начать бесплатно",
-    ctaThanks: "Спасибо!",
-    ctaNote: "Бесплатный старт · Карта не нужна",
+    ctaButton: "Смотреть планы",
+    ctaNote: "От $4 в месяц · Отмена в любое время",
 
     // Footer
     footerTagline: "Создано в Казахстане · © 2026",
