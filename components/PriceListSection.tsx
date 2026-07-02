@@ -32,12 +32,19 @@ async function parseFile(file: File): Promise<PricelistItem[]> {
   }
 
   // Excel
-  const { read, utils } = await import("xlsx");
-  const buffer = await file.arrayBuffer();
-  const wb = read(buffer);
-  const ws = wb.Sheets[wb.SheetNames[0]];
-  const rows = utils.sheet_to_json<Record<string, unknown>>(ws, { defval: "" });
-  const items = normalizeRows(rows as Record<string, string>[]);
+  const { readSheet } = await import("read-excel-file/browser");
+  const data = await readSheet(file);
+  if (data.length === 0) throw new Error("parse_error");
+  const [headerRow, ...bodyRows] = data;
+  const headers = headerRow.map((h) => String(h ?? "").trim());
+  const rows: Record<string, string>[] = bodyRows.map((row) => {
+    const obj: Record<string, string> = {};
+    headers.forEach((h, i) => {
+      obj[h] = row[i] != null ? String(row[i]) : "";
+    });
+    return obj;
+  });
+  const items = normalizeRows(rows);
   if (items === null) throw new Error("parse_error");
   return items;
 }
