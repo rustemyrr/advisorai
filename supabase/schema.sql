@@ -9,11 +9,13 @@ create table if not exists public.usage (
   constraint usage_user_date_unique unique (user_id, date)
 );
 
--- Per-user plan (free | pro). Row is created on first sign-up.
+-- Per-user plan. Row is created on first sign-up.
 create table if not exists public.profiles (
-  id         uuid    references auth.users(id) on delete cascade primary key,
-  plan       text    not null default 'free' check (plan in ('free', 'pro')),
-  created_at timestamptz default now()
+  id                     uuid    references auth.users(id) on delete cascade primary key,
+  plan                   text    not null default 'starter' check (plan in ('starter', 'standard', 'professional')),
+  paddle_subscription_id text,
+  paddle_customer_id     text,
+  created_at             timestamptz default now()
 );
 
 -- RLS: users can only read/write their own rows

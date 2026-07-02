@@ -23,6 +23,5 @@ export async function GET(request: Request) {
   }
 
   const plan = (data as { plan: string } | null)?.plan ?? "starter";
-  console.log(`[/api/plan] user=${user.id} plan=${plan}`);
   return NextResponse.json({ plan });
 }

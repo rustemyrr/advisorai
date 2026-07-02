@@ -4,18 +4,14 @@ export { FREE_GENERATION_LIMIT };
 
 export type LeadRecord = {
   ip: string;
-  email: string;
   count: number;
   date: string;
-  createdAt: string;
 };
 
 export type UsageCheckResult = {
   allowed: boolean;
-  requiresEmail: boolean;
   count: number;
   remaining: number;
-  email: string | null;
 };
 
 const store = new Map<string, LeadRecord>();
@@ -30,25 +26,15 @@ export async function getLeadForIp(ip: string): Promise<LeadRecord> {
   const key = `${ip}:${today}`;
   const existing = store.get(key);
   if (existing) return existing;
-  return { ip, email: "", count: 0, date: today, createdAt: new Date().toISOString() };
+  return { ip, count: 0, date: today };
 }
 
-async function upsertLead(record: LeadRecord) {
-  store.set(`${record.ip}:${record.date}`, record);
-}
-
-export function checkUsage(record: LeadRecord): UsageCheckResult {
+function checkUsage(record: LeadRecord): UsageCheckResult {
   const count = record.count;
-  const hasEmail = Boolean(record.email);
-  const limitReached = count >= FREE_GENERATION_LIMIT;
-  const requiresEmail = count >= 1 && count < FREE_GENERATION_LIMIT && !hasEmail;
-  const allowed = !limitReached && !requiresEmail;
   return {
-    allowed,
-    requiresEmail,
+    allowed: count < FREE_GENERATION_LIMIT,
     count,
     remaining: Math.max(0, FREE_GENERATION_LIMIT - count),
-    email: hasEmail ? record.email : null,
   };
 }
 
@@ -57,24 +43,9 @@ export async function checkUsageForIp(ip: string): Promise<UsageCheckResult> {
   return checkUsage(record);
 }
 
-export async function saveEmailForIp(ip: string, email: string): Promise<LeadRecord> {
+export async function incrementUsageForIp(ip: string): Promise<UsageCheckResult> {
   const current = await getLeadForIp(ip);
-  const updated: LeadRecord = {
-    ...current,
-    email: email.trim().toLowerCase(),
-    date: getTodayDateString(),
-  };
-  await upsertLead(updated);
-  return updated;
-}
-
-export async function incrementUsageForIp(ip: string): Promise<LeadRecord> {
-  const current = await getLeadForIp(ip);
-  const updated: LeadRecord = {
-    ...current,
-    count: current.count + 1,
-    date: getTodayDateString(),
-  };
-  await upsertLead(updated);
-  return updated;
+  const updated: LeadRecord = { ...current, count: current.count + 1 };
+  store.set(`${updated.ip}:${updated.date}`, updated);
+  return checkUsage(updated);
 }

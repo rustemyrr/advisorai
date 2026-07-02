@@ -45,7 +45,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json() as { plan: string };
-      console.log("[fetchPlan] response:", data);
       const validPlans: Plan[] = ["starter", "standard", "professional"];
       setPlan(validPlans.includes(data.plan as Plan) ? (data.plan as Plan) : "starter");
     } catch (err) {

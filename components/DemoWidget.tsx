@@ -10,7 +10,6 @@ import GenerationHistory from "@/components/GenerationHistory";
 import PriceListSection from "@/components/PriceListSection";
 import type { HistoryRow } from "@/app/api/history/route";
 
-const STORAGE_KEY = "advisorai_usage";
 const CURRENCY_KEY = "advisorai_currency";
 
 const CURRENCIES = [
@@ -21,54 +20,14 @@ const CURRENCIES = [
   { value: "GBP", label: "GBP (£)" },
 ];
 
-type StoredUsage = { count: number; date: string; email: string | null };
-
 type UsageCheck = {
   allowed: boolean;
-  requiresEmail: boolean;
   count: number;
   remaining: number;
-  email: string | null;
   isPro?: boolean;
 };
 
 type GenerateResult = { estimate: string; explanation: string; upsell: string };
-
-// ─── localStorage helpers (anonymous users) ──────────────────────────────────
-
-function getTodayString(): string {
-  const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-}
-
-function readLocalUsage(): StoredUsage {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { count: 0, date: getTodayString(), email: null };
-    const p = JSON.parse(raw) as StoredUsage;
-    return p.date !== getTodayString()
-      ? { count: 0, date: getTodayString(), email: p.email }
-      : p;
-  } catch {
-    return { count: 0, date: getTodayString(), email: null };
-  }
-}
-
-function writeLocalUsage(u: StoredUsage) {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(u)); } catch { /* ignore */ }
-}
-
-function localToCheck(s: StoredUsage): UsageCheck {
-  const limitReached = s.count >= FREE_GENERATION_LIMIT;
-  const requiresEmail = s.count >= 1 && s.count < FREE_GENERATION_LIMIT && !s.email;
-  return {
-    allowed: !limitReached && !requiresEmail,
-    requiresEmail,
-    count: s.count,
-    remaining: Math.max(0, FREE_GENERATION_LIMIT - s.count),
-    email: s.email,
-  };
-}
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
@@ -76,8 +35,6 @@ export default function DemoWidget() {
   const { lang, t } = useLanguage();
   const { user, session, plan, openAuthModal } = useAuth();
   const isPro = plan === "standard" || plan === "professional";
-
-  console.log("[DemoWidget] user:", user);
 
   const enDefault = "BMW 520d, 180k miles. Front brake discs + pads. Oil seal leaking on crank.";
   const ruDefault = "BMW 520d, 180 тыс. км. Передние тормозные диски + колодки. Течь сальника коленвала.";
@@ -100,10 +57,7 @@ export default function DemoWidget() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<GenerateResult | null>(null);
   const [usage, setUsage] = useState<UsageCheck | null>(null);
-  const [showEmailModal, setShowEmailModal] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
-  const [emailInput, setEmailInput] = useState("");
-  const [emailSubmitting, setEmailSubmitting] = useState(false);
   const [history, setHistory] = useState<HistoryRow[]>([]);
 
   // When user logs in, clear the pre-filled example so the instructional placeholder shows
@@ -148,44 +102,25 @@ export default function DemoWidget() {
     const data = await res.json() as { count: number; remaining: number; allowed: boolean; isPro: boolean };
     const check: UsageCheck = {
       allowed: data.allowed,
-      requiresEmail: false,
       count: data.count,
       remaining: data.remaining,
-      email: user?.email ?? null,
       isPro: data.isPro,
     };
     setUsage(check);
     return check;
-  }, [user, supabaseHeaders]);
-
-  const incrementSupabaseUsage = useCallback(async (): Promise<UsageCheck> => {
-    const res = await fetch("/api/usage/supabase", {
-      method: "POST",
-      headers: supabaseHeaders(),
-      body: JSON.stringify({ action: "increment" }),
-    });
-    if (!res.ok) throw new Error("Failed to track usage");
-    const data = await res.json() as { count: number; remaining: number; allowed: boolean; isPro: boolean };
-    const check: UsageCheck = {
-      allowed: data.allowed,
-      requiresEmail: false,
-      count: data.count,
-      remaining: data.remaining,
-      email: user?.email ?? null,
-      isPro: data.isPro,
-    };
-    setUsage(check);
-    return check;
-  }, [user, supabaseHeaders]);
+  }, [supabaseHeaders]);
 
   // ─── Unified refresh (picks mode based on auth state) ──────────────────
+  // Anonymous visitors must sign in before generating (see handleGenerate),
+  // so quota only needs to be resolved for authenticated users here. The
+  // /api/generate route still enforces a per-IP cap server-side as a
+  // backstop against direct, unauthenticated API calls.
 
   const refreshUsage = useCallback(async (): Promise<UsageCheck> => {
     if (user && session) {
       return fetchSupabaseUsage();
     }
-    const stored = readLocalUsage();
-    const check = localToCheck(stored);
+    const check: UsageCheck = { allowed: false, count: 0, remaining: FREE_GENERATION_LIMIT };
     setUsage(check);
     return check;
   }, [user, session, fetchSupabaseUsage]);
@@ -208,26 +143,6 @@ export default function DemoWidget() {
     void fetchHistory();
   }, [fetchHistory]);
 
-  // ─── Local increment (anonymous) ───────────────────────────────────────
-
-  function incrementLocalUsage(): UsageCheck {
-    const stored = readLocalUsage();
-    const updated: StoredUsage = { ...stored, count: stored.count + 1 };
-    writeLocalUsage(updated);
-    const check = localToCheck(updated);
-    setUsage(check);
-    return check;
-  }
-
-  function saveEmailLocally(email: string): UsageCheck {
-    const stored = readLocalUsage();
-    const updated: StoredUsage = { ...stored, email: email.trim().toLowerCase() };
-    writeLocalUsage(updated);
-    const check = localToCheck(updated);
-    setUsage(check);
-    return check;
-  }
-
   // ─── Generation ────────────────────────────────────────────────────────
 
   async function runGenerate() {
@@ -243,14 +158,20 @@ export default function DemoWidget() {
         body: JSON.stringify({ jobDescription, language: lang, currency: CURRENCIES.find(c => c.value === currency)?.label ?? currency }),
       });
       const data = await res.json();
-      if (!res.ok || data.error) throw new Error(data.error ?? "Something went wrong");
+      if (!res.ok || data.error) {
+        if (data.code === "USAGE_LIMIT") {
+          setShowUpgradeModal(true);
+          return;
+        }
+        throw new Error(data.error ?? "Something went wrong");
+      }
       const generationResult: GenerateResult = { estimate: data.estimate, explanation: data.explanation, upsell: data.upsell };
       setResult(generationResult);
 
       if (user && session) {
         const selectedCurrencyLabel = CURRENCIES.find(c => c.value === currency)?.label ?? currency;
         await Promise.all([
-          isPro ? Promise.resolve() : incrementSupabaseUsage(),
+          isPro ? Promise.resolve() : fetchSupabaseUsage(),
           fetch("/api/history", {
             method: "POST",
             headers: supabaseHeaders(),
@@ -263,8 +184,6 @@ export default function DemoWidget() {
             }),
           }).then(() => fetchHistory()),
         ]);
-      } else {
-        incrementLocalUsage();
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to generate");
@@ -282,7 +201,8 @@ export default function DemoWidget() {
     try {
       status = await refreshUsage();
     } catch {
-      status = localToCheck(readLocalUsage());
+      // Fail open on the pre-flight check — /api/generate enforces the real limit server-side.
+      status = { allowed: true, count: 0, remaining: FREE_GENERATION_LIMIT };
     }
 
     if (!status.allowed) {
@@ -292,26 +212,8 @@ export default function DemoWidget() {
     await runGenerate();
   }
 
-  async function handleEmailContinue(e: React.FormEvent) {
-    e.preventDefault();
-    const email = emailInput.trim();
-    if (!email) { setError(t.pleaseEnterEmail); return; }
-    setEmailSubmitting(true);
-    setError(null);
-    try {
-      saveEmailLocally(email);
-      setShowEmailModal(false);
-      await runGenerate();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
-    } finally {
-      setEmailSubmitting(false);
-    }
-  }
-
   const usageCount = usage?.count ?? 0;
   const remaining = usage?.remaining ?? FREE_GENERATION_LIMIT;
-  const hasEmail = Boolean(usage?.email);
   const isLoggedIn = Boolean(user && session);
 
   return (

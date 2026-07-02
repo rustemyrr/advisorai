@@ -5,9 +5,8 @@ export const paddleConfig = {
     process.env.NEXT_PUBLIC_PADDLE_SANDBOX !== "false" &&
     process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT !== "production",
   apiKey: process.env.PADDLE_API_KEY ?? "",
-  /** Notification destination secret (Paddle dashboard). Falls back to API key if unset. */
-  webhookSecret:
-    process.env.PADDLE_WEBHOOK_SECRET ?? process.env.PADDLE_API_KEY ?? "",
+  /** Notification destination secret (Paddle dashboard > Developer tools > Notifications). */
+  webhookSecret: process.env.PADDLE_WEBHOOK_SECRET ?? "",
 };
 
 export function isPaddleCheckoutConfigured() {
@@ -15,5 +14,5 @@ export function isPaddleCheckoutConfigured() {
 }
 
 export function isPaddleWebhookConfigured() {
-  return Boolean(paddleConfig.apiKey || paddleConfig.webhookSecret);
+  return Boolean(paddleConfig.webhookSecret);
 }

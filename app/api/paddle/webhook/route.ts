@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
 import { verifyPaddleSignature } from "@/lib/paddle-webhook";
 import { isPaddleWebhookConfigured, paddleConfig } from "@/lib/paddle-config";
-import { upsertSubscription } from "@/lib/subscription-store";
+import { planForPriceId } from "@/lib/paddle-plans";
+import { createAdminClient } from "@/lib/supabase-server";
 
 type PaddleSubscriptionPayload = {
   id: string;
   customer_id: string;
   status: string;
+  custom_data?: { user_id?: string } | null;
   items?: Array<{
     price?: { id?: string };
   }>;
@@ -18,10 +20,45 @@ type PaddleWebhookEvent = {
   data: PaddleSubscriptionPayload;
 };
 
+async function setProfilePlan(
+  userId: string,
+  plan: string,
+  paddleSubscriptionId: string,
+  paddleCustomerId: string
+) {
+  const db = createAdminClient();
+  const { error } = await db
+    .from("profiles")
+    .upsert(
+      {
+        id: userId,
+        plan,
+        paddle_subscription_id: paddleSubscriptionId,
+        paddle_customer_id: paddleCustomerId,
+      },
+      { onConflict: "id" }
+    );
+  if (error) {
+    console.error("[paddle] failed to update profile plan:", error.message);
+    throw error;
+  }
+}
+
+/** Subscriptions created without custom_data (e.g. old checkouts) fall back to a lookup by subscription id. */
+async function findUserIdBySubscription(paddleSubscriptionId: string): Promise<string | null> {
+  const db = createAdminClient();
+  const { data } = await db
+    .from("profiles")
+    .select("id")
+    .eq("paddle_subscription_id", paddleSubscriptionId)
+    .single();
+  return (data as { id: string } | null)?.id ?? null;
+}
+
 export async function POST(request: Request) {
   if (!isPaddleWebhookConfigured()) {
     return NextResponse.json(
-      { error: "Paddle API key not configured" },
+      { error: "Paddle webhook secret not configured" },
       { status: 500 }
     );
   }
@@ -56,22 +93,41 @@ export async function POST(request: Request) {
   try {
     switch (event.event_type) {
       case "subscription.activated":
-        await upsertSubscription({
-          paddleSubscriptionId: subscription.id,
-          customerId: subscription.customer_id,
-          status: "active",
-          priceId,
-        });
+      case "subscription.updated": {
+        const plan = planForPriceId(priceId);
+        if (!plan) {
+          console.error("[paddle] unknown price_id in webhook:", priceId);
+          break;
+        }
+        const userId =
+          subscription.custom_data?.user_id ??
+          (await findUserIdBySubscription(subscription.id));
+        if (!userId) {
+          console.error(
+            "[paddle] no user_id (custom_data or lookup) for subscription:",
+            subscription.id
+          );
+          break;
+        }
+        const targetPlan = subscription.status === "canceled" ? "starter" : plan;
+        await setProfilePlan(userId, targetPlan, subscription.id, subscription.customer_id);
         break;
+      }
 
-      case "subscription.canceled":
-        await upsertSubscription({
-          paddleSubscriptionId: subscription.id,
-          customerId: subscription.customer_id,
-          status: "canceled",
-          priceId,
-        });
+      case "subscription.canceled": {
+        const userId =
+          subscription.custom_data?.user_id ??
+          (await findUserIdBySubscription(subscription.id));
+        if (!userId) {
+          console.error(
+            "[paddle] no user_id (custom_data or lookup) for canceled subscription:",
+            subscription.id
+          );
+          break;
+        }
+        await setProfilePlan(userId, "starter", subscription.id, subscription.customer_id);
         break;
+      }
 
       default:
         break;

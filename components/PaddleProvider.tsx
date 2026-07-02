@@ -13,6 +13,7 @@ import { initializePaddle, type Paddle } from "@paddle/paddle-js";
 import type { PaddlePublicConfig } from "@/lib/paddle-public-config";
 import { isPaddleCheckoutConfigured } from "@/lib/paddle-checkout";
 import { unlockPagePointerEvents } from "@/lib/paddle-client";
+import { useAuth } from "@/lib/auth-context";
 
 const emptyConfig: PaddlePublicConfig = {
   clientToken: "",
@@ -58,6 +59,7 @@ function mergeConfig(
 }
 
 export function PaddleProvider({ children, config: initialConfig }: PaddleProviderProps) {
+  const { user, openAuthModal } = useAuth();
   const [config, setConfig] = useState(initialConfig);
   const [configLoaded, setConfigLoaded] = useState(
     isPaddleCheckoutConfigured(initialConfig)
@@ -150,6 +152,11 @@ export function PaddleProvider({ children, config: initialConfig }: PaddleProvid
   const openProCheckout = useCallback(async (priceIdOverride?: string) => {
     unlockPagePointerEvents();
 
+    if (!user) {
+      openAuthModal();
+      return;
+    }
+
     let activeConfig = config;
 
     if (!isPaddleCheckoutConfigured(activeConfig)) {
@@ -182,12 +189,14 @@ export function PaddleProvider({ children, config: initialConfig }: PaddleProvid
 
       instance.Checkout.open({
         items: [{ priceId: priceIdOverride ?? activeConfig.priceId, quantity: 1 }],
+        customData: { user_id: user.id },
+        customer: user.email ? { email: user.email } : undefined,
       });
     } finally {
       setCheckoutLoading(false);
       unlockPagePointerEvents();
     }
-  }, [config, ensurePaddle]);
+  }, [config, ensurePaddle, user, openAuthModal]);
 
   const value = useMemo(
     () => ({ openProCheckout, checkoutLoading, config, configLoaded }),

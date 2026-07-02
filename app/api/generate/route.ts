@@ -1,6 +1,15 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
 import { getUserFromToken, createAdminClient } from "@/lib/supabase-server";
+import { getClientIp } from "@/lib/get-client-ip";
+import { checkUsageForIp, incrementUsageForIp } from "@/lib/leads-store";
+import {
+  getMonthString,
+  getOrCreateProfile,
+  getOrCreateUsage,
+  incrementUsage,
+  limitForPlan,
+} from "@/lib/usage";
 import type { PricelistItem } from "@/app/api/pricelist/route";
 
 function buildPricelistSection(items: PricelistItem[], laborRate: number, currency: string): string {
@@ -37,15 +46,12 @@ ${currencyInstruction}${pricelistSection}
 Return only valid JSON, no markdown, no extra text.`;
 }
 
-async function fetchUserPricelist(token: string | null) {
-  if (!token) return null;
-  const user = await getUserFromToken(token);
-  if (!user) return null;
+async function fetchPricelistForUser(userId: string) {
   const db = createAdminClient();
   const { data } = await db
     .from("pricelist")
     .select("items, labor_rate")
-    .eq("user_id", user.id)
+    .eq("user_id", userId)
     .single();
   return data as { items: PricelistItem[]; labor_rate: number } | null;
 }
@@ -82,9 +88,44 @@ export async function POST(request: Request) {
       );
     }
 
+    const user = token ? await getUserFromToken(token) : null;
+
+    let pricelist: { items: PricelistItem[]; labor_rate: number } | null = null;
+    let recordUsage: () => Promise<void>;
+
+    if (user) {
+      const month = getMonthString();
+      const [usage, profile] = await Promise.all([
+        getOrCreateUsage(user.id, month),
+        getOrCreateProfile(user.id),
+      ]);
+      const limit = limitForPlan(profile.plan);
+      if (usage.count >= limit) {
+        return NextResponse.json(
+          { error: "Monthly generation limit reached for your plan", code: "USAGE_LIMIT" },
+          { status: 402 }
+        );
+      }
+      pricelist = await fetchPricelistForUser(user.id);
+      recordUsage = async () => {
+        if (limit !== Infinity) await incrementUsage(user.id, month, usage.count + 1);
+      };
+    } else {
+      const ip = getClientIp(request);
+      const status = await checkUsageForIp(ip);
+      if (!status.allowed) {
+        return NextResponse.json(
+          { error: "Free generation limit reached", code: "USAGE_LIMIT" },
+          { status: 402 }
+        );
+      }
+      recordUsage = async () => {
+        await incrementUsageForIp(ip);
+      };
+    }
+
     const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-    const pricelist = await fetchUserPricelist(token);
     const systemPrompt = buildSystemPrompt(
       language ?? "en",
       currency ?? (language === "ru" ? "KZT (₸)" : "USD ($)"),
@@ -107,6 +148,9 @@ export async function POST(request: Request) {
     }
 
     const parsed = parseJsonResponse(textBlock.text);
+
+    await recordUsage();
+
     return NextResponse.json(parsed);
   } catch (err) {
     console.error(err);
