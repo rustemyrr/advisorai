@@ -69,6 +69,10 @@ function parseJsonResponse(text: string) {
   };
 }
 
+// A repair job description is a couple of sentences. Anything longer is a
+// mistake or an attempt to run up the Anthropic bill on someone else's key.
+const MAX_JOB_DESCRIPTION_LENGTH = 2000;
+
 export async function POST(request: Request) {
   try {
     const token = request.headers.get("authorization")?.replace("Bearer ", "") ?? null;
@@ -81,6 +85,15 @@ export async function POST(request: Request) {
     if (!jobDescription || typeof jobDescription !== "string") {
       return NextResponse.json(
         { error: "jobDescription is required" },
+        { status: 400 }
+      );
+    }
+
+    if (jobDescription.length > MAX_JOB_DESCRIPTION_LENGTH) {
+      return NextResponse.json(
+        {
+          error: `jobDescription must be at most ${MAX_JOB_DESCRIPTION_LENGTH} characters`,
+        },
         { status: 400 }
       );
     }

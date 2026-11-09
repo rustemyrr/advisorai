@@ -3,6 +3,31 @@ import { getUserFromToken, createAdminClient } from "@/lib/supabase-server";
 
 const PRICELIST_PLANS = ["standard", "professional"];
 
+// Every item is rendered into the system prompt on each generation, so the
+// list has to stay small enough to be worth sending and cheap enough to send.
+const MAX_PRICELIST_ITEMS = 500;
+const MAX_SERVICE_NAME_LENGTH = 200;
+
+function normalizeItems(input: unknown): PricelistItem[] | null {
+  if (!Array.isArray(input)) return null;
+  if (input.length > MAX_PRICELIST_ITEMS) return null;
+  const items: PricelistItem[] = [];
+  for (const raw of input) {
+    if (typeof raw !== "object" || raw === null) return null;
+    const { service, price, hours } = raw as Record<string, unknown>;
+    if (typeof service !== "string") return null;
+    const priceNum = Number(price);
+    const hoursNum = Number(hours);
+    if (!Number.isFinite(priceNum) || !Number.isFinite(hoursNum)) return null;
+    items.push({
+      service: service.slice(0, MAX_SERVICE_NAME_LENGTH),
+      price: priceNum,
+      hours: hoursNum,
+    });
+  }
+  return items;
+}
+
 export const dynamic = "force-dynamic";
 
 export type PricelistItem = { service: string; price: number; hours: number };
@@ -61,16 +86,22 @@ export async function POST(request: Request) {
     items?: PricelistItem[];
   };
 
-  if (!Array.isArray(items)) {
-    return NextResponse.json({ error: "items must be an array" }, { status: 400 });
+  const normalizedItems = normalizeItems(items);
+  if (!normalizedItems) {
+    return NextResponse.json(
+      {
+        error: `items must be an array of at most ${MAX_PRICELIST_ITEMS} rows of { service, price, hours }`,
+      },
+      { status: 400 }
+    );
   }
 
   const { error } = await db.from("pricelist").upsert(
     {
       user_id: user.id,
-      filename: filename ?? "",
-      labor_rate: labor_rate ?? 0,
-      items,
+      filename: (filename ?? "").slice(0, MAX_SERVICE_NAME_LENGTH),
+      labor_rate: Number.isFinite(Number(labor_rate)) ? Number(labor_rate) : 0,
+      items: normalizedItems,
       updated_at: new Date().toISOString(),
     },
     { onConflict: "user_id" }
