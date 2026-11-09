@@ -1,5 +1,9 @@
 import crypto from "crypto";
 
+/** Paddle signs the timestamp together with the body; without a freshness
+ *  window a captured request stays replayable for as long as the secret lives. */
+const MAX_SIGNATURE_AGE_SECONDS = 5 * 60;
+
 /**
  * Verifies Paddle Billing webhook signatures.
  * @see https://developer.paddle.com/webhooks/signature-verification
@@ -7,7 +11,8 @@ import crypto from "crypto";
 export function verifyPaddleSignature(
   rawBody: string,
   signatureHeader: string,
-  secret: string
+  secret: string,
+  nowSeconds: number = Math.floor(Date.now() / 1000)
 ): boolean {
   const parts = signatureHeader.split(";").reduce<Record<string, string>>(
     (acc, part) => {
@@ -22,6 +27,14 @@ export function verifyPaddleSignature(
   const receivedHash = parts.h1;
 
   if (!timestamp || !receivedHash) {
+    return false;
+  }
+
+  const timestampSeconds = Number(timestamp);
+  if (
+    !Number.isFinite(timestampSeconds) ||
+    Math.abs(nowSeconds - timestampSeconds) > MAX_SIGNATURE_AGE_SECONDS
+  ) {
     return false;
   }
 
