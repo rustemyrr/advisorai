@@ -50,7 +50,7 @@ export default function Pricing() {
       cta: t.ctaSubscribe,
       ctaStyle: "outline" as const,
       href: undefined,
-      priceId: config.priceIdProfessional || config.priceId,
+      priceId: config.priceIdProfessional,
     },
   ];
 
