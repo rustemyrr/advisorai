@@ -1,29 +1,46 @@
--- Run this once in the Supabase dashboard → SQL Editor.
+-- Applied to the live project (kzienmsdjtewcjihejhd) on 2026-11-10.
 --
 -- Two problems, one migration.
 --
--- 1. Write policies that nothing uses but anyone can reach.
+-- 1. Policies that let a signed-in user write their own rows.
 --    The browser client only ever calls supabase.auth.*; every table read and
 --    write in this app goes through an API route using the service-role key,
---    which bypasses RLS entirely. The per-user insert/update policies were
---    therefore dead weight for us — but fully reachable by anyone holding the
---    publishable key and their own session token, i.e. every signed-up user.
---    With them in place a user could PATCH profiles.plan to 'professional' or
---    reset usage.count to 0 and keep generating for free. Drop them; the
---    select policies stay, since reading one's own rows is harmless.
+--    which bypasses RLS entirely. The per-user policies were therefore dead
+--    weight for us -- but fully reachable by anyone holding the publishable
+--    key and their own session token, i.e. every signed-up user.
+--
+--    The live database had them as `for all` ("Users can manage own ..."),
+--    which covers UPDATE and INSERT as well as SELECT. With them in place a
+--    user could reset usage.count to 0 and keep generating for free, or write
+--    themselves a pricelist on a plan that does not include one -- which
+--    /api/generate then feeds into the prompt. Replaced with select-only
+--    policies of the same shape; reading one's own rows is harmless.
+--
+--    public.history is a legacy table no code touches any more; it is locked
+--    down here for the same reason rather than left writable.
 --
 -- 2. The anonymous daily counter had no storage at all.
 --    It lived in a Map in process memory, so every serverless instance had its
---    own and lost it between invocations — in production that is not a cap,
+--    own and lost it between invocations -- in production that is not a cap,
 --    it is unlimited generation billed to our Anthropic key.
 
-drop policy if exists "own usage insert"     on public.usage;
-drop policy if exists "own usage update"     on public.usage;
-drop policy if exists "own profile insert"   on public.profiles;
-drop policy if exists "own profile update"   on public.profiles;
-drop policy if exists "own history insert"   on public.generation_history;
-drop policy if exists "own pricelist insert" on public.pricelist;
-drop policy if exists "own pricelist update" on public.pricelist;
+drop policy if exists "Users can manage own usage" on public.usage;
+create policy "Users can read own usage"
+  on public.usage for select using (auth.uid() = user_id);
+
+drop policy if exists "Users can manage own pricelist" on public.pricelist;
+create policy "Users can read own pricelist"
+  on public.pricelist for select using (auth.uid() = user_id);
+
+drop policy if exists "Users can manage own generation_history" on public.generation_history;
+create policy "Users can read own generation_history"
+  on public.generation_history for select using (auth.uid() = user_id);
+
+drop policy if exists "Users can manage own history" on public.history;
+create policy "Users can read own history"
+  on public.history for select using (auth.uid() = user_id);
+
+-- public.profiles was already select-only ("Users can read own profile").
 
 -- Daily free-generation counter for visitors who are not signed in.
 create table if not exists public.anon_usage (
