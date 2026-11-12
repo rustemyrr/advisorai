@@ -127,6 +127,51 @@ export const translations = {
     ctaButton: "See plans",
     ctaNote: "From $4/month · Cancel anytime",
 
+    // Agents for pros
+    navAgents: "Agents for pros",
+    navAgentsShort: "Agents",
+    agentsTag: "Agents for pros",
+    agentsHeadline: "AI agents that take the routine off a small team.",
+    agentsSubtext:
+      "Beyond estimates, we build narrow AI agents for workshops and small businesses: each one takes over a single recurring job and does it every day without being reminded.",
+    agentDirectorTitle: "AI assistant for the director",
+    agentDirectorText:
+      "Pulls revenue, costs and workload into one daily summary and sends it in the morning — no exports, no spreadsheets stitched together by hand. Ask it about the numbers in plain language instead of building a report.",
+    agentDirectorBullets: [
+      "Daily and monthly summary: revenue, average ticket, margin, payroll",
+      "Questions about the numbers in plain language — no report forms, no formulas",
+      "Flags what moved out of line and where to look first",
+    ],
+    agentSmmTitle: "AI SMM editor",
+    agentSmmText:
+      "Turns footage from the shop floor into ready-to-post content: cuts short clips, picks the usable takes, writes captions and hashtags for your audience. You film the job on a phone — the agent assembles the post.",
+    agentSmmBullets: [
+      "Reels and Shorts cut from ordinary phone video",
+      "Captions, hooks and hashtags written for an automotive audience",
+      "A week's content plan and a publishing queue",
+    ],
+    agentsHowTag: "How we start",
+    agentsHowText:
+      "We start with a call: we look at how the work is done today, pick the one job worth handing over first, and agree on what the agent has to deliver. Setup takes a few days, and you keep access to everything the agent produces.",
+    consultTitle: "Request a consultation",
+    consultSubtext:
+      "Leave your contact details and we will get in touch to discuss which agent fits your business.",
+    consultName: "Name",
+    consultNamePlaceholder: "How should we address you",
+    consultContact: "Phone or email",
+    consultContactPlaceholder: "+7 700 000 00 00 or you@company.com",
+    consultComment: "Comment",
+    consultCommentOptional: "optional",
+    consultCommentPlaceholder:
+      "Briefly: what you do and which job you would like to hand over",
+    consultSubmit: "Send request",
+    consultSending: "Sending…",
+    consultSuccessTitle: "Request sent",
+    consultSuccessText: "We will get in touch using the contact details you left.",
+    consultErrorRequired: "Please fill in your name and a contact.",
+    consultErrorGeneric:
+      "Could not send the request. Please try again or write to us directly.",
+
     // Footer
     footerTagline: "Built by an ex-BMW Director · © 2026",
     footerTerms: "Terms",
@@ -298,6 +343,51 @@ export const translations = {
       "Присоединяйтесь к сервисным консультантам из ОАЭ, Великобритании и США, которые составляют сметы быстрее.",
     ctaButton: "Смотреть планы",
     ctaNote: "От $4 в месяц · Отмена в любое время",
+
+    // Agents for pros
+    navAgents: "Агенты для специалистов",
+    navAgentsShort: "Агенты",
+    agentsTag: "Агенты для специалистов",
+    agentsHeadline: "ИИ-агенты, которые снимают рутину с небольшой команды.",
+    agentsSubtext:
+      "Кроме смет мы собираем узких ИИ-агентов для автосервисов и малого бизнеса: каждый берёт на себя одну повторяющуюся задачу и делает её каждый день, без напоминаний.",
+    agentDirectorTitle: "ИИ ассистент директора",
+    agentDirectorText:
+      "Сводит выручку, расходы и загрузку в один дневной отчёт и присылает его утром — без выгрузок и таблиц, собранных вручную. О цифрах можно спрашивать обычным языком, вместо того чтобы строить отчёт.",
+    agentDirectorBullets: [
+      "Дневная и месячная сводка: выручка, средний чек, маржа, ФОТ",
+      "Вопросы по цифрам обычным языком — без отчётных форм и формул",
+      "Замечает отклонения и подсказывает, куда смотреть в первую очередь",
+    ],
+    agentSmmTitle: "ИИ СММ-монтажёр",
+    agentSmmText:
+      "Превращает съёмку из цеха в готовый контент: нарезает короткие ролики, отбирает удачные дубли, пишет подписи и хештеги под вашу аудиторию. Вы снимаете работу на телефон — агент собирает из этого публикацию.",
+    agentSmmBullets: [
+      "Нарезка Reels и Shorts из обычного видео со смартфона",
+      "Подписи, заголовки и хештеги под автомобильную аудиторию",
+      "Контент-план на неделю и очередь публикаций",
+    ],
+    agentsHowTag: "С чего начинаем",
+    agentsHowText:
+      "Начинаем с созвона: смотрим, как работа устроена сейчас, выбираем одну задачу, которую стоит отдать первой, и договариваемся о результате. Настройка занимает несколько дней, доступ ко всему, что делает агент, остаётся у вас.",
+    consultTitle: "Заявка на консультацию",
+    consultSubtext:
+      "Оставьте контакты — свяжемся и обсудим, какой агент подойдёт вашему бизнесу.",
+    consultName: "Имя",
+    consultNamePlaceholder: "Как к вам обращаться",
+    consultContact: "Телефон или email",
+    consultContactPlaceholder: "+7 700 000 00 00 или you@company.com",
+    consultComment: "Комментарий",
+    consultCommentOptional: "необязательно",
+    consultCommentPlaceholder:
+      "Коротко: чем занимаетесь и какую задачу хотели бы отдать",
+    consultSubmit: "Отправить заявку",
+    consultSending: "Отправляем…",
+    consultSuccessTitle: "Заявка отправлена",
+    consultSuccessText: "Свяжемся с вами по оставленным контактам.",
+    consultErrorRequired: "Заполните имя и контакт.",
+    consultErrorGeneric:
+      "Не удалось отправить заявку. Попробуйте ещё раз или напишите нам напрямую.",
 
     // Footer
     footerTagline: "Создано в Казахстане · © 2026",
