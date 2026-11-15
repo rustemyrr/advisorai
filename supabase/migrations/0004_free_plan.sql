@@ -1,4 +1,7 @@
--- NOT applied to the live project yet. Rustem's call: it changes existing rows.
+-- Applied to the live project (kzienmsdjtewcjihejhd) on 2026-11-15 with
+-- Rustem's go-ahead. Three accounts on 'starter' without a subscription moved
+-- to 'free'; the one account set to 'professional' by hand was left alone,
+-- since the update only touches 'starter'.
 --
 -- Until 2026-11-15 every new account was created with plan = 'starter', which
 -- is the $4 tier (15 generations a month). So registration handed out the whole
