@@ -141,8 +141,8 @@ export const translations = {
     ctaNote: "From $4/month · Cancel anytime",
 
     // Agents for pros
-    navAgents: "Agents for pros",
-    navAgentsShort: "Agents",
+    navAdvisor: "For service advisors",
+    navAdvisorShort: "Advisors",
     agentsHeadline: "Agents for pros",
     agentsSubtitle: "The ones that make you more effective and make your life simpler",
     agentsSubtext:
@@ -166,6 +166,12 @@ export const translations = {
     agentsHowTag: "How we start",
     agentsHowText:
       "We start with a call: we look at how the work is done today, pick the one job worth handing over first, and agree on what the agent has to deliver. Setup takes a few days, and you keep access to everything the agent produces.",
+    secondProductTag: "Another product",
+    secondProductTitle: "AdvisorAI for service advisors",
+    secondProductText:
+      "A separate, self-serve product for workshops and dealerships. It turns a few words about a repair into a customer estimate on your own price list, an explanation in plain language, and an upsell worth mentioning while the car is on the lift. Signing up is free; the plans start at $4 a month.",
+    secondProductCta: "Open the product",
+
     consultTitle: "Request a consultation",
     consultSubtext:
       "Leave your contact details and we will get in touch to discuss which agent fits your business.",
@@ -369,8 +375,8 @@ export const translations = {
     ctaNote: "От $4 в месяц · Отмена в любое время",
 
     // Agents for pros
-    navAgents: "Агенты для профессионалов",
-    navAgentsShort: "Агенты",
+    navAdvisor: "Для автосервисов",
+    navAdvisorShort: "Автосервисам",
     agentsHeadline: "Агенты для профессионалов",
     agentsSubtitle: "Те, кто делает вас эффективнее и упрощает вашу жизнь",
     agentsSubtext:
@@ -394,6 +400,12 @@ export const translations = {
     agentsHowTag: "С чего начинаем",
     agentsHowText:
       "Начинаем с созвона: смотрим, как работа устроена сейчас, выбираем одну задачу, которую стоит отдать первой, и договариваемся о результате. Настройка занимает несколько дней, доступ ко всему, что делает агент, остаётся у вас.",
+    secondProductTag: "Ещё один продукт",
+    secondProductTitle: "AdvisorAI для сервисных консультантов",
+    secondProductText:
+      "Отдельный продукт для автосервисов и дилерских центров, работает сам по себе. Из пары фраз о ремонте он делает смету по вашему прайс-листу, объяснение простым языком для клиента и допродажу, о которой стоит сказать, пока машина на подъёмнике. Регистрация бесплатная, тарифы — от $4 в месяц.",
+    secondProductCta: "Открыть продукт",
+
     consultTitle: "Заявка на консультацию",
     consultSubtext:
       "Оставьте контакты — свяжемся и обсудим, какой агент подойдёт вашему бизнесу.",

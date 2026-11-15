@@ -9,4 +9,10 @@ export const siteUrl = (
 ).replace(/\/$/, "");
 
 /** Every page that should be in the sitemap, newest-first in importance. */
-export const sitemapPaths = ["/", "/agents", "/terms", "/privacy", "/refund"] as const;
+export const sitemapPaths = [
+  "/",
+  "/service-advisor",
+  "/terms",
+  "/privacy",
+  "/refund",
+] as const;

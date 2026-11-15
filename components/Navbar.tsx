@@ -1,6 +1,6 @@
 "use client";
 
-import { Car, LogOut } from "lucide-react";
+import { LogOut, Orbit } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLanguage } from "@/lib/language-context";
@@ -12,7 +12,8 @@ export default function Navbar() {
   const { lang, t, toggle } = useLanguage();
   const { user, loading, openAuthModal, signOut } = useAuth();
   const pathname = usePathname();
-  const onHome = pathname === "/";
+  // #pricing lives on the service-advisor page, not on the home page.
+  const onPricingPage = pathname === "/service-advisor";
 
   const shortEmail = user?.email
     ? user.email.length > 22
@@ -27,7 +28,7 @@ export default function Navbar() {
           href="/"
           className="flex shrink-0 items-center gap-2 font-semibold text-gray-900"
         >
-          <Car className="h-5 w-5" aria-hidden />
+          <Orbit className="h-5 w-5" aria-hidden />
           {/* The wordmark is the first thing to give up its space on the
               narrowest phones, where the nav now has one item more. */}
           <span className="hidden min-[420px]:inline">AdvisorAI</span>
@@ -37,28 +38,28 @@ export default function Navbar() {
               its own name and the two spans are decorative. Without this the
               link reads out as "AgentsAgents for pros". */}
           <Link
-            href="/agents"
-            aria-label={t.navAgents}
+            href="/service-advisor"
+            aria-label={t.navAdvisor}
             className="text-sm text-gray-600 hover:text-gray-900"
           >
             {/* The full label does not fit next to the other controls on a
                 phone, so narrow screens get the short form. */}
             <span className="sm:hidden" aria-hidden>
-              {t.navAgentsShort}
+              {t.navAdvisorShort}
             </span>
             <span className="hidden sm:inline" aria-hidden>
-              {t.navAgents}
+              {t.navAdvisor}
             </span>
           </Link>
           {/* #pricing lives on the landing page only, so the link has to be
               absolute everywhere else. On the landing page itself it stays a
               plain same-page anchor, exactly as before. */}
-          {onHome ? (
+          {onPricingPage ? (
             <a href="#pricing" className={pricingClass}>
               {t.pricing}
             </a>
           ) : (
-            <Link href="/#pricing" className={pricingClass}>
+            <Link href="/service-advisor#pricing" className={pricingClass}>
               {t.pricing}
             </Link>
           )}

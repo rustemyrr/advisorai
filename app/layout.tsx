@@ -9,9 +9,9 @@ import { siteUrl } from "@/lib/site";
 
 const inter = Inter({ subsets: ["latin"] });
 
-const title = "AdvisorAI — AI for automotive service advisors";
+const title = "AdvisorAI — AI agents for pros";
 const description =
-  "Turn repair notes into customer estimates, plain-language explanations, and upsell suggestions in seconds.";
+  "Each agent takes over one job that eats your day and does it on its own: an AI assistant for the director and an AI SMM editor. Plus a separate product for automotive service advisors.";
 
 export const metadata: Metadata = {
   // Needed for Open Graph and canonical URLs to come out absolute.

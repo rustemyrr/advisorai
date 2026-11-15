@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "AdvisorAI — AI for automotive service advisors";
+export const alt = "AdvisorAI — AI agents for pros";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -34,10 +34,10 @@ export default function OpengraphImage() {
             letterSpacing: "-0.02em",
           }}
         >
-          Estimates, explanations and upsells in 10 seconds.
+          Agents that take the work off your hands.
         </div>
         <div style={{ display: "flex", fontSize: 32, color: "#6b7280" }}>
-          AI for automotive service advisors · advisorai.help
+          AI agents for pros · advisorai.help
         </div>
       </div>
     ),

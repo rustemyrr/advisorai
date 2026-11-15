@@ -30,6 +30,11 @@ const nextConfig = {
   // Note there is deliberately no Permissions-Policy entry for `payment`:
   // the default is 'self', which is what lets Paddle's checkout iframe ask for
   // Apple Pay and Google Pay. Naming it wrongly would silently kill them.
+  // /agents was the agents page until 2026-11-15, when it became the home
+  // page. Links to it are already out in the world, so they keep working.
+  async redirects() {
+    return [{ source: "/agents", destination: "/", permanent: true }];
+  },
   async headers() {
     return [
       {
