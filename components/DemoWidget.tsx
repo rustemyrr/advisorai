@@ -35,7 +35,7 @@ type GenerateResult = { estimate: string; explanation: string; upsell: string };
 
 export default function DemoWidget() {
   const { lang, t } = useLanguage();
-  const { user, session, plan, openAuthModal } = useAuth();
+  const { user, session, plan, hasBilling, openAuthModal } = useAuth();
   const isPro = plan === "standard" || plan === "professional";
 
   const enDefault = "BMW 520d, 180k miles. Front brake discs + pads. Oil seal leaking on crank.";
@@ -59,6 +59,8 @@ export default function DemoWidget() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<GenerateResult | null>(null);
   const [usage, setUsage] = useState<UsageCheck | null>(null);
+  const [portalLoading, setPortalLoading] = useState(false);
+  const [portalError, setPortalError] = useState<string | null>(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [history, setHistory] = useState<HistoryRow[]>([]);
 
@@ -218,6 +220,27 @@ export default function DemoWidget() {
     await runGenerate();
   }
 
+  // Sends the subscriber to Paddle's own portal, where the subscription can be
+  // cancelled and the card changed. The link is single-use, so it is fetched
+  // on the click and followed straight away rather than rendered into the page.
+  async function openBillingPortal() {
+    if (portalLoading) return;
+    setPortalError(null);
+    setPortalLoading(true);
+    try {
+      const res = await fetch("/api/paddle/portal", {
+        method: "POST",
+        headers: supabaseHeaders(),
+      });
+      const data = (await res.json()) as { url?: string };
+      if (!res.ok || !data.url) throw new Error("portal unavailable");
+      window.location.href = data.url;
+    } catch {
+      setPortalError(t.manageBillingError);
+      setPortalLoading(false);
+    }
+  }
+
   const usageCount = usage?.count ?? 0;
   const remaining = usage?.remaining ?? FREE_GENERATION_LIMIT;
   const isLoggedIn = Boolean(user && session);
@@ -272,6 +295,25 @@ export default function DemoWidget() {
               <p className="mt-1 text-sm text-gray-600">{t.remaining(remaining)}</p>
             )}
           </>
+        )}
+
+        {isLoggedIn && hasBilling && (
+          <p className="mt-2">
+            <button
+              type="button"
+              onClick={() => void openBillingPortal()}
+              disabled={portalLoading}
+              className="text-sm text-gray-600 underline underline-offset-2 hover:text-gray-900 disabled:opacity-60"
+            >
+              {portalLoading ? t.manageBillingOpening : t.manageBilling}
+            </button>
+          </p>
+        )}
+
+        {portalError && (
+          <p role="alert" className="mt-1 text-sm text-red-600">
+            {portalError}
+          </p>
         )}
 
         {error && (

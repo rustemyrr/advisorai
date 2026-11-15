@@ -46,6 +46,11 @@ export const translations = {
     outputUpsell: "Upsell suggestion",
     generateErrorGeneric: "Could not generate a response. Please try again.",
 
+    // Billing portal
+    manageBilling: "Manage subscription",
+    manageBillingOpening: "Opening\u2026",
+    manageBillingError: "Could not open the billing portal. Please try again, or write to us.",
+
     // ProblemSection
     problemTag: "The problem",
     problemHeadline:
@@ -121,7 +126,7 @@ export const translations = {
       {
         question: "Can I cancel anytime?",
         answer:
-          "Yes — no contracts and no cancellation fees. Billing is handled by Paddle; write to us and we will cancel the subscription, and billing stops at the end of the period you have already paid for.",
+          "Yes — no contracts and no cancellation fees. Sign in and use the “Manage subscription” link: it opens Paddle’s customer portal, where you can cancel or change your card. Billing stops at the end of the period you have already paid for. You can also just write to us.",
       },
     ],
 
@@ -274,6 +279,11 @@ export const translations = {
     outputUpsell: "Предложение допродажи",
     generateErrorGeneric: "Не удалось сгенерировать ответ. Попробуйте ещё раз.",
 
+    // Billing portal
+    manageBilling: "Управление подпиской",
+    manageBillingOpening: "Открываем\u2026",
+    manageBillingError: "Не удалось открыть портал оплаты. Попробуйте ещё раз или напишите нам.",
+
     // ProblemSection
     problemTag: "Проблема",
     problemHeadline:
@@ -347,7 +357,7 @@ export const translations = {
       {
         question: "Можно ли отменить в любое время?",
         answer:
-          "Да — без контрактов и штрафов. Платежи идут через Paddle: напишите нам, и мы отменим подписку, а списания прекратятся в конце уже оплаченного периода.",
+          "Да — без контрактов и штрафов. Войдите и нажмите «Управление подпиской»: откроется портал Paddle, где можно отменить подписку или поменять карту. Списания прекратятся в конце уже оплаченного периода. Можно и просто написать нам.",
       },
     ],
 

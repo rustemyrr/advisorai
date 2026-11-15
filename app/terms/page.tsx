@@ -86,9 +86,10 @@ export default function TermsPage() {
         </h2>
         <p className="mt-3 text-sm leading-relaxed">
           Where offered, a free trial converts to a paid subscription unless you
-          cancel before the trial ends. You may cancel at any time by writing to
-          us at the support address below; we cancel the subscription in Paddle
-          and confirm by reply. Cancellation takes effect at the end of the
+          cancel before the trial ends. You may cancel at any time from the
+          &ldquo;Manage subscription&rdquo; link shown when you are signed in,
+          which opens Paddle&rsquo;s customer portal, or by writing to us at the
+          support address below. Cancellation takes effect at the end of the
           current billing period. No cancellation fees apply.
         </p>
       </section>

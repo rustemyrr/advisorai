@@ -79,9 +79,10 @@ export default function RefundPage() {
           Cancellations after 7 days
         </h2>
         <p className="mt-3 text-sm leading-relaxed">
-          You may cancel a paid subscription at any time by writing to us at the
-          address below; we cancel it in Paddle and confirm by reply.
-          Cancellations stop future billing at the end of the current
+          You may cancel a paid subscription at any time from the &ldquo;Manage
+          subscription&rdquo; link shown when you are signed in, which opens
+          Paddle&rsquo;s customer portal, or by writing to us at the address
+          below. Cancellations stop future billing at the end of the current
           billing period. Charges outside the 7-day guarantee window are
           non-refundable except where required by applicable law.
         </p>
