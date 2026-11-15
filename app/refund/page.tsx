@@ -4,6 +4,7 @@ import LegalLayout from "@/components/LegalLayout";
 export const metadata: Metadata = {
   title: "Refund Policy — AdvisorAI",
   description: "7-day money-back guarantee for AdvisorAI Pro subscriptions.",
+  alternates: { canonical: "/refund" },
 };
 
 export default function RefundPage() {
@@ -78,8 +79,9 @@ export default function RefundPage() {
           Cancellations after 7 days
         </h2>
         <p className="mt-3 text-sm leading-relaxed">
-          You may cancel a paid subscription at any time from your account
-          settings. Cancellations stop future billing at the end of the current
+          You may cancel a paid subscription at any time by writing to us at the
+          address below; we cancel it in Paddle and confirm by reply.
+          Cancellations stop future billing at the end of the current
           billing period. Charges outside the 7-day guarantee window are
           non-refundable except where required by applicable law.
         </p>

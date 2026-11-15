@@ -1,14 +1,36 @@
 import { createAdminClient } from "@/lib/supabase-server";
 
-// Monthly generation limits per plan
+// Monthly generation limits per plan.
+//
+// "free" is what a new account gets. It has to stay well under Starter, or
+// there is no reason to buy Starter at all -- which is exactly what happened
+// until 2026-11-15, when every signup was created with plan "starter" and so
+// received the whole paid tier for nothing.
 export const PLAN_LIMITS: Record<string, number> = {
+  free: 5,
   starter: 15,
   standard: 100,
   professional: Infinity,
 };
 
 export function limitForPlan(plan: string): number {
-  return PLAN_LIMITS[plan] ?? PLAN_LIMITS.starter;
+  // An unknown plan gets the smallest allowance, never a paid one.
+  return PLAN_LIMITS[plan] ?? PLAN_LIMITS.free;
+}
+
+// How far back a plan can read its own history. `null` means no time limit.
+// The pricing page sells exactly this, so the two have to stay in step:
+// Starter says "last 7 days", Standard and Professional say "no time limit".
+export const PLAN_HISTORY_DAYS: Record<string, number | null> = {
+  free: 7,
+  starter: 7,
+  standard: null,
+  professional: null,
+};
+
+export function historyDaysForPlan(plan: string): number | null {
+  // An unknown plan gets the smallest window, not the largest.
+  return plan in PLAN_HISTORY_DAYS ? PLAN_HISTORY_DAYS[plan] : 7;
 }
 
 export function getMonthString(): string {
@@ -46,13 +68,17 @@ export async function getOrCreateProfile(userId: string): Promise<{ plan: string
     .eq("id", userId)
     .single();
   if (data) return data as { plan: string };
+  // New accounts start on "free". Until migration 0004 is applied to the live
+  // project the plan CHECK constraint rejects that value; the insert then fails
+  // and we still answer "free", so the account gets free limits rather than a
+  // paid tier. Nothing here may ever fall back to a paying plan.
   const { data: inserted, error } = await db
     .from("profiles")
-    .insert({ id: userId, plan: "starter" })
+    .insert({ id: userId, plan: "free" })
     .select("plan")
     .single();
   if (error) console.error("[getOrCreateProfile] insert failed:", error.message);
-  return (inserted as { plan: string } | null) ?? { plan: "starter" };
+  return (inserted as { plan: string } | null) ?? { plan: "free" };
 }
 
 export async function incrementUsage(userId: string, month: string, newCount: number): Promise<void> {

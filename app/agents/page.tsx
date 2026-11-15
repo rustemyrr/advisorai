@@ -13,6 +13,7 @@ export const metadata: Metadata = {
   title: "Agents for pros — AdvisorAI",
   description:
     "The ones that make you more effective and make your life simpler: an AI assistant for the director and an AI SMM editor.",
+  alternates: { canonical: "/agents" },
 };
 
 export default function AgentsPage() {

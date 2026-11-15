@@ -33,6 +33,15 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     } catch {}
   }, []);
 
+  // The server renders lang="en" because the choice lives in localStorage and
+  // it cannot be read there. Once the page is interactive, the real language is
+  // known, so the attribute is corrected here -- that is what a screen reader
+  // reads the page with. Crawlers still see "en"; giving them the right value
+  // needs per-language URLs, which is a bigger change than one attribute.
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
+
   function toggle() {
     setLang((prev) => {
       const next: Lang = prev === "en" ? "ru" : "en";

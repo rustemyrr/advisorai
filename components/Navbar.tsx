@@ -33,14 +33,22 @@ export default function Navbar() {
           <span className="hidden min-[420px]:inline">AdvisorAI</span>
         </Link>
         <nav className="flex items-center gap-3 sm:gap-4">
+          {/* Both labels sit in the DOM and CSS picks one, so the link states
+              its own name and the two spans are decorative. Without this the
+              link reads out as "AgentsAgents for pros". */}
           <Link
             href="/agents"
+            aria-label={t.navAgents}
             className="text-sm text-gray-600 hover:text-gray-900"
           >
             {/* The full label does not fit next to the other controls on a
                 phone, so narrow screens get the short form. */}
-            <span className="sm:hidden">{t.navAgentsShort}</span>
-            <span className="hidden sm:inline">{t.navAgents}</span>
+            <span className="sm:hidden" aria-hidden>
+              {t.navAgentsShort}
+            </span>
+            <span className="hidden sm:inline" aria-hidden>
+              {t.navAgents}
+            </span>
           </Link>
           {/* #pricing lives on the landing page only, so the link has to be
               absolute everywhere else. On the landing page itself it stays a

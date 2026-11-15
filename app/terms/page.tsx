@@ -4,6 +4,7 @@ import LegalLayout from "@/components/LegalLayout";
 export const metadata: Metadata = {
   title: "Terms of Service — AdvisorAI",
   description: "Terms of Service for AdvisorAI SaaS subscription.",
+  alternates: { canonical: "/terms" },
 };
 
 export default function TermsPage() {
@@ -85,9 +86,10 @@ export default function TermsPage() {
         </h2>
         <p className="mt-3 text-sm leading-relaxed">
           Where offered, a free trial converts to a paid subscription unless you
-          cancel before the trial ends. You may cancel at any time from your
-          account settings; cancellation takes effect at the end of the current
-          billing period. No cancellation fees apply.
+          cancel before the trial ends. You may cancel at any time by writing to
+          us at the support address below; we cancel the subscription in Paddle
+          and confirm by reply. Cancellation takes effect at the end of the
+          current billing period. No cancellation fees apply.
         </p>
       </section>
 

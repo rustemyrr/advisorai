@@ -109,7 +109,7 @@ export async function POST(request: Request) {
           );
           break;
         }
-        const targetPlan = subscription.status === "canceled" ? "starter" : plan;
+        const targetPlan = subscription.status === "canceled" ? "free" : plan;
         await setProfilePlan(userId, targetPlan, subscription.id, subscription.customer_id);
         break;
       }
@@ -125,7 +125,7 @@ export async function POST(request: Request) {
           );
           break;
         }
-        await setProfilePlan(userId, "starter", subscription.id, subscription.customer_id);
+        await setProfilePlan(userId, "free", subscription.id, subscription.customer_id);
         break;
       }
 

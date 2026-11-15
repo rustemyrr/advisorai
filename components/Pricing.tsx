@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { Check } from "lucide-react";
+import { Check, Clock } from "lucide-react";
 import ProCheckoutButton from "./ProCheckoutButton";
 import { unlockPagePointerEvents } from "@/lib/paddle-client";
 import { useLanguage } from "@/lib/language-context";
@@ -23,6 +23,7 @@ export default function Pricing() {
       featured: false,
       paddleCheckout: true,
       features: t.starterFeatures,
+      soon: [] as readonly string[],
       cta: t.ctaGetStarted,
       ctaStyle: "outline" as const,
       href: undefined,
@@ -35,6 +36,7 @@ export default function Pricing() {
       featured: true,
       paddleCheckout: true,
       features: t.standardFeatures,
+      soon: [] as readonly string[],
       cta: t.ctaSubscribe,
       ctaStyle: "primary" as const,
       href: undefined,
@@ -47,6 +49,7 @@ export default function Pricing() {
       featured: false,
       paddleCheckout: true,
       features: t.professionalFeatures,
+      soon: t.professionalSoon,
       cta: t.ctaSubscribe,
       ctaStyle: "outline" as const,
       href: undefined,
@@ -64,6 +67,7 @@ export default function Pricing() {
         <h2 className="mt-2 max-w-2xl text-3xl font-semibold tracking-tight text-gray-900 sm:text-4xl">
           {t.pricingHeadline}
         </h2>
+        <p className="mt-4 max-w-2xl text-gray-600">{t.pricingFreeNote}</p>
         <div className="mt-12 grid gap-6 lg:grid-cols-3">
           {plans.map((plan) => {
             const outlineClass =
@@ -103,6 +107,23 @@ export default function Pricing() {
                         aria-hidden
                       />
                       {feature}
+                    </li>
+                  ))}
+                  {plan.soon.map((feature) => (
+                    <li
+                      key={feature}
+                      className="flex items-start gap-2 text-sm text-gray-400"
+                    >
+                      <Clock
+                        className="mt-0.5 h-4 w-4 shrink-0 text-gray-400"
+                        aria-hidden
+                      />
+                      <span>
+                        {feature}{" "}
+                        <span className="whitespace-nowrap rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-500">
+                          {t.featureSoon}
+                        </span>
+                      </span>
                     </li>
                   ))}
                 </ul>

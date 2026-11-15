@@ -14,6 +14,9 @@ export default function ConsultationForm() {
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
   const [comment, setComment] = useState("");
+  // Honeypot: hidden from people, left empty by them, filled by form-stuffing
+  // bots. The API drops anything that arrives with it set.
+  const [website, setWebsite] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
 
@@ -38,8 +41,14 @@ export default function ConsultationForm() {
           name: name.trim(),
           contact: contact.trim(),
           comment: comment.trim(),
+          website,
         }),
       });
+      if (res.status === 429) {
+        setStatus("error");
+        setError(t.consultErrorTooMany);
+        return;
+      }
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       setStatus("done");
     } catch {
@@ -135,6 +144,20 @@ export default function ConsultationForm() {
                 onChange={(e) => setComment(e.target.value)}
                 placeholder={t.consultCommentPlaceholder}
                 className={`mt-2 resize-y ${inputClass}`}
+              />
+            </div>
+
+            {/* Off-screen rather than display:none, which some bots skip. */}
+            <div className="absolute left-[-9999px] top-auto h-px w-px overflow-hidden" aria-hidden>
+              <label htmlFor="consult-website">Website</label>
+              <input
+                id="consult-website"
+                name="website"
+                type="text"
+                tabIndex={-1}
+                autoComplete="off"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
               />
             </div>
 

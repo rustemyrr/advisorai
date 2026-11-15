@@ -13,7 +13,8 @@ function buildResponse(count: number, plan: string) {
   const isPro = limit === Infinity;
   const remaining = isPro ? 999 : Math.max(0, limit - count);
   const allowed = count < limit;
-  return { count, remaining, allowed, isPro, plan };
+  // `limit` is null for an unlimited plan: Infinity is not valid JSON.
+  return { count, remaining, allowed, isPro, plan, limit: isPro ? null : limit };
 }
 
 export const dynamic = "force-dynamic";

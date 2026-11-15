@@ -25,6 +25,8 @@ type UsageCheck = {
   count: number;
   remaining: number;
   isPro?: boolean;
+  /** Monthly allowance of the signed-in user's plan; null when unlimited. */
+  limit?: number | null;
 };
 
 type GenerateResult = { estimate: string; explanation: string; upsell: string };
@@ -99,12 +101,13 @@ export default function DemoWidget() {
   const fetchSupabaseUsage = useCallback(async (): Promise<UsageCheck> => {
     const res = await fetch("/api/usage/supabase", { headers: supabaseHeaders() });
     if (!res.ok) throw new Error("Failed to fetch usage");
-    const data = await res.json() as { count: number; remaining: number; allowed: boolean; isPro: boolean };
+    const data = await res.json() as { count: number; remaining: number; allowed: boolean; isPro: boolean; limit: number | null };
     const check: UsageCheck = {
       allowed: data.allowed,
       count: data.count,
       remaining: data.remaining,
       isPro: data.isPro,
+      limit: data.limit,
     };
     setUsage(check);
     return check;
@@ -163,7 +166,10 @@ export default function DemoWidget() {
           setShowUpgradeModal(true);
           return;
         }
-        throw new Error(data.error ?? "Something went wrong");
+        if (data.code === "GENERATE_FAILED") {
+          throw new Error(t.generateErrorGeneric);
+        }
+        throw new Error(data.error ?? t.generateErrorGeneric);
       }
       const generationResult: GenerateResult = { estimate: data.estimate, explanation: data.explanation, upsell: data.upsell };
       setResult(generationResult);
@@ -260,7 +266,7 @@ export default function DemoWidget() {
         ) : isPro ? null : (
           <>
             <p className="mt-2 text-sm text-gray-500">
-              {t.usageLabel(usageCount, FREE_GENERATION_LIMIT)}
+              {t.usageLabel(usageCount, usage?.limit ?? FREE_GENERATION_LIMIT)}
             </p>
             {remaining > 0 && isLoggedIn && (
               <p className="mt-1 text-sm text-gray-600">{t.remaining(remaining)}</p>

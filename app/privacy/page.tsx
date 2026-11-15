@@ -4,6 +4,7 @@ import LegalLayout from "@/components/LegalLayout";
 export const metadata: Metadata = {
   title: "Privacy Policy — AdvisorAI",
   description: "Privacy Policy for AdvisorAI SaaS subscription.",
+  alternates: { canonical: "/privacy" },
 };
 
 export default function PrivacyPage() {
@@ -146,10 +147,11 @@ export default function PrivacyPage() {
         <p className="mt-3 text-sm leading-relaxed">
           We retain account and billing records for as long as your subscription
           is active and for a reasonable period afterward for legal and accounting
-          purposes. Job descriptions and generated outputs on the free plan are
-          processed with minimal retention; Pro plan estimate history is retained
-          while your subscription is active and deleted within 30 days of account
-          closure unless law requires longer retention.
+          purposes. Job descriptions and generated outputs are saved to your
+          estimate history and retained while your account exists; how far back
+          you can read that history depends on your plan, but nothing is deleted
+          automatically. We delete your history on request, and within 30 days
+          of account closure, unless law requires longer retention.
         </p>
       </section>
 

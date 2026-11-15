@@ -44,6 +44,7 @@ export const translations = {
     outputEstimate: "Estimate",
     outputExplanation: "Plain-language explanation",
     outputUpsell: "Upsell suggestion",
+    generateErrorGeneric: "Could not generate a response. Please try again.",
 
     // ProblemSection
     problemTag: "The problem",
@@ -64,6 +65,8 @@ export const translations = {
     // Pricing
     pricingTag: "Pricing",
     pricingHeadline: "Simple plans for every dealership.",
+    pricingFreeNote:
+      "Signing up is free and gives you 5 generations a month. The plans below raise that and add the pricelist and history features.",
     mostPopular: "Most popular",
     planStarter: "Starter",
     planStandard: "Standard",
@@ -75,22 +78,24 @@ export const translations = {
       "Plain-language explainer",
       "AI upsell suggestions",
       "Currency selector (KZT/RUB/USD/AED/GBP)",
-      "Estimate history — 7 days",
+      "Estimate history — last 7 days",
     ],
     standardFeatures: [
       "100 generations per month",
       "1 advisor",
       "Everything in Starter",
-      "Full estimate history",
+      "Estimate history — no time limit",
       "Pricelist upload (Excel/CSV)",
     ],
     professionalFeatures: [
       "Unlimited generations",
-      "Up to 3 advisor seats",
       "Everything in Standard",
-      "Team analytics / dashboard",
       "Priority support",
     ],
+    // Not built yet. Shown with a badge so nobody buys the plan expecting them
+    // today — see the pricing audit from 2026-11-15.
+    professionalSoon: ["Up to 3 advisor seats", "Team analytics / dashboard"],
+    featureSoon: "in development",
     ctaGetStarted: "Get started",
     ctaSubscribe: "Subscribe",
     ctaContact: "Contact us",
@@ -111,19 +116,22 @@ export const translations = {
       {
         question: "Is my data stored or shared?",
         answer:
-          "Job descriptions are processed to generate your output and not stored permanently. We never share your data with third parties.",
+          "Your job descriptions and the generated output are saved to your own estimate history so you can come back to them, and only you can read them. The job description is sent to Anthropic's API to produce the output. Nothing is sold or shared with anyone else, and you can ask us to delete your history at any time.",
       },
       {
         question: "Can I cancel anytime?",
         answer:
-          "Yes. Cancel anytime from your account settings. No contracts, no cancellation fees.",
+          "Yes — no contracts and no cancellation fees. Billing is handled by Paddle; write to us and we will cancel the subscription, and billing stops at the end of the period you have already paid for.",
       },
     ],
 
     // CTA Section
     ctaHeadline: "Start writing better estimates today.",
+    // Said nothing about who already uses it: with four accounts and no paying
+    // customers, "join advisors in the UAE, UK and US" was the same invention
+    // as the testimonials this block used to sit under.
     ctaSubtext:
-      "Join service advisors in UAE, UK, and US who write better estimates in less time.",
+      "Works in KZT, RUB, USD, AED and GBP, on your own price list, from any device. Cancel whenever you like.",
     ctaButton: "See plans",
     ctaNote: "From $4/month · Cancel anytime",
 
@@ -169,6 +177,8 @@ export const translations = {
     consultSuccessTitle: "Request sent",
     consultSuccessText: "We will get in touch using the contact details you left.",
     consultErrorRequired: "Please fill in your name and a contact.",
+    consultErrorTooMany:
+      "You have already left a request today. We have it \u2014 we will be in touch.",
     consultErrorGeneric:
       "Could not send the request. Please try again or write to us directly.",
 
@@ -197,22 +207,23 @@ export const translations = {
     pricelistEmpty: "No price list uploaded yet.",
     pricelistParseError: "Could not parse file. Check that it has Service, Price, and Hours columns.",
 
-    // Testimonials
-    testimonialsTag: "What advisors say",
-    testimonialsHeadline:
-      "Trusted by service advisors at BMW, Lexus, and Toyota dealerships.",
-    testimonials: [
+    // HowItWorks
+    howTag: "How it works",
+    howHeadline: "Three steps from the service desk to the customer's screen.",
+    howSubtext:
+      "Nothing to install and nothing to learn. You type the job the way you would say it out loud, and you get back something you can hand to the customer.",
+    howSteps: [
       {
-        quote:
-          "I used to spend my lunch break catching up on estimates. Now I'm done before the customer leaves the service desk.",
-        name: "James M.",
-        role: "Service Advisor, BMW Dubai",
+        title: "Load your price list once",
+        text: "Upload the spreadsheet you already work from. Estimates come back with your own prices and labour hours, not market averages.",
       },
       {
-        quote:
-          "The upsell suggestions alone paid for 6 months of the subscription in the first week.",
-        name: "Sarah R.",
-        role: "Senior Advisor, Toyota London",
+        title: "Describe the job in your own words",
+        text: "“BMW 520d, 180k, front discs and pads, oil seal leaking on the crank.” Shorthand is fine — that is how advisors write it down anyway.",
+      },
+      {
+        title: "Hand over the estimate, the explanation and the upsell",
+        text: "Three blocks come back together: the itemised quote, the same thing in plain language for the customer, and the job worth mentioning while the car is already on the lift.",
       },
     ],
   },
@@ -261,6 +272,7 @@ export const translations = {
     outputEstimate: "Смета",
     outputExplanation: "Объяснение простым языком",
     outputUpsell: "Предложение допродажи",
+    generateErrorGeneric: "Не удалось сгенерировать ответ. Попробуйте ещё раз.",
 
     // ProblemSection
     problemTag: "Проблема",
@@ -281,6 +293,8 @@ export const translations = {
     // Pricing
     pricingTag: "Цены",
     pricingHeadline: "Простые планы для любого дилерства.",
+    pricingFreeNote:
+      "Регистрация бесплатная и даёт 5 генераций в месяц. Планы ниже поднимают лимит и добавляют прайс-лист и историю смет.",
     mostPopular: "Популярный",
     planStarter: "Starter",
     planStandard: "Standard",
@@ -292,22 +306,22 @@ export const translations = {
       "Объяснение простым языком",
       "ИИ-допродажи",
       "Выбор валюты (KZT/RUB/USD/AED/GBP)",
-      "История смет — 7 дней",
+      "История смет — последние 7 дней",
     ],
     standardFeatures: [
       "100 генераций в месяц",
       "1 консультант",
       "Всё из Starter",
-      "Полная история смет",
+      "История смет без ограничения по сроку",
       "Загрузка прайс-листа (Excel/CSV)",
     ],
     professionalFeatures: [
       "Безлимитные генерации",
-      "До 3 мест для консультантов",
       "Всё из Standard",
-      "Аналитика команды / дашборд",
       "Приоритетная поддержка",
     ],
+    professionalSoon: ["До 3 мест для консультантов", "Аналитика команды / дашборд"],
+    featureSoon: "в разработке",
     ctaGetStarted: "Начать",
     ctaSubscribe: "Подписаться",
     ctaContact: "Связаться с нами",
@@ -328,19 +342,19 @@ export const translations = {
       {
         question: "Хранятся ли и передаются ли мои данные?",
         answer:
-          "Описания работ обрабатываются только для генерации результата и не хранятся постоянно. Мы никогда не передаём ваши данные третьим лицам.",
+          "Описания работ и результаты сохраняются в вашу историю смет, чтобы вы могли к ним вернуться; прочитать их можете только вы. Описание работы отправляется в API Anthropic, который и формирует результат. Больше никому данные не передаются и не продаются, а историю мы удалим по вашей просьбе.",
       },
       {
         question: "Можно ли отменить в любое время?",
         answer:
-          "Да. Отменяйте в любое время в настройках аккаунта. Без контрактов и штрафов.",
+          "Да — без контрактов и штрафов. Платежи идут через Paddle: напишите нам, и мы отменим подписку, а списания прекратятся в конце уже оплаченного периода.",
       },
     ],
 
     // CTA Section
     ctaHeadline: "Начните составлять сметы лучше уже сегодня.",
     ctaSubtext:
-      "Присоединяйтесь к сервисным консультантам из ОАЭ, Великобритании и США, которые составляют сметы быстрее.",
+      "Работает в тенге, рублях, долларах, дирхамах и фунтах, по вашему прайс-листу и с любого устройства. Отменить можно в любой момент.",
     ctaButton: "Смотреть планы",
     ctaNote: "От $4 в месяц · Отмена в любое время",
 
@@ -386,6 +400,8 @@ export const translations = {
     consultSuccessTitle: "Заявка отправлена",
     consultSuccessText: "Свяжемся с вами по оставленным контактам.",
     consultErrorRequired: "Заполните имя и контакт.",
+    consultErrorTooMany:
+      "Вы уже оставляли заявку сегодня. Она у нас — мы свяжемся с вами.",
     consultErrorGeneric:
       "Не удалось отправить заявку. Попробуйте ещё раз или напишите нам напрямую.",
 
@@ -414,22 +430,23 @@ export const translations = {
     pricelistEmpty: "Прайс-лист ещё не загружен.",
     pricelistParseError: "Не удалось распознать файл. Проверьте, что есть столбцы Service, Price и Hours.",
 
-    // Testimonials
-    testimonialsTag: "Что говорят консультанты",
-    testimonialsHeadline:
-      "Нам доверяют сервисные консультанты BMW, Lexus и Toyota.",
-    testimonials: [
+    // HowItWorks
+    howTag: "Как это работает",
+    howHeadline: "Три шага от стойки приёмки до экрана клиента.",
+    howSubtext:
+      "Ничего не нужно устанавливать и нечему учиться. Вы описываете работу так, как сказали бы её вслух, и получаете то, что можно сразу отдать клиенту.",
+    howSteps: [
       {
-        quote:
-          "Раньше я тратил обеденный перерыв на сметы. Теперь успеваю до того, как клиент уходит.",
-        name: "James M.",
-        role: "Сервисный консультант, BMW Dubai",
+        title: "Один раз загрузите прайс-лист",
+        text: "Тот же файл, с которым вы уже работаете. Сметы считаются по вашим ценам и нормо-часам, а не по средним по рынку.",
       },
       {
-        quote:
-          "Только предложения по допродажам окупили 6 месяцев подписки за первую неделю.",
-        name: "Sarah R.",
-        role: "Старший консультант, Toyota London",
+        title: "Опишите работу своими словами",
+        text: "«BMW 520d, 180 тыс., передние диски и колодки, течёт сальник коленвала». Сокращения не мешают — приёмщики так и записывают.",
+      },
+      {
+        title: "Отдайте смету, объяснение и допродажу",
+        text: "Возвращаются сразу три блока: смета по позициям, то же самое простым языком для клиента и работа, о которой стоит сказать, пока машина уже на подъёмнике.",
       },
     ],
   },

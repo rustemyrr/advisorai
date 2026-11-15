@@ -71,7 +71,7 @@ export async function POST(request: Request) {
     .select("plan")
     .eq("id", user.id)
     .single();
-  const plan = (profile as { plan: string } | null)?.plan ?? "starter";
+  const plan = (profile as { plan: string } | null)?.plan ?? "free";
   if (!PRICELIST_PLANS.includes(plan)) {
     return NextResponse.json(
       { error: "Pricelist upload requires Standard or Professional plan" },
@@ -107,6 +107,9 @@ export async function POST(request: Request) {
     { onConflict: "user_id" }
   );
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error("[pricelist POST]", error.message);
+    return NextResponse.json({ error: "Could not save pricelist" }, { status: 500 });
+  }
   return NextResponse.json({ ok: true });
 }

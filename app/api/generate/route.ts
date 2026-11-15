@@ -170,9 +170,12 @@ export async function POST(request: Request) {
 
     return NextResponse.json(parsed);
   } catch (err) {
-    console.error(err);
-    const message =
-      err instanceof Error ? err.message : "Failed to generate response";
-    return NextResponse.json({ error: message }, { status: 500 });
+    // The detail belongs in the log, not in the response: it is a database or
+    // model error and it describes our schema and our driver to a stranger.
+    console.error("[generate]", err);
+    return NextResponse.json(
+      { error: "Could not generate a response. Please try again.", code: "GENERATE_FAILED" },
+      { status: 500 }
+    );
   }
 }
