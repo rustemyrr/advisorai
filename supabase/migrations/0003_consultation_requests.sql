@@ -1,5 +1,5 @@
--- NOT YET APPLIED to the live project. Run it before /agents goes live,
--- otherwise the consultation form's POST /api/consultation returns 500.
+-- Applied to the live project (kzienmsdjtewcjihejhd) on 2026-11-15 with
+-- Rustem's go-ahead: the table, its index and RLS are already in place there.
 --
 -- Stores the consultation requests left on /agents ("Агенты для профессионалов").
 --
