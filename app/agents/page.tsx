@@ -5,9 +5,9 @@ import ConsultationForm from "@/components/ConsultationForm";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "Агенты для специалистов — AdvisorAI",
+  title: "Агенты для профессионалов — AdvisorAI",
   description:
-    "ИИ ассистент директора и ИИ СММ-монтажёр: узкие агенты, которые снимают рутину с автосервиса и небольшой команды.",
+    "Те, кто делает вас эффективнее и упрощает вашу жизнь: ИИ ассистент директора и ИИ СММ-монтажёр.",
 };
 
 export default function AgentsPage() {

@@ -130,25 +130,25 @@ export const translations = {
     // Agents for pros
     navAgents: "Agents for pros",
     navAgentsShort: "Agents",
-    agentsTag: "Agents for pros",
-    agentsHeadline: "AI agents that take the routine off a small team.",
+    agentsHeadline: "Agents for pros",
+    agentsSubtitle: "The ones that make you more effective and make your life simpler",
     agentsSubtext:
-      "Beyond estimates, we build narrow AI agents for workshops and small businesses: each one takes over a single recurring job and does it every day without being reminded.",
+      "Each agent takes over one job that eats your time every day and does it on its own — no reminders, and no new software to learn.",
     agentDirectorTitle: "AI assistant for the director",
     agentDirectorText:
-      "Pulls revenue, costs and workload into one daily summary and sends it in the morning — no exports, no spreadsheets stitched together by hand. Ask it about the numbers in plain language instead of building a report.",
+      "Takes the evening spreadsheet work off your hands. Yesterday's summary is ready by morning: revenue, average ticket, costs, workload. Need a particular number? Ask in plain language and get an answer, not a form to fill in.",
     agentDirectorBullets: [
-      "Daily and monthly summary: revenue, average ticket, margin, payroll",
-      "Questions about the numbers in plain language — no report forms, no formulas",
-      "Flags what moved out of line and where to look first",
+      "Yesterday's summary arrives in the morning — nothing to compile",
+      "A question about the numbers in plain language instead of a report form",
+      "Spots what went off on its own and says where to look first",
     ],
     agentSmmTitle: "AI SMM editor",
     agentSmmText:
-      "Turns footage from the shop floor into ready-to-post content: cuts short clips, picks the usable takes, writes captions and hashtags for your audience. You film the job on a phone — the agent assembles the post.",
+      "Takes the editing and the captions off you. You film the job on a phone — the agent picks the usable takes, cuts the clip and writes the post. Keeping the socials going no longer costs you an evening.",
     agentSmmBullets: [
-      "Reels and Shorts cut from ordinary phone video",
-      "Captions, hooks and hashtags written for an automotive audience",
-      "A week's content plan and a publishing queue",
+      "A finished Reel from ordinary phone video",
+      "Captions and hooks you do not have to rewrite",
+      "A week's content plan — no deciding what to post",
     ],
     agentsHowTag: "How we start",
     agentsHowText:
@@ -345,27 +345,27 @@ export const translations = {
     ctaNote: "От $4 в месяц · Отмена в любое время",
 
     // Agents for pros
-    navAgents: "Агенты для специалистов",
+    navAgents: "Агенты для профессионалов",
     navAgentsShort: "Агенты",
-    agentsTag: "Агенты для специалистов",
-    agentsHeadline: "ИИ-агенты, которые снимают рутину с небольшой команды.",
+    agentsHeadline: "Агенты для профессионалов",
+    agentsSubtitle: "Те, кто делает вас эффективнее и упрощает вашу жизнь",
     agentsSubtext:
-      "Кроме смет мы собираем узких ИИ-агентов для автосервисов и малого бизнеса: каждый берёт на себя одну повторяющуюся задачу и делает её каждый день, без напоминаний.",
+      "Каждый агент берёт на себя одну задачу, на которую у вас каждый день уходит время, и делает её сам — без напоминаний и без новых программ, которые надо осваивать.",
     agentDirectorTitle: "ИИ ассистент директора",
     agentDirectorText:
-      "Сводит выручку, расходы и загрузку в один дневной отчёт и присылает его утром — без выгрузок и таблиц, собранных вручную. О цифрах можно спрашивать обычным языком, вместо того чтобы строить отчёт.",
+      "Избавляет от вечернего сведения таблиц. Утром отчёт за вчера уже готов: выручка, средний чек, расходы, загрузка. А если нужно уточнить цифру — спрашиваете обычным языком и получаете ответ, а не форму для заполнения.",
     agentDirectorBullets: [
-      "Дневная и месячная сводка: выручка, средний чек, маржа, ФОТ",
-      "Вопросы по цифрам обычным языком — без отчётных форм и формул",
-      "Замечает отклонения и подсказывает, куда смотреть в первую очередь",
+      "Отчёт за вчера приходит утром — сводить ничего не нужно",
+      "Вопрос о цифрах обычным языком вместо отчётной формы",
+      "Сам замечает, что пошло не так, и говорит, куда смотреть в первую очередь",
     ],
     agentSmmTitle: "ИИ СММ-монтажёр",
     agentSmmText:
-      "Превращает съёмку из цеха в готовый контент: нарезает короткие ролики, отбирает удачные дубли, пишет подписи и хештеги под вашу аудиторию. Вы снимаете работу на телефон — агент собирает из этого публикацию.",
+      "Снимает с вас монтаж и подписи. Вы просто снимаете работу на телефон — агент отбирает удачные кадры, собирает ролик и пишет текст к публикации. Вести соцсети больше не значит тратить на это вечер.",
     agentSmmBullets: [
-      "Нарезка Reels и Shorts из обычного видео со смартфона",
-      "Подписи, заголовки и хештеги под автомобильную аудиторию",
-      "Контент-план на неделю и очередь публикаций",
+      "Готовый Reels из обычного видео со смартфона",
+      "Подписи и заголовки, которые не надо переписывать",
+      "Контент-план на неделю — не нужно придумывать, что выкладывать",
     ],
     agentsHowTag: "С чего начинаем",
     agentsHowText:

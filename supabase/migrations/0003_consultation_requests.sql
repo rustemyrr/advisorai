@@ -1,7 +1,7 @@
 -- NOT YET APPLIED to the live project. Run it before /agents goes live,
 -- otherwise the consultation form's POST /api/consultation returns 500.
 --
--- Stores the consultation requests left on /agents ("Агенты для специалистов").
+-- Stores the consultation requests left on /agents ("Агенты для профессионалов").
 --
 -- Written only by the API route with the service-role key, exactly like
 -- public.anon_usage: the browser client holds the publishable key and must

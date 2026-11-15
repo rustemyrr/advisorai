@@ -24,11 +24,13 @@ export default function AgentsSection() {
   return (
     <section className="border-b border-gray-100 py-16 sm:py-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <p className="text-sm font-medium text-gray-500">{t.agentsTag}</p>
-        <h1 className="mt-2 max-w-3xl text-3xl font-semibold tracking-tight text-gray-900 sm:text-4xl">
+        <h1 className="max-w-3xl text-3xl font-semibold tracking-tight text-gray-900 sm:text-4xl">
           {t.agentsHeadline}
         </h1>
-        <p className="mt-4 max-w-3xl text-gray-600">{t.agentsSubtext}</p>
+        <p className="mt-3 max-w-3xl text-lg text-gray-700 sm:text-xl">
+          {t.agentsSubtitle}
+        </p>
+        <p className="mt-5 max-w-3xl text-gray-600">{t.agentsSubtext}</p>
 
         <div className="mt-12 grid gap-6 md:grid-cols-2">
           {agents.map((agent) => (
