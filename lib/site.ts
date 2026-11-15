@@ -11,6 +11,7 @@ export const siteUrl = (
 /** Every page that should be in the sitemap, newest-first in importance. */
 export const sitemapPaths = [
   "/",
+  "/service-agent",
   "/service-advisor",
   "/terms",
   "/privacy",

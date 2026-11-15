@@ -9,7 +9,17 @@ type Status = "idle" | "sending" | "done" | "error";
 const inputClass =
   "w-full rounded-lg border border-gray-200 bg-white p-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400";
 
-export default function ConsultationForm() {
+/**
+ * `source` says which page the request came from, so the Telegram notification
+ * and the row say whether this is someone asking about the agents in general
+ * or about the car-service agent specifically. The API only accepts the values
+ * it knows (see app/api/consultation/route.ts).
+ */
+export default function ConsultationForm({
+  source = "agents",
+}: {
+  source?: "agents" | "service-agent";
+} = {}) {
   const { t } = useLanguage();
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
@@ -41,6 +51,7 @@ export default function ConsultationForm() {
           name: name.trim(),
           contact: contact.trim(),
           comment: comment.trim(),
+          source,
           website,
         }),
       });

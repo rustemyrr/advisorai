@@ -14,7 +14,16 @@ export default function Footer() {
           <Orbit className="h-5 w-5" aria-hidden />
           AdvisorAI
         </div>
-        <nav className="flex items-center gap-4 text-sm text-gray-500">
+        <nav className="flex flex-wrap items-center justify-center gap-4 text-sm text-gray-500">
+          {/* Neither product is a tab in the header any more -- each is entered
+              through its card on the home page. The footer is what keeps them
+              reachable from a page deep in the site. */}
+          <Link href="/service-agent" className="hover:text-gray-900">
+            {t.navAgent}
+          </Link>
+          <Link href="/service-advisor" className="hover:text-gray-900">
+            {t.navAdvisor}
+          </Link>
           <Link href="/terms" className="hover:text-gray-900">
             {t.footerTerms}
           </Link>

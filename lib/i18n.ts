@@ -142,11 +142,14 @@ export const translations = {
 
     // Agents for pros
     navAdvisor: "For service advisors",
-    navAdvisorShort: "Advisors",
-    agentsHeadline: "Agents for pros",
+    agentsHeadline: "Assistants for pros",
     agentsSubtitle: "The ones that make you more effective and make your life simpler",
     agentsSubtext:
-      "Each agent takes over one job that eats your time every day and does it on its own — no reminders, and no new software to learn.",
+      "An assistant takes over one job that eats your time every day and does it on its own — no reminders, and no new software to learn. The work stays yours; what goes is the part that costs you the evening.",
+    businessAgentsHeadline: "Agents for a business",
+    businessAgentsSubtitle: "Not a helper beside a person — the role itself",
+    businessAgentsSubtext:
+      "This kind of agent does not prompt an employee: it holds a job in your process. It talks to the customer, decides inside the rules you set, and carries the thing to a result — a booking made, a reminder delivered, an appointment confirmed. What is left for people is what needs people.",
     agentDirectorTitle: "AI assistant for the director",
     agentDirectorText:
       "Takes the evening spreadsheet work off your hands. Yesterday's summary is ready by morning: revenue, average ticket, costs, workload. Need a particular number? Ask in plain language and get an answer, not a form to fill in.",
@@ -163,14 +166,28 @@ export const translations = {
       "Captions and hooks you do not have to rewrite",
       "A week's content plan — no deciding what to post",
     ],
+    agentServiceTitle: "AI front desk for a car service",
+    agentServiceText:
+      "Takes the phone off your hands. It answers customer calls, says what a service covers, books a free slot, and calls out on its own when a service is due or a warranty is about to end.",
+    agentServiceBullets: [
+      "Answers every call — at night, on a day off, and when every line is busy",
+      "Books by your opening hours and bays, and never double-books",
+      "Calls about a due service and about a warranty running out",
+      "Confirms tomorrow's bookings the evening before, so slots do not sit empty",
+    ],
+    agentServiceCta: "More about the agent",
     agentsHowTag: "How we start",
     agentsHowText:
       "We start with a call: we look at how the work is done today, pick the one job worth handing over first, and agree on what the agent has to deliver. Setup takes a few days, and you keep access to everything the agent produces.",
-    secondProductTag: "Another product",
-    secondProductTitle: "AdvisorAI for service advisors",
-    secondProductText:
-      "A separate, self-serve product for workshops and dealerships. It turns a few words about a repair into a customer estimate on your own price list, an explanation in plain language, and an upsell worth mentioning while the car is on the lift. Signing up is free; the plans start at $4 a month.",
-    secondProductCta: "Open the product",
+    agentAdvisorTitle: "AI assistant for the service advisor",
+    agentAdvisorText:
+      "Takes the writing off the front desk. A few words about the repair come back as a customer estimate on your own price list, the same thing in plain language, and an upsell worth mentioning while the car is on the lift. Sign-up is free; the plans start at $4 a month.",
+    agentAdvisorBullets: [
+      "An estimate on your own prices and labour hours, not market averages",
+      "An explanation the customer understands without a technician",
+      "An upsell suggested while the car is still on the lift",
+    ],
+    agentAdvisorCta: "Open the product and plans",
 
     consultTitle: "Request a consultation",
     consultSubtext:
@@ -236,6 +253,63 @@ export const translations = {
         title: "Hand over the estimate, the explanation and the upsell",
         text: "Three blocks come back together: the itemised quote, the same thing in plain language for the customer, and the job worth mentioning while the car is already on the lift.",
       },
+    ],
+
+    // Service agent (/service-agent)
+    navAgent: "Agent for car services",
+    saTag: "Agent for car services",
+    saHeadline: "The agent that talks to your customers on the phone",
+    saSubtext:
+      "It answers the call, explains what a service covers, finds a free slot and books it. And it calls out on its own: when a service is due, when a warranty is about to end, and to confirm tomorrow's bookings.",
+    saCtaPrimary: "Request a consultation",
+    saCtaConsole: "See the agent at work",
+    saNote: "Works on your own number and your own records — a CRM or 1C.",
+    saDoesHeadline: "What it takes off the front desk",
+    saDoesItems: [
+      {
+        title: "Incoming calls",
+        text: "Picks up on the first ring, at any hour, however many people call at once. Says what a service covers, roughly how long the work takes and what to bring along.",
+      },
+      {
+        title: "Booking",
+        text: "Offers times that fit your opening hours and the number of bays, books one, and reads the date, time, car and job back to the customer. It cannot double-book: the slot is checked again at the moment of booking.",
+      },
+      {
+        title: "Service reminders",
+        text: "Every morning it finds the cars that are due — by date or by odometer — calls, and offers the two nearest openings. One person hears about one due service once.",
+      },
+      {
+        title: "Warranty",
+        text: "Calls while the warranty is still running, so a check costs the customer nothing instead of costing them later. It never promises that a fault will be covered — the technician decides that.",
+      },
+      {
+        title: "Confirmations",
+        text: "The evening before, it rings everyone booked for tomorrow. Whoever cannot come is rescheduled or cancelled, so the slot is free early rather than empty on the day.",
+      },
+    ],
+    saHowHeadline: "How it is connected",
+    saHowSteps: [
+      {
+        title: "Your number stays yours",
+        text: "The agent joins your telephony over SIP — no new operator, no new number. Until that is connected it works as a list instead: the front desk gets who to call and why.",
+      },
+      {
+        title: "Your records stay yours",
+        text: "Customers, cars and bookings are read from your CRM over its API, or from 1C over OData. A shop with no system of its own lets the agent keep the records.",
+      },
+      {
+        title: "Live in a few days",
+        text: "We set the opening hours, the bays and the service intervals, listen to the first calls together with you and tune the wording. Every booking lands in your system as it happens.",
+      },
+    ],
+    saLimitsHeadline: "What the agent will not do, by design",
+    saLimitsItems: [
+      "No prices and no diagnosis over the phone — it offers an inspection instead.",
+      "No promise that a fault will be covered by warranty.",
+      "No booking into a time that is not actually free.",
+      "An accident, an argument about money, a complaint or a request for a person goes straight to the front desk.",
+      "Asked not to call again, it marks that and stops calling.",
+      "It does not pass for a person: asked directly, it says it is the shop assistant.",
     ],
   },
 
@@ -376,11 +450,14 @@ export const translations = {
 
     // Agents for pros
     navAdvisor: "Для автосервисов",
-    navAdvisorShort: "Автосервисам",
-    agentsHeadline: "Агенты для профессионалов",
+    agentsHeadline: "Ассистенты для профессионалов",
     agentsSubtitle: "Те, кто делает вас эффективнее и упрощает вашу жизнь",
     agentsSubtext:
-      "Каждый агент берёт на себя одну задачу, на которую у вас каждый день уходит время, и делает её сам — без напоминаний и без новых программ, которые надо осваивать.",
+      "Ассистент берёт на себя одну задачу, на которую у вас каждый день уходит время, и делает её сам — без напоминаний и без новых программ, которые надо осваивать. Работа остаётся вашей, уходит та часть, что съедает вечер.",
+    businessAgentsHeadline: "Агенты для бизнеса",
+    businessAgentsSubtitle: "Не помощник рядом с человеком, а сама роль",
+    businessAgentsSubtext:
+      "Такой агент не подсказывает сотруднику — он занимает место в вашем процессе. Разговаривает с клиентом, принимает решения в рамках ваших правил и доводит дело до результата: запись сделана, напоминание дошло, визит подтверждён. Человеку остаётся то, где нужен человек.",
     agentDirectorTitle: "ИИ ассистент директора",
     agentDirectorText:
       "Избавляет от вечернего сведения таблиц. Утром отчёт за вчера уже готов: выручка, средний чек, расходы, загрузка. А если нужно уточнить цифру — спрашиваете обычным языком и получаете ответ, а не форму для заполнения.",
@@ -397,14 +474,28 @@ export const translations = {
       "Подписи и заголовки, которые не надо переписывать",
       "Контент-план на неделю — не нужно придумывать, что выкладывать",
     ],
+    agentServiceTitle: "ИИ администратор автосервиса",
+    agentServiceText:
+      "Берёт на себя телефон. Отвечает на звонки клиентов, рассказывает, что входит в обслуживание, записывает в свободное окно и сам звонит, когда подошёл срок ТО или заканчивается гарантия.",
+    agentServiceBullets: [
+      "Отвечает на каждый звонок — ночью, в выходной и когда все линии заняты",
+      "Записывает по вашим часам работы и числу постов, без двойных записей",
+      "Сам звонит о плановом ТО и об окончании гарантии",
+      "Накануне подтверждает записи, чтобы окна не стояли пустыми",
+    ],
+    agentServiceCta: "Подробнее об агенте",
     agentsHowTag: "С чего начинаем",
     agentsHowText:
       "Начинаем с созвона: смотрим, как работа устроена сейчас, выбираем одну задачу, которую стоит отдать первой, и договариваемся о результате. Настройка занимает несколько дней, доступ ко всему, что делает агент, остаётся у вас.",
-    secondProductTag: "Ещё один продукт",
-    secondProductTitle: "AdvisorAI для сервисных консультантов",
-    secondProductText:
-      "Отдельный продукт для автосервисов и дилерских центров, работает сам по себе. Из пары фраз о ремонте он делает смету по вашему прайс-листу, объяснение простым языком для клиента и допродажу, о которой стоит сказать, пока машина на подъёмнике. Регистрация бесплатная, тарифы — от $4 в месяц.",
-    secondProductCta: "Открыть продукт",
+    agentAdvisorTitle: "ИИ ассистент сервисного консультанта",
+    agentAdvisorText:
+      "Снимает писанину со стойки приёмки. Из пары фраз о ремонте получается смета по вашему прайс-листу, то же самое простым языком для клиента и допродажа, о которой стоит сказать, пока машина на подъёмнике. Регистрация бесплатная, тарифы — от $4 в месяц.",
+    agentAdvisorBullets: [
+      "Смета по вашим ценам и нормо-часам, а не по средним по рынку",
+      "Объяснение, которое клиент понимает без мастера",
+      "Допродажа, пока машина ещё на подъёмнике",
+    ],
+    agentAdvisorCta: "Открыть продукт и тарифы",
 
     consultTitle: "Заявка на консультацию",
     consultSubtext:
@@ -470,6 +561,63 @@ export const translations = {
         title: "Отдайте смету, объяснение и допродажу",
         text: "Возвращаются сразу три блока: смета по позициям, то же самое простым языком для клиента и работа, о которой стоит сказать, пока машина уже на подъёмнике.",
       },
+    ],
+
+    // Агент для автосервиса (/service-agent)
+    navAgent: "Агент для автосервиса",
+    saTag: "Агент для автосервиса",
+    saHeadline: "Агент, который разговаривает с вашими клиентами по телефону",
+    saSubtext:
+      "Отвечает на звонок, рассказывает, что входит в обслуживание, подбирает свободное время и записывает. И звонит сам: когда подошёл срок ТО, когда заканчивается гарантия и чтобы подтвердить запись на завтра.",
+    saCtaPrimary: "Оставить заявку",
+    saCtaConsole: "Посмотреть агента в работе",
+    saNote: "Работает на вашем номере и с вашей базой — CRM или 1С.",
+    saDoesHeadline: "Что он снимает с администратора",
+    saDoesItems: [
+      {
+        title: "Входящие звонки",
+        text: "Поднимает трубку на первом сигнале, в любое время и сколько бы звонков ни пришло разом. Говорит, что входит в обслуживание, сколько примерно займёт работа и что взять с собой.",
+      },
+      {
+        title: "Запись",
+        text: "Подбирает время по вашим часам работы и числу постов, записывает и проговаривает клиенту дату, время, машину и услугу. Двух человек на один пост не поставит: перед записью окно проверяется заново.",
+      },
+      {
+        title: "Напоминание о ТО",
+        text: "Каждое утро находит, у кого подошёл срок планового обслуживания — по дате или по пробегу, — звонит и предлагает два ближайших окна. Об одном сроке человек слышит один раз.",
+      },
+      {
+        title: "Гарантия",
+        text: "Звонит, пока гарантия ещё действует: проверить машину до конца срока клиенту ничего не стоит, после — уже за его счёт. Не обещает, что поломку признают гарантийной: это решает мастер.",
+      },
+      {
+        title: "Подтверждение записи",
+        text: "Накануне обзванивает всех, кто записан на завтра. Кто не приедет — перенос или отмена, и окно освобождается заранее, а не стоит пустым в день приёма.",
+      },
+    ],
+    saHowHeadline: "Как подключается",
+    saHowSteps: [
+      {
+        title: "Номер остаётся вашим",
+        text: "Агент подключается к вашей телефонии по SIP — менять оператора и номер не нужно. Пока телефония не подключена, он работает списком: администратор получает, кому и почему позвонить.",
+      },
+      {
+        title: "База остаётся вашей",
+        text: "Клиенты, машины и записи читаются из вашей CRM по API или из 1С по OData. Если учёта нет, агент ведёт базу сам.",
+      },
+      {
+        title: "Запуск за несколько дней",
+        text: "Настраиваем часы работы, число постов и интервалы ТО, слушаем первые звонки вместе с вами и правим формулировки. Записи всё время появляются в вашей системе.",
+      },
+    ],
+    saLimitsHeadline: "Чего агент не делает — намеренно",
+    saLimitsItems: [
+      "Не называет цену ремонта и не ставит диагноз по телефону — предлагает диагностику.",
+      "Не обещает, что случай окажется гарантийным.",
+      "Не записывает на время, которого в расписании нет.",
+      "ДТП, спор о деньгах, жалоба или просьба позвать человека — сразу администратору.",
+      "Просьбу больше не звонить выполняет сразу и без уговоров.",
+      "Не выдаёт себя за человека: на прямой вопрос отвечает, что он ассистент сервиса.",
     ],
   },
 } as const;

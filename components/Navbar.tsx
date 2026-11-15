@@ -34,34 +34,17 @@ export default function Navbar() {
           <span className="hidden min-[420px]:inline">AdvisorAI</span>
         </Link>
         <nav className="flex items-center gap-3 sm:gap-4">
-          {/* Both labels sit in the DOM and CSS picks one, so the link states
-              its own name and the two spans are decorative. Without this the
-              link reads out as "AgentsAgents for pros". */}
-          <Link
-            href="/service-advisor"
-            aria-label={t.navAdvisor}
-            className="text-sm text-gray-600 hover:text-gray-900"
-          >
-            {/* The full label does not fit next to the other controls on a
-                phone, so narrow screens get the short form. */}
-            <span className="sm:hidden" aria-hidden>
-              {t.navAdvisorShort}
-            </span>
-            <span className="hidden sm:inline" aria-hidden>
-              {t.navAdvisor}
-            </span>
-          </Link>
-          {/* #pricing lives on the landing page only, so the link has to be
-              absolute everywhere else. On the landing page itself it stays a
-              plain same-page anchor, exactly as before. */}
-          {onPricingPage ? (
+          {/* No product tabs up here. Both offers are entered through their
+              card on the home page, so the only navigation the header carries
+              is the wordmark, the language and the account.
+
+              Pricing is the one exception, and only on the product page it
+              belongs to: there it is a same-page anchor. Elsewhere it would
+              send a reader into a product they have not opened yet. */}
+          {onPricingPage && (
             <a href="#pricing" className={pricingClass}>
               {t.pricing}
             </a>
-          ) : (
-            <Link href="/service-advisor#pricing" className={pricingClass}>
-              {t.pricing}
-            </Link>
           )}
           <button
             type="button"

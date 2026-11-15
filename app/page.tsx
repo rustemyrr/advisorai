@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import AgentsSection from "@/components/AgentsSection";
-import SecondProduct from "@/components/SecondProduct";
+import BusinessAgentsSection from "@/components/BusinessAgentsSection";
 import ConsultationForm from "@/components/ConsultationForm";
 import Footer from "@/components/Footer";
 
@@ -17,7 +17,7 @@ export default function Home() {
       <Navbar />
       <main>
         <AgentsSection />
-        <SecondProduct />
+        <BusinessAgentsSection />
         <ConsultationForm />
       </main>
       <Footer />

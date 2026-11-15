@@ -1,12 +1,21 @@
 "use client";
 
-import { BarChart3, Check, Clapperboard } from "lucide-react";
+import { BarChart3, Clapperboard, Wrench } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
+import AgentCard from "@/components/AgentCard";
 
+/**
+ * Assistants: they make one person faster at work that person still does.
+ * The director still runs the shop, the owner still films the video -- the
+ * assistant takes the part that eats the evening.
+ *
+ * Agents that hold a role in the process on their own are a different offer
+ * and live in their own block (components/BusinessAgentsSection.tsx).
+ */
 export default function AgentsSection() {
   const { t } = useLanguage();
 
-  const agents = [
+  const assistants = [
     {
       icon: BarChart3,
       title: t.agentDirectorTitle,
@@ -18,6 +27,17 @@ export default function AgentsSection() {
       title: t.agentSmmTitle,
       text: t.agentSmmText,
       bullets: t.agentSmmBullets,
+    },
+    // The service-advisor SaaS: an assistant like the other two -- the advisor
+    // still writes the estimate, this takes the writing. Its card is the way
+    // into the product page, where the demo, the plans and the checkout live.
+    {
+      icon: Wrench,
+      title: t.agentAdvisorTitle,
+      text: t.agentAdvisorText,
+      bullets: t.agentAdvisorBullets,
+      href: "/service-advisor",
+      cta: t.agentAdvisorCta,
     },
   ];
 
@@ -32,36 +52,9 @@ export default function AgentsSection() {
         </p>
         <p className="mt-5 max-w-3xl text-gray-600">{t.agentsSubtext}</p>
 
-        <div className="mt-12 grid gap-6 md:grid-cols-2">
-          {agents.map((agent) => (
-            <div
-              key={agent.title}
-              className="rounded-xl border border-gray-200 bg-white p-6"
-            >
-              <agent.icon
-                className="h-6 w-6 text-gray-900"
-                strokeWidth={1.5}
-                aria-hidden
-              />
-              <h2 className="mt-4 text-lg font-semibold text-gray-900">
-                {agent.title}
-              </h2>
-              <p className="mt-2 text-sm leading-relaxed text-gray-600">
-                {agent.text}
-              </p>
-              <ul className="mt-5 space-y-2.5">
-                {agent.bullets.map((bullet) => (
-                  <li key={bullet} className="flex gap-2.5 text-sm text-gray-700">
-                    <Check
-                      className="mt-0.5 h-4 w-4 shrink-0 text-gray-900"
-                      strokeWidth={2}
-                      aria-hidden
-                    />
-                    <span className="leading-relaxed">{bullet}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {assistants.map((assistant) => (
+            <AgentCard key={assistant.title} {...assistant} />
           ))}
         </div>
 

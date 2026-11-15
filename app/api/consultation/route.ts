@@ -28,10 +28,21 @@ function clean(value: unknown, max: number): string {
 // Public on purpose: the form is for visitors who do not have an account.
 // The insert goes through the service-role client because the table has RLS
 // on with no policies, so nothing holding the publishable key can write to it.
+// Which page a request may say it came from. An unknown value is treated as
+// the default rather than trusted: the column feeds the notification and the
+// dashboard, and it is written from an unauthenticated request.
+const SOURCES = ["agents", "service-agent"] as const;
+type Source = (typeof SOURCES)[number];
+
+function cleanSource(value: unknown): Source {
+  return SOURCES.includes(value as Source) ? (value as Source) : "agents";
+}
+
 export async function POST(request: Request) {
   const body = await request.json().catch(() => ({}));
-  const { name, contact, comment } = body as Record<string, unknown>;
+  const { name, contact, comment, source } = body as Record<string, unknown>;
   const ip = getClientIp(request);
+  const cleanedSource = cleanSource(source);
 
   // Answer a bot the same way we answer a person, so it has nothing to learn
   // from the response, and write nothing.
@@ -80,7 +91,7 @@ export async function POST(request: Request) {
     name: cleanName,
     contact: cleanContact,
     comment: cleanComment || null,
-    source: "agents",
+    source: cleanedSource,
     ip,
   });
 
@@ -96,7 +107,7 @@ export async function POST(request: Request) {
     name: cleanName,
     contact: cleanContact,
     comment: cleanComment || null,
-    source: "agents",
+    source: cleanedSource,
   });
 
   return NextResponse.json({ ok: true });
