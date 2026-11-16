@@ -116,23 +116,38 @@ export default function DemoWidget() {
   }, [supabaseHeaders]);
 
   // ─── Unified refresh (picks mode based on auth state) ──────────────────
-  // Anonymous visitors must sign in before generating (see handleGenerate),
-  // so quota only needs to be resolved for authenticated users here. The
-  // /api/generate route still enforces a per-IP cap server-side as a
-  // backstop against direct, unauthenticated API calls.
+  // A visitor who is not signed in gets FREE_GENERATION_LIMIT generations a
+  // day, counted per IP by /api/generate. The landing page promises a demo
+  // you can try right now, so the widget reads that allowance and spends it;
+  // the account is asked for once it runs out.
+
+  /** The daily free allowance of a visitor who is not signed in. */
+  const fetchAnonUsage = useCallback(async (): Promise<UsageCheck> => {
+    const res = await fetch("/api/usage/check", { method: "POST" });
+    if (!res.ok) throw new Error("Failed to fetch usage");
+    const data = (await res.json()) as UsageCheck;
+    const check: UsageCheck = {
+      allowed: data.allowed,
+      count: data.count,
+      remaining: data.remaining,
+    };
+    setUsage(check);
+    return check;
+  }, []);
 
   const refreshUsage = useCallback(async (): Promise<UsageCheck> => {
     if (user && session) {
       return fetchSupabaseUsage();
     }
-    const check: UsageCheck = { allowed: false, count: 0, remaining: FREE_GENERATION_LIMIT };
-    setUsage(check);
-    return check;
-  }, [user, session, fetchSupabaseUsage]);
+    return fetchAnonUsage();
+  }, [user, session, fetchSupabaseUsage, fetchAnonUsage]);
 
+  // Signed in: show the real monthly count straight away. Signed out: the
+  // daily allowance is read on the first click instead, so a visit that never
+  // touches the demo costs no request.
   useEffect(() => {
-    void refreshUsage();
-  }, [refreshUsage]);
+    if (user && session) void refreshUsage();
+  }, [user, session, refreshUsage]);
 
   const fetchHistory = useCallback(async () => {
     if (!user || !session) return;
@@ -176,6 +191,11 @@ export default function DemoWidget() {
       const generationResult: GenerateResult = { estimate: data.estimate, explanation: data.explanation, upsell: data.upsell };
       setResult(generationResult);
 
+      if (!user) {
+        // Keep the "N left today" line honest after a generation.
+        await fetchAnonUsage().catch(() => { /* the server still counts it */ });
+      }
+
       if (user && session) {
         const selectedCurrencyLabel = CURRENCIES.find(c => c.value === currency)?.label ?? currency;
         await Promise.all([
@@ -202,7 +222,6 @@ export default function DemoWidget() {
 
   async function handleGenerate() {
     setError(null);
-    if (!user) { openAuthModal(); return; }
     if (isPro) { await runGenerate(); return; }
 
     let status: UsageCheck;
@@ -285,7 +304,12 @@ export default function DemoWidget() {
         </div>
 
         {!user ? (
-          <p className="mt-2 text-sm text-gray-500">{t.signInToGenerate}</p>
+          <p className="mt-2 text-sm text-gray-500">
+            {/* Counting down to "0 left" is worse than saying it is gone. */}
+            {remaining > 0
+              ? t.demoFreeRemaining(remaining)
+              : t.demoFreeUsedUpTitle}
+          </p>
         ) : isPro ? null : (
           <>
             <p className="mt-2 text-sm text-gray-500">
@@ -336,12 +360,32 @@ export default function DemoWidget() {
 
       {showUpgradeModal && (
         <Modal onClose={() => setShowUpgradeModal(false)}>
-          <h3 className="text-xl font-semibold text-gray-900">{t.limitTitle}</h3>
-          <p className="mt-2 text-sm text-gray-600">{t.limitSubtext}</p>
+          <h3 className="text-xl font-semibold text-gray-900">
+            {user ? t.limitTitle : t.demoFreeUsedUpTitle}
+          </h3>
+          <p className="mt-2 text-sm text-gray-600">
+            {user ? t.limitSubtext : t.demoFreeUsedUpSubtext}
+          </p>
+          {!user && (
+            <button
+              type="button"
+              onClick={() => {
+                setShowUpgradeModal(false);
+                openAuthModal();
+              }}
+              className="mt-6 block w-full rounded-md bg-gray-900 px-4 py-2.5 text-center text-sm font-medium text-white hover:bg-gray-800"
+            >
+              {t.demoSignUpFree}
+            </button>
+          )}
           <Link
             href="#pricing"
             onClick={() => setShowUpgradeModal(false)}
-            className="mt-6 block w-full rounded-md bg-gray-900 px-4 py-2.5 text-center text-sm font-medium text-white hover:bg-gray-800"
+            className={
+              user
+                ? "mt-6 block w-full rounded-md bg-gray-900 px-4 py-2.5 text-center text-sm font-medium text-white hover:bg-gray-800"
+                : "mt-3 block w-full rounded-md border border-gray-300 px-4 py-2.5 text-center text-sm font-medium text-gray-900 hover:bg-gray-50"
+            }
           >
             {t.startTrial}
           </Link>

@@ -38,7 +38,12 @@ export const translations = {
     limitSubtext:
       "Upgrade to Standard or Professional for more estimates, explanations, and upsell suggestions.",
     startTrial: "View plans →",
-    signInToGenerate: "Sign in to generate →",
+    demoFreeRemaining: (n: number) =>
+      `${n} free ${n === 1 ? "generation" : "generations"} left today. A free account gives you 5 a month, your own estimate history and your price list.`,
+    demoFreeUsedUpTitle: "That is today’s free demo used up",
+    demoFreeUsedUpSubtext:
+      "A free account gives you 5 generations a month, your own estimate history and your price list. Or pick a plan below.",
+    demoSignUpFree: "Sign up free →",
     pleaseWait: "Please wait…",
     pleaseEnterEmail: "Please enter your email",
     outputEstimate: "Estimate",
@@ -351,7 +356,18 @@ export const translations = {
     limitSubtext:
       "Перейдите на Standard или Professional для большего числа смет, объяснений и допродаж.",
     startTrial: "Смотреть планы →",
-    signInToGenerate: "Войдите чтобы генерировать →",
+    demoFreeRemaining: (n: number) => {
+      // 1 генерация, 2-4 генерации, 0 и 5+ генераций.
+      const one = n % 10 === 1 && n % 100 !== 11;
+      const few = [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100);
+      const adjective = one ? "бесплатная" : few ? "бесплатные" : "бесплатных";
+      const noun = one ? "генерация" : few ? "генерации" : "генераций";
+      return `Осталось ${n} ${adjective} ${noun} на сегодня. Бесплатный аккаунт даёт 5 в месяц, историю смет и свой прайс-лист.`;
+    },
+    demoFreeUsedUpTitle: "Бесплатные генерации на сегодня закончились",
+    demoFreeUsedUpSubtext:
+      "Бесплатный аккаунт даёт 5 генераций в месяц, историю смет и загрузку прайс-листа. Или выберите план ниже.",
+    demoSignUpFree: "Зарегистрироваться бесплатно →",
     pleaseWait: "Подождите…",
     pleaseEnterEmail: "Введите ваш email",
     outputEstimate: "Смета",

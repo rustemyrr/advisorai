@@ -49,10 +49,17 @@ export default function AuthModal({ onClose }: { onClose: () => void }) {
 
     try {
       if (tab === "signup") {
-        const { error: err } = await supabase.auth.signUp({ email, password });
+        const { data, error: err } = await supabase.auth.signUp({ email, password });
         if (err) throw err;
-        // If email confirmation is disabled in Supabase → auth state changes and modal auto-closes.
-        // If confirmation is required → show message.
+        // Email confirmation is off in Supabase, so signUp hands back a session
+        // and the visitor is already signed in. Sending them to an inbox that
+        // will never get a letter is how an account is lost on the first
+        // minute. The message is shown only when Supabase really did send one,
+        // i.e. when it returns no session.
+        if (data.session) {
+          onClose();
+          return;
+        }
         setSuccess(copy.checkEmail);
       } else {
         const { error: err } = await supabase.auth.signInWithPassword({ email, password });
