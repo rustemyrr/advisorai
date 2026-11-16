@@ -2,13 +2,13 @@ import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
 import { getUserFromToken, createAdminClient } from "@/lib/supabase-server";
 import { getClientIp } from "@/lib/get-client-ip";
-import { checkUsageForIp, incrementUsageForIp } from "@/lib/leads-store";
+import { releaseForIp, reserveForIp } from "@/lib/leads-store";
 import {
   getMonthString,
   getOrCreateProfile,
-  getOrCreateUsage,
-  incrementUsage,
   limitForPlan,
+  releaseGeneration,
+  reserveGeneration,
 } from "@/lib/usage";
 import type { PricelistItem } from "@/app/api/pricelist/route";
 
@@ -108,37 +108,40 @@ export async function POST(request: Request) {
     const user = token ? await getUserFromToken(token) : null;
 
     let pricelist: { items: PricelistItem[]; labor_rate: number } | null = null;
-    let recordUsage: () => Promise<void>;
+    // Set once a generation has been spent, and called only if the model never
+    // answers -- see the call below.
+    let release: (() => Promise<void>) | null = null;
 
+    // The allowance is spent before the model is asked anything, not after it
+    // replies. Checking first and writing afterwards is two statements with a
+    // gap in the middle: two requests that arrive together both pass the check
+    // and the limit is quietly exceeded.
     if (user) {
       const month = getMonthString();
-      const [usage, profile] = await Promise.all([
-        getOrCreateUsage(user.id, month),
-        getOrCreateProfile(user.id),
-      ]);
+      const profile = await getOrCreateProfile(user.id);
       const limit = limitForPlan(profile.plan);
-      if (usage.count >= limit) {
-        return NextResponse.json(
-          { error: "Monthly generation limit reached for your plan", code: "USAGE_LIMIT" },
-          { status: 402 }
-        );
-      }
       pricelist = await fetchPricelistForUser(user.id);
-      recordUsage = async () => {
-        if (limit !== Infinity) await incrementUsage(user.id, month, usage.count + 1);
-      };
+
+      if (limit !== Infinity) {
+        const reservation = await reserveGeneration(user.id, month, limit);
+        if (!reservation.counted) {
+          return NextResponse.json(
+            { error: "Monthly generation limit reached for your plan", code: "USAGE_LIMIT" },
+            { status: 402 }
+          );
+        }
+        release = () => releaseGeneration(user.id, month);
+      }
     } else {
       const ip = getClientIp(request);
-      const status = await checkUsageForIp(ip);
-      if (!status.allowed) {
+      const reservation = await reserveForIp(ip);
+      if (!reservation.counted) {
         return NextResponse.json(
           { error: "Free generation limit reached", code: "USAGE_LIMIT" },
           { status: 402 }
         );
       }
-      recordUsage = async () => {
-        await incrementUsageForIp(ip);
-      };
+      release = () => releaseForIp(ip);
     }
 
     const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -149,21 +152,26 @@ export async function POST(request: Request) {
       pricelist
     );
 
-    const message = await client.messages.create({
-      model: "claude-sonnet-5-5",
-      max_tokens: 4096,
-      system: systemPrompt,
-      messages: [{ role: "user", content: jobDescription }],
-    });
-
-    // Counted the moment the model has answered, before the response is read
-    // or parsed. Everything below this line can still fail, and the key has
-    // already been spent by then -- a generation that fails after the call but
-    // is never counted is free compute. The job description is the visitor's
-    // own prompt, so "answer in plain text, no JSON" is a reply they can ask
-    // for on purpose: with the count after the parse, that loop had no cap at
-    // all, signed in or not.
-    await recordUsage();
+    // Whatever happens from here on, the generation stays spent: by the time
+    // the model has answered the key is paid for, and a reply that fails to
+    // parse must not be free -- the job description is the visitor's own
+    // prompt, so "answer in plain text, no JSON" is a reply they can ask for
+    // on purpose and repeat.
+    //
+    // A call that never answers at all is the one exception. Nothing was
+    // billed, and nothing in a repair description can provoke it, so that
+    // generation goes back.
+    const message = await client.messages
+      .create({
+        model: "claude-sonnet-5-5",
+        max_tokens: 4096,
+        system: systemPrompt,
+        messages: [{ role: "user", content: jobDescription }],
+      })
+      .catch(async (modelError: unknown) => {
+        if (release) await release();
+        throw modelError;
+      });
 
     const textBlock = message.content.find((block) => block.type === "text");
     if (!textBlock || textBlock.type !== "text") {

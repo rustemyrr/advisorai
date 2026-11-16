@@ -1,4 +1,4 @@
-import { createAdminClient } from "@/lib/supabase-server";
+import { createAdminClient, isMissingFunction } from "@/lib/supabase-server";
 
 // Monthly generation limits per plan.
 //
@@ -89,4 +89,69 @@ export async function incrementUsage(userId: string, month: string, newCount: nu
     .eq("user_id", userId)
     .eq("date", month);
   if (error) console.error("[incrementUsage] update failed:", error.message);
+}
+
+export type UsageReservation = { counted: boolean; count: number };
+
+/**
+ * Spends one generation of this month's allowance, and says whether there was
+ * one to spend. Call it before the model, not after: the point of the
+ * reservation is that the limit is decided while nothing has been billed yet.
+ *
+ * `increment_usage` (migration 0007) does the check and the write in one
+ * statement, so two requests that arrive together cannot both read the same
+ * count. Until that migration is applied to the live project this falls back
+ * to the read-modify-write it replaces, which holds the limit for one request
+ * at a time -- the behaviour the whole site had until then.
+ */
+export async function reserveGeneration(
+  userId: string,
+  month: string,
+  limit: number
+): Promise<UsageReservation> {
+  const db = createAdminClient();
+  const { data, error } = await db.rpc("increment_usage", {
+    p_user_id: userId,
+    p_date: month,
+    p_limit: limit,
+  });
+
+  if (!error) {
+    const row = (Array.isArray(data) ? data[0] : data) as
+      | { counted?: unknown; new_count?: unknown }
+      | null;
+    if (row && typeof row.counted === "boolean") {
+      return { counted: row.counted, count: Number(row.new_count) || 0 };
+    }
+    throw new Error("increment_usage returned an unexpected shape");
+  }
+
+  if (!isMissingFunction(error)) {
+    // Fail closed. An allowance we cannot write is an allowance we cannot
+    // enforce, and the caller is one line away from spending the API key.
+    throw new Error(`increment_usage failed: ${error.message}`);
+  }
+
+  const usage = await getOrCreateUsage(userId, month);
+  if (usage.count >= limit) return { counted: false, count: usage.count };
+  await incrementUsage(userId, month, usage.count + 1);
+  return { counted: true, count: usage.count + 1 };
+}
+
+/**
+ * Gives one generation back. Only for the failure that cost nothing and cannot
+ * be provoked from the request: the call to the model did not return at all.
+ * Best effort by design -- a refund that fails must not fail the response, and
+ * before migration 0007 there is no function to call, so the generation simply
+ * stays counted.
+ */
+export async function releaseGeneration(userId: string, month: string): Promise<void> {
+  const db = createAdminClient();
+  const { error } = await db.rpc("release_usage", {
+    p_user_id: userId,
+    p_date: month,
+  });
+  if (error && !isMissingFunction(error)) {
+    console.error("[releaseGeneration] release_usage failed:", error.message);
+  }
 }

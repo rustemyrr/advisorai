@@ -24,3 +24,21 @@ export async function getUserFromToken(token: string | null) {
   if (error || !data.user) return null;
   return data.user;
 }
+
+/**
+ * True when a `.rpc()` call failed because the function is not in the
+ * database yet. A migration lands in git before it is run against the live
+ * project, so every RPC added after launch has to answer this question: is
+ * this "not deployed yet" (fall back) or "broken" (fail closed).
+ */
+export function isMissingFunction(error: {
+  code?: string | null;
+  message?: string | null;
+}): boolean {
+  // PostgREST answers PGRST202 when the function is not in its schema cache;
+  // 42883 is Postgres' own "function does not exist".
+  if (error.code === "PGRST202" || error.code === "42883") return true;
+  return /could not find the function|function .* does not exist/i.test(
+    error.message ?? ""
+  );
+}
