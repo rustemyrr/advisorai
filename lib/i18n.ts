@@ -39,10 +39,10 @@ export const translations = {
       "Upgrade to Standard or Professional for more estimates, explanations, and upsell suggestions.",
     startTrial: "View plans →",
     demoFreeRemaining: (n: number) =>
-      `${n} free ${n === 1 ? "generation" : "generations"} left today. A free account gives you 5 a month, your own estimate history and your price list.`,
+      `${n} free ${n === 1 ? "generation" : "generations"} left today. A free account gives you 5 a month and your own estimate history.`,
     demoFreeUsedUpTitle: "That is today’s free demo used up",
     demoFreeUsedUpSubtext:
-      "A free account gives you 5 generations a month, your own estimate history and your price list. Or pick a plan below.",
+      "A free account gives you 5 generations a month and your own estimate history. Your own price list comes with the plans below.",
     demoSignUpFree: "Sign up free →",
     pleaseWait: "Please wait…",
     pleaseEnterEmail: "Please enter your email",
@@ -362,11 +362,11 @@ export const translations = {
       const few = [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100);
       const adjective = one ? "бесплатная" : few ? "бесплатные" : "бесплатных";
       const noun = one ? "генерация" : few ? "генерации" : "генераций";
-      return `Осталось ${n} ${adjective} ${noun} на сегодня. Бесплатный аккаунт даёт 5 в месяц, историю смет и свой прайс-лист.`;
+      return `Осталось ${n} ${adjective} ${noun} на сегодня. Бесплатный аккаунт даёт 5 в месяц и историю смет.`;
     },
     demoFreeUsedUpTitle: "Бесплатные генерации на сегодня закончились",
     demoFreeUsedUpSubtext:
-      "Бесплатный аккаунт даёт 5 генераций в месяц, историю смет и загрузку прайс-листа. Или выберите план ниже.",
+      "Бесплатный аккаунт даёт 5 генераций в месяц и историю смет. Свой прайс-лист — на планах ниже.",
     demoSignUpFree: "Зарегистрироваться бесплатно →",
     pleaseWait: "Подождите…",
     pleaseEnterEmail: "Введите ваш email",
