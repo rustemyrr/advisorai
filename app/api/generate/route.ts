@@ -156,6 +156,15 @@ export async function POST(request: Request) {
       messages: [{ role: "user", content: jobDescription }],
     });
 
+    // Counted the moment the model has answered, before the response is read
+    // or parsed. Everything below this line can still fail, and the key has
+    // already been spent by then -- a generation that fails after the call but
+    // is never counted is free compute. The job description is the visitor's
+    // own prompt, so "answer in plain text, no JSON" is a reply they can ask
+    // for on purpose: with the count after the parse, that loop had no cap at
+    // all, signed in or not.
+    await recordUsage();
+
     const textBlock = message.content.find((block) => block.type === "text");
     if (!textBlock || textBlock.type !== "text") {
       return NextResponse.json(
@@ -165,8 +174,6 @@ export async function POST(request: Request) {
     }
 
     const parsed = parseJsonResponse(textBlock.text);
-
-    await recordUsage();
 
     return NextResponse.json(parsed);
   } catch (err) {
