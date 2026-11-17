@@ -40,7 +40,7 @@ export default function BusinessAgentsSection() {
 
         <div className="mt-12 grid gap-6 md:grid-cols-2">
           {agents.map((agent) => (
-            <AgentCard key={agent.title} {...agent} />
+            <AgentCard key={agent.title} {...agent} requestFor={agent.title} />
           ))}
         </div>
       </div>

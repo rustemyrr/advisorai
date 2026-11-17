@@ -157,12 +157,14 @@ export const translations = {
       "This kind of agent does not prompt an employee: it holds a job in your process. It talks to the customer, decides inside the rules you set, and carries the thing to a result — a booking made, a reminder delivered, an appointment confirmed. What is left for people is what needs people.",
     agentDirectorTitle: "AI assistant for the director",
     agentDirectorText:
-      "Takes the evening spreadsheet work off your hands. Yesterday's summary is ready by morning: revenue, average ticket, costs, workload. Need a particular number? Ask in plain language and get an answer, not a form to fill in.",
+      "Takes the spreadsheet work off your hands. The day's summary is ready the same evening: revenue, average ticket, costs, workload. Need a particular number? Ask in plain language and get an answer, not a form to fill in.",
     agentDirectorBullets: [
-      "Yesterday's summary arrives in the morning — nothing to compile",
+      "The day's summary arrives the same evening — nothing to compile",
       "A question about the numbers in plain language instead of a report form",
       "Spots what went off on its own and says where to look first",
     ],
+    agentRequestCta: "Request a consultation",
+    consultAbout: (what: string) => `Interested in: ${what}`,
     agentSmmTitle: "AI SMM editor",
     agentSmmText:
       "Takes the editing and the captions off you. You film the job on a phone — the agent picks the usable takes, cuts the clip and writes the post. Keeping the socials going no longer costs you an evening.",
@@ -476,12 +478,14 @@ export const translations = {
       "Такой агент не подсказывает сотруднику — он занимает место в вашем процессе. Разговаривает с клиентом, принимает решения в рамках ваших правил и доводит дело до результата: запись сделана, напоминание дошло, визит подтверждён. Человеку остаётся то, где нужен человек.",
     agentDirectorTitle: "ИИ ассистент директора",
     agentDirectorText:
-      "Избавляет от вечернего сведения таблиц. Утром отчёт за вчера уже готов: выручка, средний чек, расходы, загрузка. А если нужно уточнить цифру — спрашиваете обычным языком и получаете ответ, а не форму для заполнения.",
+      "Избавляет от сведения таблиц. Вечером того же дня отчёт уже готов: выручка, средний чек, расходы, загрузка. А если нужно уточнить цифру — спрашиваете обычным языком и получаете ответ, а не форму для заполнения.",
     agentDirectorBullets: [
-      "Отчёт за вчера приходит утром — сводить ничего не нужно",
+      "Отчёт за день приходит вечером того же дня — сводить ничего не нужно",
       "Вопрос о цифрах обычным языком вместо отчётной формы",
       "Сам замечает, что пошло не так, и говорит, куда смотреть в первую очередь",
     ],
+    agentRequestCta: "Оставить заявку",
+    consultAbout: (what: string) => `Интересует: ${what}`,
     agentSmmTitle: "ИИ СММ-монтажёр",
     agentSmmText:
       "Снимает с вас монтаж и подписи. Вы просто снимаете работу на телефон — агент отбирает удачные кадры, собирает ролик и пишет текст к публикации. Вести соцсети больше не значит тратить на это вечер.",

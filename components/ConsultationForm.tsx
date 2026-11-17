@@ -1,7 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Check } from "lucide-react";
+import {
+  CONSULTATION_PREFILL_EVENT,
+  type ConsultationPrefillDetail,
+} from "@/lib/consultation-prefill";
 import { useLanguage } from "@/lib/language-context";
 
 type Status = "idle" | "sending" | "done" | "error";
@@ -29,6 +33,22 @@ export default function ConsultationForm({
   const [website, setWebsite] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
+
+  // A card above says which agent the visitor came from. It fills the comment
+  // only while the field is still empty, so it can never overwrite something
+  // the visitor typed, and a visitor who scrolled here on their own sees the
+  // form exactly as before.
+  useEffect(() => {
+    function onPrefill(event: Event) {
+      const { detail } = event as CustomEvent<ConsultationPrefillDetail>;
+      if (!detail?.about) return;
+      setComment((current) =>
+        current.trim() ? current : t.consultAbout(detail.about)
+      );
+    }
+    window.addEventListener(CONSULTATION_PREFILL_EVENT, onPrefill);
+    return () => window.removeEventListener(CONSULTATION_PREFILL_EVENT, onPrefill);
+  }, [t]);
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
