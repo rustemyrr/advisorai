@@ -150,7 +150,7 @@ export const translations = {
     agentsHeadline: "Assistants for pros",
     agentsSubtitle: "The ones that make you more effective and make your life simpler",
     agentsSubtext:
-      "An assistant takes over one job that eats your time every day and does it on its own — no reminders, and no new software to learn. The work stays yours; what goes is the part that costs you the evening.",
+      "An assistant takes over the jobs that eat your time every day and does them on its own — no reminders, and no new software to learn. The work stays yours; the routine is what goes.",
     businessAgentsHeadline: "Agents for a business",
     businessAgentsSubtitle: "Not a helper beside a person — the role itself",
     businessAgentsSubtext:
@@ -469,7 +469,7 @@ export const translations = {
     agentsHeadline: "Ассистенты для профессионалов",
     agentsSubtitle: "Те, кто делает вас эффективнее и упрощает вашу жизнь",
     agentsSubtext:
-      "Ассистент берёт на себя одну задачу, на которую у вас каждый день уходит время, и делает её сам — без напоминаний и без новых программ, которые надо осваивать. Работа остаётся вашей, уходит та часть, что съедает вечер.",
+      "Ассистент берёт на себя задачи, на которые у вас каждый день уходит время, и делает их сам — без напоминаний и без новых программ, которые надо осваивать. Работа остаётся вашей — уходит рутина.",
     businessAgentsHeadline: "Агенты для бизнеса",
     businessAgentsSubtitle: "Не помощник рядом с человеком, а сама роль",
     businessAgentsSubtext:
