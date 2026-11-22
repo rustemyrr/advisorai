@@ -13,7 +13,7 @@ import AgentCard from "@/components/AgentCard";
  * and live in their own block (components/BusinessAgentsSection.tsx).
  */
 export default function AgentsSection() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
 
   const assistants = [
     {
@@ -21,6 +21,8 @@ export default function AgentsSection() {
       title: t.agentDirectorTitle,
       text: t.agentDirectorText,
       bullets: t.agentDirectorBullets,
+      href: "/director-assistant",
+      cta: lang === "en" ? "Open demo" : "Открыть демо",
     },
     {
       icon: Clapperboard,

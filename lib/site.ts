@@ -13,6 +13,7 @@ export const sitemapPaths = [
   "/",
   "/service-agent",
   "/service-advisor",
+  "/director-assistant",
   "/terms",
   "/privacy",
   "/refund",
