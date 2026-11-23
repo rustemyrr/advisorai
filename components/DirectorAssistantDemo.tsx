@@ -5,301 +5,433 @@ import Link from "next/link";
 import {
   ArrowLeft,
   CircleHelp,
-  Lightbulb,
+  Headphones,
   ListChecks,
-  Search,
   Send,
+  TrendingDown,
+  TrendingUp,
   TriangleAlert,
 } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
 
 /**
- * What the director's assistant actually sends, with invented numbers.
+ * The dealership director's daily report, with everything invented.
  *
- * The first version of this page was a dashboard somebody imagined: four tiles
- * and three notes. The working framework sends something else entirely, and
- * Rustem reads it every evening -- so the demo has to carry the same shape:
- * the day against its norm, revenue by hour, a P&L that walks from revenue
- * down to profit, the top jobs, the month so far with a forecast, and then the
- * part people actually read -- signals, risks, recommendations, one idea.
+ * Modelled on the real one Rustem reads every evening. Two things about it
+ * matter more than the list of blocks, and both are reproduced here:
  *
- * Everything here is fictional and the page says so three times. It is not the
- * framework and must never be presented as it: no connection, no real figures.
- * The arithmetic below is consistent on purpose -- a sample report whose
- * numbers do not add up teaches the reader to distrust the real one.
+ *  - a section heading is a finding with a number in it, not a label. "Seven
+ *    of eighteen cars no longer cover their interest" is the heading; the
+ *    table under it is the evidence.
+ *  - half of it is not money but discipline: response time against the SLA,
+ *    rejections closed without a call, agreements never written into the CRM,
+ *    and the call scorecard that shows which step of the script is skipped.
+ *
+ * Everything on this page is fictional: the dealership, the managers, the
+ * models, every figure. It is a prototype of the interface, it connects to
+ * nothing, and it says so three times. Do not wire it to real data and do not
+ * present it as the working assistant.
  */
 
-const CURRENCY_DAY = 1_284_000;
-const CURRENCY_NORM = 1_330_000;
-const ORDERS = 36;
-const AVERAGE = Math.round(CURRENCY_DAY / ORDERS); // 35 667
-const AVERAGE_NORM = 36_900;
-const BAYS_USED = 7;
-const BAYS_TOTAL = 9;
-const LOAD = Math.round((BAYS_USED / BAYS_TOTAL) * 100); // 78
+const MONTH = { day: 23, days: 30 };
 
-/** Hourly revenue; the parts sum to the day's revenue above. */
-const HOURS: ReadonlyArray<readonly [string, number]> = [
-  ["09", 42_000],
-  ["10", 96_000],
-  ["11", 148_000],
-  ["12", 171_000],
-  ["13", 118_000],
-  ["14", 163_000],
-  ["15", 186_000],
-  ["16", 154_000],
-  ["17", 128_000],
-  ["18", 78_000],
-];
-const HOUR_MAX = Math.max(...HOURS.map(([, v]) => v));
-
-const PARTS = 577_800; // 45% of revenue
-const WAGES = 231_120; // 18%, piece rate
-const ACQUIRING = 15_408; // 1.2%
-const TAX = 38_520; // 3% set aside
-const GROSS = CURRENCY_DAY - PARTS - WAGES - ACQUIRING - TAX; // 421 152
-const FIXED = 268_000;
-const NET = GROSS - FIXED; // 153 152
-
-type PnlKind = "base" | "minus" | "subtotal" | "total";
-const PNL: ReadonlyArray<{ key: string; value: number; kind: PnlKind }> = [
-  { key: "pnlRevenue", value: CURRENCY_DAY, kind: "base" },
-  { key: "pnlParts", value: -PARTS, kind: "minus" },
-  { key: "pnlWages", value: -WAGES, kind: "minus" },
-  { key: "pnlAcquiring", value: -ACQUIRING, kind: "minus" },
-  { key: "pnlTax", value: -TAX, kind: "minus" },
-  { key: "pnlGross", value: GROSS, kind: "subtotal" },
-  { key: "pnlFixed", value: -FIXED, kind: "minus" },
-  { key: "pnlNet", value: NET, kind: "total" },
-];
-
-/** Top jobs: count and revenue. Not expected to sum to the day. */
-const TOP_JOBS: ReadonlyArray<{ key: string; count: number; sum: number }> = [
-  { key: "jobOil", count: 9, sum: 171_000 },
-  { key: "jobBrakes", count: 5, sum: 164_000 },
-  { key: "jobCooling", count: 2, sum: 148_000 },
-  { key: "jobSuspension", count: 7, sum: 98_000 },
-  { key: "jobTyres", count: 6, sum: 72_000 },
-];
-
-const MIX = { labourOnly: 11, labourParts: 21, partsOnly: 4 }; // 36
-const SERVICE_PLAN = { done: 5, plan: 8 };
-
-const MONTH = {
-  days: 19,
-  revenue: 24_980_000,
-  orders: 712,
-  profit: 3_120_000,
-  forecast: 4_250_000,
+type Direction = {
+  key: string;
+  plan: number;
+  fact: number;
+  forecast: number;
+  unit: "pcs" | "money";
 };
 
-const SIGNALS = ["signal1", "signal2", "signal3", "signal4", "signal5"] as const;
-const RISKS = ["risk1", "risk2", "risk3"] as const;
-const ACTIONS = ["action1", "action2", "action3"] as const;
+const DIRECTIONS: readonly Direction[] = [
+  { key: "dirNew", plan: 6, fact: 3, forecast: 6, unit: "pcs" },
+  { key: "dirService", plan: 42_000_000, fact: 31_400_000, forecast: 41_000_000, unit: "money" },
+  { key: "dirUsed", plan: 5, fact: 2, forecast: 4, unit: "pcs" },
+  { key: "dirFinance", plan: 18_000_000, fact: 12_200_000, forecast: 16_000_000, unit: "money" },
+];
 
-type AnswerKey = "profit" | "workload" | "firstStep";
+const PROFIT = { plan: 60_000_000, forecast: 54_000_000 };
+
+const STOCK = {
+  total: 18,
+  underwater: 7,
+  loss: 28_400_000,
+  charged: 14,
+  perMonth: 15_600_000,
+  perDay: 312_000,
+};
+
+const FUNNEL = [
+  { key: "funnelLeads", value: 426 },
+  { key: "funnelVisits", value: 112 },
+  { key: "funnelDrives", value: 38 },
+  { key: "funnelOffers", value: 21 },
+  { key: "funnelContracts", value: 7 },
+] as const;
+
+const SOURCES = [
+  { key: "srcSite", value: 168 },
+  { key: "srcMeta", value: 121 },
+  { key: "srcCalls", value: 84 },
+  { key: "srcWalkIn", value: 53 },
+] as const;
+
+const SLA = { target: 90, actual: 86, leads: 426, inTime: 367, median: 6, lateToday: 2 };
+
+/** The nine checklist items a call is scored against. */
+const SCRIPT = [
+  "s1",
+  "s2",
+  "s3",
+  "s4",
+  "s5",
+  "s6",
+  "s7",
+  "s8",
+  "s9",
+] as const;
+
+const SCRIPT_ALL = [98, 76, 41, 49, 10, 20, 45, 51, 10];
+
+type Manager = {
+  key: string;
+  scored: number;
+  score: number;
+  week: number;
+  items: number[];
+  leads: number;
+  sla: number;
+  drives: number;
+  contracts: number;
+};
+
+const MANAGERS: readonly Manager[] = [
+  {
+    key: "mgr1",
+    scored: 25,
+    score: 46,
+    week: 51,
+    items: [100, 80, 48, 52, 0, 12, 48, 56, 16],
+    leads: 164,
+    sla: 91,
+    drives: 18,
+    contracts: 3,
+  },
+  {
+    key: "mgr2",
+    scored: 12,
+    score: 44,
+    week: 39,
+    items: [100, 92, 8, 58, 33, 17, 42, 50, 0],
+    leads: 142,
+    sla: 84,
+    drives: 11,
+    contracts: 2,
+  },
+  {
+    key: "mgr3",
+    scored: 11,
+    score: 50,
+    week: 37,
+    items: [100, 73, 64, 36, 0, 27, 45, 45, 9],
+    leads: 120,
+    sla: 79,
+    drives: 9,
+    contracts: 2,
+  },
+];
+
+const CALLS = { scored: 51, average: 44 };
+
+const WEAK = [
+  { key: "weak1", manager: "mgr2", score: 33, seconds: 175 },
+  { key: "weak2", manager: "mgr3", score: 28, seconds: 212 },
+] as const;
+
+const REJECTS = { total: 426, unproven: 140, noAttempts: 115 };
+
+const PRIORITIES = ["prio1", "prio2", "prio3"] as const;
+const RISKS = ["risk1", "risk2", "risk3", "risk4"] as const;
+const ACTIONS = ["action1", "action2", "action3"] as const;
+const BETTER = ["better1", "better2", "better3"] as const;
+const WORSE = ["worse1", "worse2", "worse3"] as const;
+
+type AnswerKey = "plan" | "leads" | "firstStep";
 
 const copy = {
   en: {
     back: "All assistants",
     eyebrow: "Interactive prototype",
-    title: "The evening report, the way it actually arrives.",
+    title: "The dealership report, the way it actually arrives.",
     intro:
-      "The working assistant sends this every evening: the day against its norm, where the money went, and what to do about it. The figures below are invented.",
-    demoBadge: "Sample data · fictional workshop",
-    shop: "Seifullin Street Workshop",
-    day: "Sunday, 22 November 2026",
-    kpiRevenue: "Revenue",
-    kpiRevenueNote: `3.5% below the ${fmtEn(CURRENCY_NORM)} norm`,
-    kpiAverage: "Average order",
-    kpiAverageNote: `${ORDERS} orders closed · norm ${fmtEn(AVERAGE_NORM)}`,
-    kpiLoad: "Workshop load",
-    kpiLoadNote: `${BAYS_USED} of ${BAYS_TOTAL} bays busy`,
-    kpiNet: "Net profit",
-    kpiNetNote: "11.9% of revenue",
-    hoursTitle: "Revenue by hour",
-    hoursNote: "Peak at 15:00; the 13:00 dip is the usual lunch gap.",
-    pnlTitle: "P&L for the day",
-    pnlRevenue: "Revenue",
-    pnlParts: "− Parts cost (45%)",
-    pnlWages: "− Mechanics' pay (18%, piece rate)",
-    pnlAcquiring: "− Card processing (1.2%)",
-    pnlTax: "− Tax set aside (3%)",
-    pnlGross: "= Gross margin",
-    pnlFixed: "− Fixed per day (rent, utilities, admin, security)",
-    pnlNet: "= Net profit for the day",
-    topTitle: "Top jobs",
-    topCount: "Count",
-    topSum: "Revenue",
-    jobOil: "Oil and filter change",
-    jobBrakes: "Brake pad replacement",
-    jobCooling: "Cooling system repair",
-    jobSuspension: "Suspension diagnostics",
-    jobTyres: "Seasonal tyre change",
-    mixTitle: "What the orders were made of",
-    mixLabourOnly: "Labour only",
-    mixLabourParts: "Labour and parts",
-    mixPartsOnly: "Parts only",
-    planTitle: `Scheduled servicing — plan ${SERVICE_PLAN.plan} cars a day`,
-    planNote: `${SERVICE_PLAN.done} of ${SERVICE_PLAN.plan} · third day under plan`,
-    monthTitle: "Month to date (1–22 November)",
-    monthRevenue: "Revenue",
-    monthOrders: "Orders",
-    monthProfit: "Profit",
-    monthForecast: "Month forecast",
-    monthForecastNote: "On the last 30 days' average",
-    monthDays: `${MONTH.days} working days`,
-    signalsTitle: "Signals of the day",
-    signal1: `Revenue is 3.5% under the norm (${fmtEn(CURRENCY_DAY)} against ${fmtEn(CURRENCY_NORM)}), yet profit held: the average order rose 2.1%. Fewer cars, more expensive work.`,
-    signal2:
-      "Parts are 45% of revenue against the usual 41% — check whether the last purchases went to the pricier supplier.",
-    signal3: `Two bays stood idle all day (load ${LOAD}%) — cancellations, or slots nobody filled?`,
-    signal4: `Scheduled servicing came in at ${SERVICE_PLAN.done} of ${SERVICE_PLAN.plan}, under plan for the third day running.`,
-    signal5:
-      "Four orders were parts with no labour — counter sales, or work that was done and never written up?",
+      "What a dealer principal reads every evening: the month against its plan, where the leads are lost, how the team actually speaks to customers — and what to do tomorrow morning. Every figure here is invented.",
+    demoBadge: "Sample data · fictional dealership",
+    shop: "Turan Avenue Motors",
+    period: `Sales · November · ${MONTH.day} of ${MONTH.days} days gone`,
+
+    planTitle: "Plan, actual and forecast by department",
+    dirNew: "New cars · handovers",
+    dirService: "Service, parts, accessories",
+    dirUsed: "Used cars",
+    dirFinance: "Finance and insurance",
+    colPlan: "Plan",
+    colFact: "Actual",
+    colForecast: "Forecast",
+    profitLine: "Net profit forecast",
+    profitNote: "Against a plan of",
+
+    stockTitle: `${STOCK.underwater} of ${STOCK.total} cars in stock no longer cover their interest: minus ${fmtEn(STOCK.loss)}`,
+    stockNote: `Interest runs on ${STOCK.charged} cars — ${fmtEn(STOCK.perMonth)} a month, ${fmtEn(STOCK.perDay)} a day. It starts on day 61 in stock at 18% a year and eats the 10% margin before the car is sold.`,
+
+    funnelTitle: "Where customers come from and how far they get",
+    funnelLeads: "Enquiries",
+    funnelVisits: "Visits",
+    funnelDrives: "Test drives",
+    funnelOffers: "Written offers",
+    funnelContracts: "Contracts",
+    srcSite: "Website",
+    srcMeta: "Meta",
+    srcCalls: "Calls",
+    srcWalkIn: "Walk-in",
+    sourcesTitle: "Traffic by source",
+
+    slaTitle: `40-minute SLA: ${SLA.actual}% of leads this month against a ${SLA.target}% target`,
+    slaNote: `${SLA.inTime} of ${SLA.leads} leads picked up inside 40 minutes, median 6 minutes. Late or still untouched today: ${SLA.lateToday}.`,
+
+    callsTitle: `Call scoring averages ${CALLS.average}%: the configurator is offered in 10% of calls, the address in 10%, a test drive in 20%`,
+    callsNote: `${CALLS.scored} calls scored this month against the nine-step script. A green cell means the step was done in that share of the manager's calls.`,
+    colManager: "Manager",
+    colScored: "Scored",
+    colScore: "Score",
+    colWeek: "7 days",
+    s1: "Greeting, name, role",
+    s2: "Model",
+    s3: "Invited to the showroom",
+    s4: "Customer's city",
+    s5: "Configurator",
+    s6: "Test drive",
+    s7: "Trade-in",
+    s8: "Finance, instalments, insurance",
+    s9: "Address",
+    scriptAll: "Everyone, this month",
+    mgr1: "Askhat Y.",
+    mgr2: "Daniyar S.",
+    mgr3: "Ilyas T.",
+
+    ratingTitle: "Manager ranking",
+    ratingNote: "Sorted by the last seven days of call scoring — the number that moves fastest.",
+    colLeads: "Leads",
+    colSla: "SLA",
+    colCalls: "Calls",
+    colDrives: "Test drives",
+    colContracts: "Contracts",
+
+    weakTitle: "Weak calls over seven days",
+    weakNote: "Scored 34% or below and longer than a minute — the ones worth listening to.",
+    weak1: "Outbound · new lead · price request",
+    weak2: "Outbound · follow-up after a visit",
+    sec: "s",
+
+    rejectsTitle: `${REJECTS.total} rejections this month: ${REJECTS.unproven} with nothing to back them (${Math.round((REJECTS.unproven / REJECTS.total) * 100)}%)`,
+    rejectsNote: `${REJECTS.noAttempts} were closed as "not answering" without three call attempts on different days. A rejection counts only when the customer was called from the showroom line and the reason is in the comment.`,
+
+    prioTitle: "Priorities for tomorrow",
+    prio1: `Rejections without evidence: ${REJECTS.unproven} to review, ${WEAK.length === 2 ? 11 : 11} of them hot. Send back to the manager anything with no call from the line.`,
+    prio2: "Rule 17 breached twice today — \"not answering\" with fewer than three attempts. Do not confirm; call the customer.",
+    prio3: "Push the 14 live offers: a decision date and a next step on each, checked daily.",
     risksTitle: "Risks",
-    risk1:
-      "If parts settle at 45% of revenue, the month lands roughly KZT 380,000 under the forecast.",
-    risk2:
-      "Two idle bays are about KZT 90,000 of revenue a day at the average labour rate.",
-    risk3:
-      "A third day under the servicing plan means next month opens with an empty schedule.",
-    actionsTitle: "What to do",
-    action1:
-      "Check the purchase prices on the last three invoices for pads and filters.",
-    action2:
-      "Before 10:00 tomorrow, call back the cancellations and offer the free 14:00 and 16:00 slots.",
-    action3:
-      "Send a service reminder to the 23 cars whose interval came due in the last 30 days.",
-    ideaTitle: "Idea of the day",
-    idea: "A seasonal package — tyre change, brake check and cabin filter for KZT 28,900 instead of 34,500. It fills the bays that stand idle in the afternoon, which is exactly where the day sags.",
-    askTitle: "Ask about the numbers",
+    risk1: `At ${SLA.actual}% the SLA misses the ${SLA.target}% target, and the target is a condition of the importer's Q4 programme.`,
+    risk2: "The configurator is offered in one call out of ten. It is the step that turns a price question into a visit.",
+    risk3: `Interest on stock grows by ${fmtEn(STOCK.perDay)} a day. Seven cars are already past the point where the margin covers it.`,
+    risk4: "Showroom cameras counted 122 entries this month against 34 visits in the CRM. Some are staff, but the gap is customers nobody logged.",
+    actionsTitle: "Recommendations",
+    action1: "Add the configurator to the script check and review it at the Monday meeting — it is the cheapest point of growth on this page.",
+    action2: "Sell the two worst stock cars first: their interest alone exceeds the discount it would take to move them.",
+    action3: "Give reception a rule for night enquiries — the first lead of the day is created at 09:57, and the customer wrote at 23:40.",
+
+    weekTitle: "Week against week",
+    betterTitle: "Improved",
+    better1: "Contracts: 7 against 5",
+    better2: "SLA: +4 points",
+    better3: "Call-backs on missed calls: +12%",
+    worseTitle: "Worse",
+    worse1: "Configurator offered: −6 points",
+    worse2: "Showroom visits: −9",
+    worse3: "Missed calls with no call-back: 32%",
+
+    askTitle: "Ask about the report",
     askText:
       "Pick an example or type your own. This demo answers three prepared questions and sends nothing anywhere.",
-    placeholder: "For example: why is profit under the norm?",
+    placeholder: "For example: why is the plan at risk?",
     send: "Ask",
     examples: "Try asking",
-    qProfit: "Why is revenue under the norm?",
-    qWorkload: "Where did the load sag today?",
+    qPlan: "Why is the monthly plan at risk?",
+    qLeads: "Where are we losing leads?",
     qFirstStep: "What should I check first?",
     responseLabel: "Assistant response",
-    sources: `Basis: sample ledger · ${ORDERS} orders · revenue, parts and payroll`,
-    profitAnswer: `Revenue is ${fmtEn(CURRENCY_DAY)} against a norm of ${fmtEn(CURRENCY_NORM)} — 3.5% under. The gap is in volume, not price: the average order is up 2.1%, so fewer cars came through. Net profit still came to ${fmtEn(NET)}, because the day's fixed costs were already covered by 15:00.`,
-    workloadAnswer: `Seven of nine bays were busy, so load was ${LOAD}%. The dip is between 13:00 and 14:00 and again after 17:00. Two bays stood free the whole day — check cancellations and unfilled slots before tomorrow's shift.`,
-    firstStepAnswer:
-      "Parts at 45% of revenue against the usual 41%. That is about KZT 51,000 for the day, more than anything else on this page. Start with the last three purchase invoices.",
+    sources: "Basis: sample CRM, telephony and 1C ledgers · November",
+    planAnswer: `Three handovers of six with ${MONTH.days - MONTH.day} days left. The forecast still says six, because four contracts are signed and the cars are here — the risk is not demand, it is paperwork and delivery dates. Net profit is forecast at ${fmtEn(PROFIT.forecast)} against a plan of ${fmtEn(PROFIT.plan)}, and the gap is almost exactly the interest accrued on stock.`,
+    leadsAnswer: `Between the enquiry and the visit: 426 enquiries became 112 visits. Two causes are visible on this page — the SLA at ${SLA.actual}% against a ${SLA.target}% target, and the configurator offered in 10% of calls. The second is cheaper to fix and moves the same number.`,
+    firstStepAnswer: `The ${REJECTS.unproven} rejections with nothing behind them. A third of the month's rejections were closed without a call from the line, which means the funnel above is measuring a smaller market than you actually have.`,
     unknownAnswer:
       "This prototype recognizes only the three sample questions below. It has no connected data and no live model. Pick one to see how an answer with its basis would look.",
     disclosure:
-      "Prototype only. Every figure here is invented for interface testing; nothing is connected to a business system, and this is not the working assistant.",
+      "Prototype only. The dealership, the managers, the models and every figure are invented for interface testing. Nothing here is connected to a CRM, a telephony system or 1C, and this is not the working assistant.",
     questionHint: "The response appears here",
     questionRequired: "Type a question or choose an example.",
-    generated: "Generated by the director's assistant · sample 22.11.2026 20:30",
+    generated: "Generated by the director's assistant · sample 23.11.2026 20:30",
   },
   ru: {
     back: "Все ассистенты",
     eyebrow: "Интерактивный прототип",
-    title: "Вечерний отчёт — так, как он приходит.",
+    title: "Отчёт дилерского центра — так, как он приходит.",
     intro:
-      "Работающий ассистент присылает это каждый вечер: день против нормы, куда ушли деньги и что с этим делать. Цифры ниже вымышлены.",
-    demoBadge: "Учебные данные · вымышленный сервис",
-    shop: "Автосервис на Сейфуллина",
-    day: "Воскресенье, 22 ноября 2026",
-    kpiRevenue: "Выручка",
-    kpiRevenueNote: `На 3,5% ниже нормы ${fmtRu(CURRENCY_NORM)}`,
-    kpiAverage: "Средний заказ",
-    kpiAverageNote: `${ORDERS} заказ-нарядов · норма ${fmtRu(AVERAGE_NORM)}`,
-    kpiLoad: "Загрузка сервиса",
-    kpiLoadNote: `Занято ${BAYS_USED} из ${BAYS_TOTAL} постов`,
-    kpiNet: "Чистая прибыль",
-    kpiNetNote: "11,9% от выручки",
-    hoursTitle: "Выручка по часам",
-    hoursNote: "Пик в 15:00, провал в 13:00 — обычный обеденный.",
-    pnlTitle: "P&L дня",
-    pnlRevenue: "Выручка",
-    pnlParts: "− Себестоимость запчастей (45%)",
-    pnlWages: "− Зарплата механиков (сделка 18%)",
-    pnlAcquiring: "− Эквайринг (1,2%)",
-    pnlTax: "− Налог (резерв 3%)",
-    pnlGross: "= Валовая маржа",
-    pnlFixed: "− Фикс/день (аренда, коммуналка, админ, охрана)",
-    pnlNet: "= Чистая прибыль дня",
-    topTitle: "Топ работ",
-    topCount: "Кол-во",
-    topSum: "Выручка",
-    jobOil: "Замена масла и фильтров",
-    jobBrakes: "Замена тормозных колодок",
-    jobCooling: "Ремонт системы охлаждения",
-    jobSuspension: "Диагностика подвески",
-    jobTyres: "Сезонный шиномонтаж",
-    mixTitle: "Из чего состояли заказ-наряды",
-    mixLabourOnly: "Только работы",
-    mixLabourParts: "Работы и запчасти",
-    mixPartsOnly: "Только запчасти",
-    planTitle: `Плановое ТО — план ${SERVICE_PLAN.plan} машин в день`,
-    planNote: `${SERVICE_PLAN.done} из ${SERVICE_PLAN.plan} · третий день ниже плана`,
-    monthTitle: "Накопленный итог месяца (1–22 ноября)",
-    monthRevenue: "Выручка",
-    monthOrders: "Заказ-нарядов",
-    monthProfit: "Прибыль",
-    monthForecast: "Прогноз месяца",
-    monthForecastNote: "По среднему за последние 30 дней",
-    monthDays: `${MONTH.days} рабочих дней`,
-    signalsTitle: "Сигналы дня",
-    signal1: `Выручка на 3,5% ниже нормы (${fmtRu(CURRENCY_DAY)} против ${fmtRu(CURRENCY_NORM)}), но прибыль удержалась: средний заказ вырос на 2,1%. Машин меньше, работы дороже.`,
-    signal2:
-      "Запчасти — 45% выручки против обычных 41%. Проверьте, не ушли ли последние закупки к дорогому поставщику.",
-    signal3: `Два поста простояли весь день (загрузка ${LOAD}%) — отмены или незаполненные окна?`,
-    signal4: `Плановое ТО — ${SERVICE_PLAN.done} из ${SERVICE_PLAN.plan}, третий день подряд ниже плана.`,
-    signal5:
-      "Четыре заказ-наряда — запчасти без работ. Продажа через стойку или неоформленные работы?",
+      "То, что директор салона читает каждый вечер: месяц против плана, где теряются клиенты, как команда на самом деле разговаривает — и что делать завтра утром. Все цифры здесь вымышлены.",
+    demoBadge: "Учебные данные · вымышленный салон",
+    shop: "Автоцентр на Туран",
+    period: `Продажи · ноябрь · прошло ${MONTH.day} из ${MONTH.days} дн.`,
+
+    planTitle: "План, факт и прогноз по направлениям",
+    dirNew: "Новые автомобили · выдачи",
+    dirService: "Сервис, запчасти, аксессуары",
+    dirUsed: "Автомобили с пробегом",
+    dirFinance: "Финансовые услуги",
+    colPlan: "План",
+    colFact: "Факт",
+    colForecast: "Прогноз",
+    profitLine: "Прогноз чистой прибыли",
+    profitNote: "при плане",
+
+    stockTitle: `${STOCK.underwater} из ${STOCK.total} машин склада уже не окупают проценты: минус ${fmtRu(STOCK.loss)}`,
+    stockNote: `Проценты идут по ${STOCK.charged} машинам — ${fmtRu(STOCK.perMonth)} в месяц, ${fmtRu(STOCK.perDay)} в день. Начисляются с 61-го дня на складе под 18% годовых и съедают маржу 10% ещё до продажи.`,
+
+    funnelTitle: "Откуда приходят клиенты и как далеко доходят",
+    funnelLeads: "Обращения",
+    funnelVisits: "Визиты",
+    funnelDrives: "Тест-драйвы",
+    funnelOffers: "КП",
+    funnelContracts: "Контракты",
+    srcSite: "Сайт",
+    srcMeta: "Meta",
+    srcCalls: "Звонки",
+    srcWalkIn: "Трафик салона",
+    sourcesTitle: "Трафик по источникам",
+
+    slaTitle: `SLA 40 минут: ${SLA.actual}% листов за месяц при цели ${SLA.target}%`,
+    slaNote: `${SLA.inTime} из ${SLA.leads} листов взяты в работу за 40 минут, медиана 6 минут. Сегодня позже срока или ещё не взяты — ${SLA.lateToday}.`,
+
+    callsTitle: `Средняя оценка разговоров ${CALLS.average}%: конфигуратор звучит в 10% звонков, адрес — в 10%, тест-драйв — в 20%`,
+    callsNote: `За месяц оценён ${CALLS.scored} разговор по анкете из девяти пунктов. Процент в ячейке — в скольких разговорах менеджера пункт выполнен.`,
+    colManager: "Сотрудник",
+    colScored: "Оценено",
+    colScore: "Оценка",
+    colWeek: "7 дней",
+    s1: "Приветствие, имя, должность",
+    s2: "Модель",
+    s3: "Пригласил в салон",
+    s4: "Город клиента",
+    s5: "Конфигуратор",
+    s6: "Тест-драйв",
+    s7: "Трейд-ин",
+    s8: "Кредит, рассрочка, страховка",
+    s9: "Адрес",
+    scriptAll: "Все за месяц",
+    mgr1: "Асхат Е.",
+    mgr2: "Данияр С.",
+    mgr3: "Ильяс Т.",
+
+    ratingTitle: "Рейтинг менеджеров",
+    ratingNote: "Отсортированы по оценке разговоров за последние 7 дней — это цифра, которая меняется быстрее всех.",
+    colLeads: "Листов",
+    colSla: "SLA",
+    colCalls: "Разговоры",
+    colDrives: "Тест-драйвы",
+    colContracts: "Контракты",
+
+    weakTitle: "Слабые разговоры за 7 дней",
+    weakNote: "Оценка 34% и ниже, дольше минуты — те, которые стоит послушать.",
+    weak1: "Исходящий · новый лид · запрос цены",
+    weak2: "Исходящий · после визита",
+    sec: "с",
+
+    rejectsTitle: `${REJECTS.total} отказов за месяц: без доказательств ${REJECTS.unproven} (${Math.round((REJECTS.unproven / REJECTS.total) * 100)}%)`,
+    rejectsNote: `${REJECTS.noAttempts} из них поставлены как «не отвечает» без трёх попыток дозвона в разные дни. Отказ засчитывается, только если клиенту звонили с линии салона и причина записана в комментарии.`,
+
+    prioTitle: "Приоритеты на завтра",
+    prio1: `Отказы без доказательств: разобрать ${REJECTS.unproven}, из них горячих 11. Всё, где нет звонка с линии, вернуть менеджеру.`,
+    prio2: "Дважды за сегодня нарушено правило №17 — «не отвечает» меньше чем с трёх попыток. Не подтверждать, дозвониться клиенту.",
+    prio3: "Дожать 14 активных КП: по каждому дата решения и следующий шаг, ежедневный контроль.",
     risksTitle: "Риски",
-    risk1:
-      "Если доля запчастей закрепится на 45%, месяц закроется примерно на 380 000 ₸ ниже прогноза.",
-    risk2:
-      "Два простаивающих поста — около 90 000 ₸ выручки в день по среднему нормо-часу.",
-    risk3:
-      "Третий день недобора по ТО означает, что следующий месяц начнётся с пустой записи.",
-    actionsTitle: "Что сделать",
-    action1:
-      "Сверить закупочные цены по трём последним накладным на колодки и фильтры.",
-    action2:
-      "Завтра до 10:00 прозвонить отменившихся и предложить свободные окна на 14:00 и 16:00.",
-    action3:
-      "Отправить напоминание о ТО 23 машинам, у которых срок подошёл за последние 30 дней.",
-    ideaTitle: "Идея дня",
-    idea: "Сезонный пакет: шиномонтаж, проверка тормозов и салонный фильтр за 28 900 ₸ вместо 34 500. Он заполняет посты, которые простаивают днём, — там, где и проседает день.",
+    risk1: `SLA ${SLA.actual}% не дотягивает до цели ${SLA.target}%, а цель — условие программы импортёра на Q4.`,
+    risk2: "Конфигуратор звучит в одном звонке из десяти. Это тот шаг, который превращает вопрос о цене в визит.",
+    risk3: `Проценты по складу растут на ${fmtRu(STOCK.perDay)} в день. По семи машинам маржа их уже не покрывает.`,
+    risk4: "Камеры насчитали 122 входа в салон за месяц против 34 визитов в CRM. Часть — сотрудники, но разрыв это клиенты, которых не завели.",
+    actionsTitle: "Рекомендации",
+    action1: "Вынести конфигуратор в проверку скрипта и разобрать на планёрке — это самая дешёвая точка роста на этой странице.",
+    action2: "Продавать первыми две худшие машины склада: проценты по ним уже больше скидки, которая их сдвинет.",
+    action3: "Дать ресепшену правило по ночным заявкам: первый лист дня заводится в 09:57, а клиент написал в 23:40.",
+
+    weekTitle: "Неделя к неделе",
+    betterTitle: "Улучшилось",
+    better1: "Контракты: 7 против 5",
+    better2: "SLA: +4 пункта",
+    better3: "Перезвоны по пропущенным: +12%",
+    worseTitle: "Ухудшилось",
+    worse1: "Конфигуратор в разговоре: −6 пунктов",
+    worse2: "Визиты в салон: −9",
+    worse3: "Пропущенные без перезвона: 32%",
+
     askTitle: "Задайте вопрос по отчёту",
     askText:
       "Выберите пример или напишите свой. Демо отвечает на три заготовленных вопроса и никуда не отправляет данные.",
-    placeholder: "Например: почему выручка ниже нормы?",
+    placeholder: "Например: почему план под угрозой?",
     send: "Спросить",
     examples: "Попробуйте спросить",
-    qProfit: "Почему выручка ниже нормы?",
-    qWorkload: "Где сегодня просела загрузка?",
+    qPlan: "Почему план месяца под угрозой?",
+    qLeads: "Где мы теряем клиентов?",
     qFirstStep: "Что проверить в первую очередь?",
     responseLabel: "Ответ ассистента",
-    sources: `Основа: учебный журнал · ${ORDERS} заказ-нарядов · выручка, запчасти и ФОТ`,
-    profitAnswer: `Выручка ${fmtRu(CURRENCY_DAY)} против нормы ${fmtRu(CURRENCY_NORM)} — на 3,5% ниже. Разница в количестве, а не в цене: средний заказ вырос на 2,1%, то есть машин проехало меньше. Чистая прибыль всё равно вышла ${fmtRu(NET)}, потому что фикс дня закрылся уже к 15:00.`,
-    workloadAnswer: `Заняты были 7 постов из 9 — загрузка ${LOAD}%. Провал приходится на 13:00–14:00 и после 17:00. Два поста простояли весь день: проверьте отмены и незаполненные окна до завтрашней смены.`,
-    firstStepAnswer:
-      "Запчасти — 45% выручки против обычных 41%. За день это около 51 000 ₸, больше всего остального на этой странице. Начните с трёх последних накладных.",
+    sources: "Основа: учебные выгрузки CRM, телефонии и 1С · ноябрь",
+    planAnswer: `Выдано 3 из 6, осталось ${MONTH.days - MONTH.day} дней. Прогноз всё ещё 6, потому что четыре контракта подписаны и машины на месте — риск не в спросе, а в оформлении и сроках выдачи. Чистая прибыль прогнозируется ${fmtRu(PROFIT.forecast)} при плане ${fmtRu(PROFIT.plan)}, и разрыв почти точно равен начисленным процентам по складу.`,
+    leadsAnswer: `Между обращением и визитом: из 426 обращений визитов 112. Две причины видны прямо на этой странице — SLA ${SLA.actual}% при цели ${SLA.target}% и конфигуратор в 10% разговоров. Второе дешевле исправить, а двигает те же цифры.`,
+    firstStepAnswer: `${REJECTS.unproven} отказов, за которыми ничего нет. Треть месячных отказов закрыта без звонка с линии — значит воронка выше меряет рынок меньше того, который у вас есть.`,
     unknownAnswer:
       "В прототипе распознаются только три примера ниже. Подключённых данных и работающей модели здесь нет. Выберите пример, чтобы увидеть, как выглядит ответ с указанием основы.",
     disclosure:
-      "Только прототип. Все цифры здесь придуманы для проверки интерфейса; подключения к системам бизнеса нет, и это не тот ассистент, который работает у клиентов.",
+      "Только прототип. Салон, менеджеры, модели и все цифры придуманы для проверки интерфейса. Подключения к CRM, телефонии и 1С здесь нет, и это не тот ассистент, который работает у клиентов.",
     questionHint: "Ответ появится здесь",
     questionRequired: "Введите вопрос или выберите пример.",
-    generated: "Сформировано ассистентом директора · образец 22.11.2026 20:30",
+    generated: "Сформировано ассистентом директора · образец 23.11.2026 20:30",
   },
 } as const;
 
 function fmtRu(value: number): string {
+  if (value >= 1_000_000) {
+    const m = value / 1_000_000;
+    return `${new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 1 }).format(m)} млн ₸`;
+  }
+  if (value >= 1000) {
+    return `${new Intl.NumberFormat("ru-RU").format(Math.round(value / 1000))} тыс. ₸`;
+  }
   return `${new Intl.NumberFormat("ru-RU").format(value)} ₸`;
 }
 
 function fmtEn(value: number): string {
+  if (value >= 1_000_000) {
+    const m = value / 1_000_000;
+    return `KZT ${new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 }).format(m)}m`;
+  }
+  if (value >= 1000) {
+    return `KZT ${new Intl.NumberFormat("en-US").format(Math.round(value / 1000))}k`;
+  }
   return `KZT ${new Intl.NumberFormat("en-US").format(value)}`;
+}
+
+/** Green when the step is done often, amber in the middle, red when it is skipped. */
+function cellTone(share: number): string {
+  if (share >= 70) return "bg-emerald-50 text-emerald-900";
+  if (share >= 35) return "bg-amber-50 text-amber-900";
+  return "bg-red-50 text-red-900";
 }
 
 export default function DirectorAssistantDemo() {
@@ -310,33 +442,34 @@ export default function DirectorAssistantDemo() {
   const [answer, setAnswer] = useState<AnswerKey | "unknown" | null>(null);
   const [hint, setHint] = useState<string | null>(null);
 
+  const label = (key: string) => t[key as keyof typeof t] as string;
+  const funnelMax = FUNNEL[0].value;
+  const sourcesMax = Math.max(...SOURCES.map((s) => s.value));
+  const ranking = [...MANAGERS].sort((a, b) => b.week - a.week);
+
   function resolve(text: string): AnswerKey | "unknown" {
     const q = text.toLowerCase();
-    if (/приб|выруч|норм|profit|revenue|norm/.test(q)) return "profit";
-    if (/загруз|пост|окн|load|bay|slot/.test(q)) return "workload";
-    if (/перв|начать|провер|first|check|start/.test(q)) return "firstStep";
+    if (/план|прибыл|выдач|прогноз|plan|profit|forecast/.test(q)) return "plan";
+    if (/лид|клиент|воронк|визит|теря|lead|funnel|lose|visit/.test(q)) return "leads";
+    if (/перв|провер|начать|first|check|start/.test(q)) return "firstStep";
     return "unknown";
-  }
-
-  function ask(text: string) {
-    if (!text.trim()) {
-      setHint(t.questionRequired);
-      return;
-    }
-    setHint(null);
-    setAnswer(resolve(text));
   }
 
   function onSubmit(event: FormEvent) {
     event.preventDefault();
-    ask(question);
+    if (!question.trim()) {
+      setHint(t.questionRequired);
+      return;
+    }
+    setHint(null);
+    setAnswer(resolve(question));
   }
 
   const answerText =
-    answer === "profit"
-      ? t.profitAnswer
-      : answer === "workload"
-        ? t.workloadAnswer
+    answer === "plan"
+      ? t.planAnswer
+      : answer === "leads"
+        ? t.leadsAnswer
         : answer === "firstStep"
           ? t.firstStepAnswer
           : answer === "unknown"
@@ -344,14 +477,14 @@ export default function DirectorAssistantDemo() {
             : null;
 
   const examples: ReadonlyArray<[AnswerKey, string]> = [
-    ["profit", t.qProfit],
-    ["workload", t.qWorkload],
+    ["plan", t.qPlan],
+    ["leads", t.qLeads],
     ["firstStep", t.qFirstStep],
   ];
 
   return (
     <section className="bg-gray-50 py-10 sm:py-14">
-      <div className="mx-auto max-w-4xl px-4 sm:px-6">
+      <div className="mx-auto max-w-5xl px-4 sm:px-6">
         <Link
           href="/"
           className="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900"
@@ -366,120 +499,238 @@ export default function DirectorAssistantDemo() {
         <h1 className="mt-2 text-3xl font-semibold tracking-tight text-gray-900 sm:text-4xl">
           {t.title}
         </h1>
-        <p className="mt-3 max-w-2xl text-gray-600">{t.intro}</p>
+        <p className="mt-3 max-w-3xl text-gray-600">{t.intro}</p>
 
-        {/* The report itself, on its own sheet. */}
         <article className="mt-8 overflow-hidden rounded-2xl border border-gray-200 bg-white">
           <header className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-gray-100 px-5 py-4 sm:px-6">
             <h2 className="text-lg font-semibold text-gray-900">{t.shop}</h2>
-            <p className="text-sm text-gray-500">{t.day}</p>
+            <p className="text-sm text-gray-500">{t.period}</p>
             <p className="w-full text-xs font-medium uppercase tracking-wide text-amber-700">
               {t.demoBadge}
             </p>
           </header>
 
-          <div className="space-y-8 px-5 py-6 sm:px-6">
-            {/* Day against its norm */}
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-              {[
-                { label: t.kpiRevenue, value: money(CURRENCY_DAY), note: t.kpiRevenueNote },
-                { label: t.kpiAverage, value: money(AVERAGE), note: t.kpiAverageNote },
-                { label: t.kpiLoad, value: `${LOAD}%`, note: t.kpiLoadNote },
-                { label: t.kpiNet, value: money(NET), note: t.kpiNetNote },
-              ].map((kpi) => (
-                <div key={kpi.label}>
-                  <p className="text-xs text-gray-500">{kpi.label}</p>
-                  <p className="mt-1 text-xl font-semibold tabular-nums text-gray-900">
-                    {kpi.value}
-                  </p>
-                  <p className="mt-1 text-xs leading-relaxed text-gray-500">{kpi.note}</p>
-                </div>
-              ))}
-            </div>
-
-            {/* Revenue by hour */}
+          <div className="space-y-10 px-5 py-6 sm:px-6">
+            {/* Plan, actual, forecast */}
             <section>
-              <h3 className="text-sm font-semibold text-gray-900">{t.hoursTitle}</h3>
-              {/* Each column is full height so the bar's percentage has
-                  something definite to resolve against; the bar itself lives in
-                  a flex-1 box above the label, which is what makes the bars sit
-                  on one baseline. */}
-              <div className="mt-4 flex h-32 gap-1.5" aria-hidden>
-                {HOURS.map(([hour, value]) => (
-                  <div key={hour} className="flex h-full flex-1 flex-col">
-                    <div className="flex flex-1 items-end">
-                      <div
-                        className="w-full rounded-t bg-gray-900/80"
-                        style={{ height: `${Math.round((value / HOUR_MAX) * 100)}%` }}
-                      />
-                    </div>
-                    <span className="mt-1 text-center text-[10px] text-gray-500">
-                      {hour}
-                    </span>
-                  </div>
-                ))}
-              </div>
-              <ul className="sr-only">
-                {HOURS.map(([hour, value]) => (
-                  <li key={hour}>{`${hour}:00 — ${money(value)}`}</li>
-                ))}
-              </ul>
-              <p className="mt-2 text-xs text-gray-500">{t.hoursNote}</p>
-            </section>
-
-            {/* P&L */}
-            <section>
-              <h3 className="text-sm font-semibold text-gray-900">{t.pnlTitle}</h3>
-              <dl className="mt-3 divide-y divide-gray-100">
-                {PNL.map((row) => {
-                  const strong = row.kind === "total" || row.kind === "subtotal";
-                  return (
-                    <div
-                      key={row.key}
-                      className={`flex items-baseline justify-between gap-4 py-2 ${
-                        strong ? "font-semibold text-gray-900" : "text-gray-600"
-                      }`}
-                    >
-                      <dt className="text-sm leading-relaxed">
-                        {t[row.key as keyof typeof t] as string}
-                      </dt>
-                      <dd className="shrink-0 text-sm tabular-nums">
-                        {row.value < 0 ? `−${money(Math.abs(row.value))}` : money(row.value)}
-                      </dd>
-                    </div>
-                  );
-                })}
-              </dl>
-            </section>
-
-            {/* Top jobs */}
-            <section>
-              <h3 className="text-sm font-semibold text-gray-900">{t.topTitle}</h3>
-              <table className="mt-3 w-full text-sm">
+              <h3 className="text-base font-semibold text-gray-900">{t.planTitle}</h3>
+              <table className="mt-4 w-full text-sm">
                 <thead>
                   <tr className="text-xs text-gray-500">
-                    <th scope="col" className="pb-2 text-left font-normal">
-                      &nbsp;
-                    </th>
-                    <th scope="col" className="pb-2 text-right font-normal">
-                      {t.topCount}
-                    </th>
-                    <th scope="col" className="pb-2 text-right font-normal">
-                      {t.topSum}
-                    </th>
+                    <th scope="col" className="pb-2 text-left font-normal">&nbsp;</th>
+                    <th scope="col" className="pb-2 text-right font-normal">{t.colPlan}</th>
+                    <th scope="col" className="pb-2 text-right font-normal">{t.colFact}</th>
+                    <th scope="col" className="pb-2 text-right font-normal">{t.colForecast}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {TOP_JOBS.map((job) => (
-                    <tr key={job.key}>
-                      <td className="py-2 text-gray-700">
-                        {t[job.key as keyof typeof t] as string}
+                  {DIRECTIONS.map((d) => {
+                    const show = (v: number) =>
+                      d.unit === "money" ? money(v) : `${v}`;
+                    return (
+                      <tr key={d.key}>
+                        <td className="py-2.5 text-gray-700">{label(d.key)}</td>
+                        <td className="py-2.5 text-right tabular-nums text-gray-500">
+                          {show(d.plan)}
+                        </td>
+                        <td className="py-2.5 text-right font-medium tabular-nums text-gray-900">
+                          {show(d.fact)}
+                        </td>
+                        <td
+                          className={`py-2.5 text-right tabular-nums ${
+                            d.forecast >= d.plan ? "text-emerald-700" : "text-amber-700"
+                          }`}
+                        >
+                          {show(d.forecast)}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                  <tr className="font-semibold text-gray-900">
+                    <td className="py-2.5">{t.profitLine}</td>
+                    <td className="py-2.5 text-right tabular-nums text-gray-500">
+                      {money(PROFIT.plan)}
+                    </td>
+                    <td className="py-2.5" />
+                    <td className="py-2.5 text-right tabular-nums text-amber-700">
+                      {money(PROFIT.forecast)}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+
+            {/* Stock — the heading is the finding */}
+            <section className="rounded-xl bg-amber-50 p-4">
+              <h3 className="text-base font-semibold text-amber-900">{t.stockTitle}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-amber-900/90">{t.stockNote}</p>
+            </section>
+
+            {/* Funnel and sources */}
+            <section>
+              <h3 className="text-base font-semibold text-gray-900">{t.funnelTitle}</h3>
+              <div className="mt-4 grid gap-6 sm:grid-cols-2">
+                <div>
+                  <ul className="space-y-2">
+                    {FUNNEL.map((step) => (
+                      <li key={step.key}>
+                        <div className="flex items-baseline justify-between gap-3 text-sm">
+                          <span className="text-gray-700">{label(step.key)}</span>
+                          <span className="tabular-nums text-gray-900">{step.value}</span>
+                        </div>
+                        <div className="mt-1 h-1.5 w-full rounded-full bg-gray-100" aria-hidden>
+                          <div
+                            className="h-1.5 rounded-full bg-gray-900/80"
+                            style={{ width: `${Math.round((step.value / funnelMax) * 100)}%` }}
+                          />
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                    {t.sourcesTitle}
+                  </p>
+                  <ul className="mt-3 space-y-2">
+                    {SOURCES.map((s) => (
+                      <li key={s.key}>
+                        <div className="flex items-baseline justify-between gap-3 text-sm">
+                          <span className="text-gray-700">{label(s.key)}</span>
+                          <span className="tabular-nums text-gray-900">{s.value}</span>
+                        </div>
+                        <div className="mt-1 h-1.5 w-full rounded-full bg-gray-100" aria-hidden>
+                          <div
+                            className="h-1.5 rounded-full bg-gray-400"
+                            style={{ width: `${Math.round((s.value / sourcesMax) * 100)}%` }}
+                          />
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </section>
+
+            {/* SLA */}
+            <section>
+              <h3 className="text-base font-semibold text-gray-900">{t.slaTitle}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-gray-600">{t.slaNote}</p>
+              <div className="mt-3 h-2 w-full rounded-full bg-gray-100" aria-hidden>
+                <div
+                  className="h-2 rounded-full bg-amber-500"
+                  style={{ width: `${SLA.actual}%` }}
+                />
+              </div>
+            </section>
+
+            {/* Call scoring — the scorecard */}
+            <section>
+              <h3 className="flex items-start gap-2 text-base font-semibold text-gray-900">
+                <Headphones className="mt-0.5 h-5 w-5 shrink-0" strokeWidth={2} aria-hidden />
+                {t.callsTitle}
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-gray-600">{t.callsNote}</p>
+
+              <div className="mt-4 overflow-x-auto">
+                <table className="w-full min-w-[640px] text-sm">
+                  <thead>
+                    <tr className="text-xs text-gray-500">
+                      <th scope="col" className="pb-2 text-left font-normal">{t.colManager}</th>
+                      <th scope="col" className="pb-2 text-right font-normal">{t.colScored}</th>
+                      <th scope="col" className="pb-2 text-right font-normal">{t.colScore}</th>
+                      {SCRIPT.map((s, i) => (
+                        <th
+                          key={s}
+                          scope="col"
+                          className="pb-2 text-center font-normal"
+                          title={label(s)}
+                        >
+                          {i + 1}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    <tr className="text-gray-500">
+                      <td className="py-2">{t.scriptAll}</td>
+                      <td className="py-2 text-right tabular-nums">{CALLS.scored}</td>
+                      <td className="py-2 text-right tabular-nums">{CALLS.average}%</td>
+                      {SCRIPT_ALL.map((v, i) => (
+                        <td key={i} className="py-2 text-center tabular-nums">
+                          {v}%
+                        </td>
+                      ))}
+                    </tr>
+                    {MANAGERS.map((m) => (
+                      <tr key={m.key}>
+                        <td className="py-2 text-gray-900">{label(m.key)}</td>
+                        <td className="py-2 text-right tabular-nums text-gray-600">
+                          {m.scored}
+                        </td>
+                        <td className="py-2 text-right tabular-nums text-gray-900">
+                          {m.score}%
+                        </td>
+                        {m.items.map((v, i) => (
+                          <td key={i} className="px-1 py-1 text-center">
+                            <span
+                              className={`block rounded px-1 py-1 text-xs tabular-nums ${cellTone(v)}`}
+                            >
+                              {v}%
+                            </span>
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <ol className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
+                {SCRIPT.map((s, i) => (
+                  <li key={s}>
+                    {i + 1}. {label(s)}
+                  </li>
+                ))}
+              </ol>
+            </section>
+
+            {/* Manager ranking */}
+            <section>
+              <h3 className="text-base font-semibold text-gray-900">{t.ratingTitle}</h3>
+              <p className="mt-2 text-sm text-gray-600">{t.ratingNote}</p>
+              <table className="mt-4 w-full text-sm">
+                <thead>
+                  <tr className="text-xs text-gray-500">
+                    <th scope="col" className="pb-2 text-left font-normal">{t.colManager}</th>
+                    <th scope="col" className="pb-2 text-right font-normal">{t.colWeek}</th>
+                    <th scope="col" className="pb-2 text-right font-normal">{t.colLeads}</th>
+                    <th scope="col" className="pb-2 text-right font-normal">{t.colSla}</th>
+                    <th scope="col" className="pb-2 text-right font-normal">{t.colDrives}</th>
+                    <th scope="col" className="pb-2 text-right font-normal">{t.colContracts}</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {ranking.map((m, i) => (
+                    <tr key={m.key}>
+                      <td className="py-2.5 text-gray-900">
+                        <span className="mr-2 text-gray-400 tabular-nums">{i + 1}</span>
+                        {label(m.key)}
                       </td>
-                      <td className="py-2 text-right tabular-nums text-gray-600">
-                        {job.count}
+                      <td className="py-2.5 text-right font-medium tabular-nums text-gray-900">
+                        {m.week}%
                       </td>
-                      <td className="py-2 text-right tabular-nums text-gray-900">
-                        {money(job.sum)}
+                      <td className="py-2.5 text-right tabular-nums text-gray-600">{m.leads}</td>
+                      <td
+                        className={`py-2.5 text-right tabular-nums ${
+                          m.sla >= SLA.target ? "text-emerald-700" : "text-amber-700"
+                        }`}
+                      >
+                        {m.sla}%
+                      </td>
+                      <td className="py-2.5 text-right tabular-nums text-gray-600">{m.drives}</td>
+                      <td className="py-2.5 text-right tabular-nums text-gray-900">
+                        {m.contracts}
                       </td>
                     </tr>
                   ))}
@@ -487,81 +738,54 @@ export default function DirectorAssistantDemo() {
               </table>
             </section>
 
-            {/* Order mix and the servicing plan */}
-            <div className="grid gap-6 sm:grid-cols-2">
-              <section>
-                <h3 className="text-sm font-semibold text-gray-900">{t.mixTitle}</h3>
-                <dl className="mt-3 space-y-2 text-sm">
-                  {[
-                    [t.mixLabourOnly, MIX.labourOnly],
-                    [t.mixLabourParts, MIX.labourParts],
-                    [t.mixPartsOnly, MIX.partsOnly],
-                  ].map(([label, value]) => (
-                    <div key={String(label)} className="flex justify-between gap-4">
-                      <dt className="text-gray-600">{label}</dt>
-                      <dd className="tabular-nums text-gray-900">{value}</dd>
-                    </div>
-                  ))}
-                </dl>
-              </section>
-
-              <section>
-                <h3 className="text-sm font-semibold text-gray-900">{t.planTitle}</h3>
-                <div className="mt-3 h-2 w-full rounded-full bg-gray-100" aria-hidden>
-                  <div
-                    className="h-2 rounded-full bg-amber-500"
-                    style={{
-                      width: `${Math.round((SERVICE_PLAN.done / SERVICE_PLAN.plan) * 100)}%`,
-                    }}
-                  />
-                </div>
-                <p className="mt-2 text-sm text-gray-600">{t.planNote}</p>
-              </section>
-            </div>
-
-            {/* Month to date */}
+            {/* Weak calls */}
             <section>
-              <h3 className="text-sm font-semibold text-gray-900">{t.monthTitle}</h3>
-              <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-4">
-                {[
-                  { label: t.monthRevenue, value: money(MONTH.revenue), note: t.monthDays },
-                  { label: t.monthOrders, value: String(MONTH.orders), note: "" },
-                  { label: t.monthProfit, value: money(MONTH.profit), note: "" },
-                  {
-                    label: t.monthForecast,
-                    value: money(MONTH.forecast),
-                    note: t.monthForecastNote,
-                  },
-                ].map((item) => (
-                  <div key={item.label}>
-                    <p className="text-xs text-gray-500">{item.label}</p>
-                    <p className="mt-1 text-base font-semibold tabular-nums text-gray-900">
-                      {item.value}
-                    </p>
-                    {item.note && <p className="mt-1 text-xs text-gray-500">{item.note}</p>}
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {/* The part people actually read */}
-            <section>
-              <h3 className="flex items-center gap-2 text-sm font-semibold text-gray-900">
-                <Search className="h-4 w-4" strokeWidth={2} aria-hidden />
-                {t.signalsTitle}
-              </h3>
-              <ul className="mt-3 space-y-2.5">
-                {SIGNALS.map((key) => (
-                  <li key={key} className="text-sm leading-relaxed text-gray-700">
-                    {t[key]}
+              <h3 className="text-base font-semibold text-gray-900">{t.weakTitle}</h3>
+              <p className="mt-2 text-sm text-gray-600">{t.weakNote}</p>
+              <ul className="mt-3 divide-y divide-gray-100">
+                {WEAK.map((call) => (
+                  <li
+                    key={call.key}
+                    className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-2.5 text-sm"
+                  >
+                    <span className="text-gray-900">{label(call.manager)}</span>
+                    <span className="text-gray-600">{label(call.key)}</span>
+                    <span className="tabular-nums text-gray-500">
+                      {call.seconds} {t.sec}
+                    </span>
+                    <span className="rounded bg-red-50 px-2 py-0.5 text-xs font-medium tabular-nums text-red-900">
+                      {call.score}%
+                    </span>
                   </li>
                 ))}
               </ul>
             </section>
 
+            {/* CRM discipline */}
+            <section>
+              <h3 className="text-base font-semibold text-gray-900">{t.rejectsTitle}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-gray-600">{t.rejectsNote}</p>
+            </section>
+
+            {/* Priorities, risks, recommendations */}
+            <section>
+              <h3 className="flex items-center gap-2 text-base font-semibold text-gray-900">
+                <ListChecks className="h-5 w-5" strokeWidth={2} aria-hidden />
+                {t.prioTitle}
+              </h3>
+              <ol className="mt-3 space-y-2.5">
+                {PRIORITIES.map((key, i) => (
+                  <li key={key} className="flex gap-3 text-sm leading-relaxed text-gray-700">
+                    <span className="shrink-0 text-gray-400 tabular-nums">{i + 1}</span>
+                    <span>{t[key]}</span>
+                  </li>
+                ))}
+              </ol>
+            </section>
+
             <section className="rounded-xl bg-amber-50 p-4">
-              <h3 className="flex items-center gap-2 text-sm font-semibold text-amber-900">
-                <TriangleAlert className="h-4 w-4" strokeWidth={2} aria-hidden />
+              <h3 className="flex items-center gap-2 text-base font-semibold text-amber-900">
+                <TriangleAlert className="h-5 w-5" strokeWidth={2} aria-hidden />
                 {t.risksTitle}
               </h3>
               <ul className="mt-3 space-y-2.5">
@@ -574,30 +798,46 @@ export default function DirectorAssistantDemo() {
             </section>
 
             <section>
-              <h3 className="flex items-center gap-2 text-sm font-semibold text-gray-900">
-                <ListChecks className="h-4 w-4" strokeWidth={2} aria-hidden />
-                {t.actionsTitle}
-              </h3>
-              <ol className="mt-3 space-y-2.5">
+              <h3 className="text-base font-semibold text-gray-900">{t.actionsTitle}</h3>
+              <ul className="mt-3 space-y-2.5">
                 {ACTIONS.map((key) => (
                   <li key={key} className="text-sm leading-relaxed text-gray-700">
                     {t[key]}
                   </li>
                 ))}
-              </ol>
+              </ul>
             </section>
 
-            <section className="rounded-xl border border-gray-200 p-4">
-              <h3 className="flex items-center gap-2 text-sm font-semibold text-gray-900">
-                <Lightbulb className="h-4 w-4" strokeWidth={2} aria-hidden />
-                {t.ideaTitle}
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-gray-700">{t.idea}</p>
+            {/* Week against week */}
+            <section>
+              <h3 className="text-base font-semibold text-gray-900">{t.weekTitle}</h3>
+              <div className="mt-3 grid gap-4 sm:grid-cols-2">
+                <div className="rounded-xl border border-gray-200 p-4">
+                  <p className="flex items-center gap-2 text-sm font-medium text-emerald-700">
+                    <TrendingUp className="h-4 w-4" strokeWidth={2} aria-hidden />
+                    {t.betterTitle}
+                  </p>
+                  <ul className="mt-2 space-y-1.5 text-sm text-gray-700">
+                    {BETTER.map((key) => (
+                      <li key={key}>{t[key]}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="rounded-xl border border-gray-200 p-4">
+                  <p className="flex items-center gap-2 text-sm font-medium text-red-700">
+                    <TrendingDown className="h-4 w-4" strokeWidth={2} aria-hidden />
+                    {t.worseTitle}
+                  </p>
+                  <ul className="mt-2 space-y-1.5 text-sm text-gray-700">
+                    {WORSE.map((key) => (
+                      <li key={key}>{t[key]}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
             </section>
 
-            <p className="border-t border-gray-100 pt-4 text-xs text-gray-400">
-              {t.generated}
-            </p>
+            <p className="border-t border-gray-100 pt-4 text-xs text-gray-400">{t.generated}</p>
           </div>
         </article>
 
