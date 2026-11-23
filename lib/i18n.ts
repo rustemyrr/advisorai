@@ -183,6 +183,54 @@ export const translations = {
       "Confirms tomorrow's bookings the evening before, so slots do not sit empty",
     ],
     agentServiceCta: "More about the agent",
+    agentShopTitle: "AI front desk for a shop floor",
+    agentShopText:
+      "Answers the shop's calls and messages: what is in stock, what it costs, when the rest arrives. It takes the order, holds the item and hands the customer to a person when the question stops being about the catalogue.",
+    agentShopBullets: [
+      "Answers on stock, price and delivery from your own figures, never a guess",
+      "Takes an order or a hold and passes it to the floor",
+      "Writes first to the people who asked and went quiet",
+    ],
+    agentLeadTitle: "AI lead manager",
+    agentLeadText:
+      "Picks up every enquiry the moment it lands — at night and on a Sunday too. It finds out what the customer wants, how close they are to buying, and hands a ready card to the right manager.",
+    agentLeadBullets: [
+      "Replies in minutes, not after the morning meeting",
+      "Qualifies: who the customer is, what they need, how hot they are",
+      "Night and weekend enquiries stop waiting until Monday",
+    ],
+    agentSalesTitle: "AI sales manager",
+    agentSalesText:
+      "Carries the customer from the first question to the meeting: answers on price, specification and terms, offers a visit or a test drive, and comes back to the ones who are still thinking.",
+    agentSalesBullets: [
+      "Answers on price, specification and delivery dates",
+      "Agrees a visit and reminds the customer the day before",
+      "Returns to the undecided instead of letting them cool",
+    ],
+    agentClinicTitle: "AI front desk for a clinic",
+    agentClinicText:
+      "Takes the clinic's phone. It books, moves and confirms appointments by the doctors' schedule, reminds the day before, and answers about opening hours and how to prepare for a procedure.",
+    agentClinicBullets: [
+      "Books by each doctor's schedule, and never double-books",
+      "Reminds the day before, so fewer people simply do not come",
+      "Answers nothing about health — that goes to the doctor",
+    ],
+    agentTechTitle: "AI assistant for a workshop manager",
+    agentTechText:
+      "Puts the evening report together for you: revenue, bay load, hours sold against hours worked, the servicing plan. It says where the day sagged and what to check before the morning shift.",
+    agentTechBullets: [
+      "Bay load and sold hours against the time the workshop was open",
+      "The day's P&L: what the profit was made of and what ate it",
+      "Work orders sitting open longer than they should",
+    ],
+    agentDoctorTitle: "AI assistant for a doctor",
+    agentDoctorText:
+      "Takes the writing off the consultation. The conversation with the patient comes back as a structured note, the prescriptions and a plain-language reminder for the patient. The doctor checks it and signs.",
+    agentDoctorBullets: [
+      "The visit written into the record from the conversation, not by hand after the shift",
+      "A reminder the patient understands without a second appointment",
+      "No diagnosis and no advice of its own — the decision stays with the doctor",
+    ],
     agentsHowTag: "How we start",
     agentsHowText:
       "We start with a call: we look at how the work is done today, pick the one job worth handing over first, and agree on what the agent has to deliver. Setup takes a few days, and you keep access to everything the agent produces.",
@@ -504,6 +552,54 @@ export const translations = {
       "Накануне подтверждает записи, чтобы окна не стояли пустыми",
     ],
     agentServiceCta: "Подробнее об агенте",
+    agentShopTitle: "ИИ администратор торгового зала",
+    agentShopText:
+      "Отвечает на звонки и сообщения магазина: что есть в наличии, сколько стоит, когда привезут остальное. Принимает заказ, откладывает товар и передаёт человеку, когда вопрос перестаёт быть про каталог.",
+    agentShopBullets: [
+      "Отвечает про наличие, цену и сроки по вашим остаткам, а не наугад",
+      "Принимает заказ или бронь и передаёт в зал",
+      "Пишет первым тем, кто спрашивал и пропал",
+    ],
+    agentLeadTitle: "ИИ лид-менеджер",
+    agentLeadText:
+      "Берёт заявку в работу в ту же минуту — ночью и в воскресенье тоже. Выясняет, что клиенту нужно и насколько он близок к покупке, и передаёт менеджеру готовую карточку.",
+    agentLeadBullets: [
+      "Отвечает за минуты, а не после утренней планёрки",
+      "Квалифицирует: что за клиент, что ему нужно, насколько горячий",
+      "Ночные и выходные заявки перестают ждать понедельника",
+    ],
+    agentSalesTitle: "ИИ менеджер по продажам",
+    agentSalesText:
+      "Ведёт клиента от первого вопроса до встречи: отвечает про цену, комплектацию и условия, предлагает визит или тест-драйв и возвращается к тем, кто ещё думает.",
+    agentSalesBullets: [
+      "Отвечает про цену, комплектацию и сроки поставки",
+      "Договаривается о визите и напоминает накануне",
+      "Возвращается к сомневающимся, вместо того чтобы дать им остыть",
+    ],
+    agentClinicTitle: "ИИ администратор медклиники",
+    agentClinicText:
+      "Берёт на себя телефон клиники. Записывает, переносит и подтверждает приёмы по расписанию врачей, напоминает накануне, отвечает про часы работы и подготовку к процедуре.",
+    agentClinicBullets: [
+      "Записывает по расписанию каждого врача, без двойных записей",
+      "Напоминает накануне — и до приёма доходит больше людей",
+      "Про здоровье не отвечает: это к врачу",
+    ],
+    agentTechTitle: "ИИ ассистент руководителя автосервиса",
+    agentTechText:
+      "Собирает вечерний отчёт за вас: выручка, загрузка постов, проданные нормо-часы, план по ТО. Говорит, где день просел и что проверить до утренней смены.",
+    agentTechBullets: [
+      "Загрузка цеха и проданные часы против рабочего времени",
+      "P&L дня: из чего сложилась прибыль и что её съело",
+      "Заказ-наряды, которые висят дольше срока",
+    ],
+    agentDoctorTitle: "ИИ ассистент доктора",
+    agentDoctorText:
+      "Снимает писанину с приёма. Из разговора с пациентом получается структурированная запись в карту, назначения и памятка понятным языком. Врач проверяет и подписывает.",
+    agentDoctorBullets: [
+      "Запись приёма в карту — из разговора, а не вручную после смены",
+      "Памятка пациенту, которую не нужно объяснять второй раз",
+      "Ни диагноза, ни советов от себя — решение остаётся за врачом",
+    ],
     agentsHowTag: "С чего начинаем",
     agentsHowText:
       "Начинаем с созвона: смотрим, как работа устроена сейчас, выбираем одну задачу, которую стоит отдать первой, и договариваемся о результате. Настройка занимает несколько дней, доступ ко всему, что делает агент, остаётся у вас.",
