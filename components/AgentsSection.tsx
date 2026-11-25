@@ -1,6 +1,6 @@
 "use client";
 
-import { BarChart3, Clapperboard, Wrench } from "lucide-react";
+import { BarChart3, Clapperboard, Gauge, Stethoscope, Wrench } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
 import AgentCard from "@/components/AgentCard";
 
@@ -29,6 +29,18 @@ export default function AgentsSection() {
       title: t.agentSmmTitle,
       text: t.agentSmmText,
       bullets: t.agentSmmBullets,
+    },
+    {
+      icon: Gauge,
+      title: t.agentTechTitle,
+      text: t.agentTechText,
+      bullets: t.agentTechBullets,
+    },
+    {
+      icon: Stethoscope,
+      title: t.agentDoctorTitle,
+      text: t.agentDoctorText,
+      bullets: t.agentDoctorBullets,
     },
     // The service-advisor SaaS: an assistant like the other two -- the advisor
     // still writes the estimate, this takes the writing. Its card is the way

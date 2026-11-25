@@ -1,6 +1,6 @@
 "use client";
 
-import { PhoneCall } from "lucide-react";
+import { Handshake, HeartPulse, Inbox, PhoneCall, Store } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
 import AgentCard from "@/components/AgentCard";
 
@@ -10,8 +10,10 @@ import AgentCard from "@/components/AgentCard";
  * customer, decides inside the rules the shop sets, and carries the job to a
  * result.
  *
- * One card today (the car-service front desk); the block exists because the
- * distinction is the offer, not because the list is long.
+ * The order is deliberate: the two that answer a channel end to end come
+ * first, then the two that work a pipeline. Each one names the moment it
+ * refuses to decide and hands over to a person -- that boundary is the offer
+ * as much as the capability is.
  */
 export default function BusinessAgentsSection() {
   const { t } = useLanguage();
@@ -24,6 +26,30 @@ export default function BusinessAgentsSection() {
       bullets: t.agentServiceBullets,
       href: "/service-agent",
       cta: t.agentServiceCta,
+    },
+    {
+      icon: HeartPulse,
+      title: t.agentClinicTitle,
+      text: t.agentClinicText,
+      bullets: t.agentClinicBullets,
+    },
+    {
+      icon: Store,
+      title: t.agentShopTitle,
+      text: t.agentShopText,
+      bullets: t.agentShopBullets,
+    },
+    {
+      icon: Inbox,
+      title: t.agentLeadTitle,
+      text: t.agentLeadText,
+      bullets: t.agentLeadBullets,
+    },
+    {
+      icon: Handshake,
+      title: t.agentSalesTitle,
+      text: t.agentSalesText,
+      bullets: t.agentSalesBullets,
     },
   ];
 
@@ -38,7 +64,7 @@ export default function BusinessAgentsSection() {
         </p>
         <p className="mt-5 max-w-3xl text-gray-600">{t.businessAgentsSubtext}</p>
 
-        <div className="mt-12 grid gap-6 md:grid-cols-2">
+        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {agents.map((agent) => (
             <AgentCard key={agent.title} {...agent} requestFor={agent.title} />
           ))}
